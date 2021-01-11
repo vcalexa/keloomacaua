@@ -30,8 +30,9 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="178dp"
+        android:id="@+id/imageLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="0dp"
@@ -73,7 +74,7 @@
         android:layout_marginBottom="193dp"
         android:text="Ia carti" />
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/player2Cards"
         android:layout_width="105dp"
         android:layout_height="166dp"
@@ -83,7 +84,7 @@
         android:layout_weight="1"
         android:src="@drawable/ace_of_clubs">
 
-    </ImageView>
+    </ImageView>-->
 
     <ImageView
         android:id="@+id/tablePile"
@@ -95,6 +96,5 @@
         android:layout_marginStart="159dp"
         android:layout_marginTop="271dp"
         app:srcCompat="@drawable/four_of_clubs" />
-
 
 </RelativeLayout>
