@@ -6,28 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sound.KelooMacaua.ActualCard;
+import com.sound.KelooMacaua.Card;
 import com.sound.KelooMacaua.ItemClickListener;
 import com.sound.KelooMacaua.MainActivity;
 import com.sound.KelooMacaua.R;
 
-public class MyAdapter extends RecyclerView.Adapter <MyAdapter.ViewHolder>{
-    private List<ActualCard> actualCards;
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    private List<Integer> actualCards;
     private final Context context;
 
-    public MyAdapter(Context context, List<ActualCard> actualCards) {
+    public MyAdapter(Context context, List<Integer> actualCards) {
         super();
         this.context = context;
         this.actualCards = actualCards;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -38,9 +38,10 @@ public class MyAdapter extends RecyclerView.Adapter <MyAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        //viewHolder.textView.setText(numberName.get(i));
+        Card card = new Card();
+        String imageTitle = card.getImageViewName(actualCards.get(i));
 
-        int imageId =  context.getResources().getIdentifier(actualCards.get(i).getCardDescription(),
+        int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
         viewHolder.setClickListener((view, position, isLongClick) -> {
@@ -53,15 +54,18 @@ public class MyAdapter extends RecyclerView.Adapter <MyAdapter.ViewHolder>{
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return actualCards.size();
     }
+
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
             View.OnLongClickListener {
         ImageView imgThumbnail;
         //TextView textView;
         private ItemClickListener clickListener;
+
         ViewHolder(View itemView) {
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
@@ -69,13 +73,16 @@ public class MyAdapter extends RecyclerView.Adapter <MyAdapter.ViewHolder>{
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
+
         void setClickListener(ItemClickListener itemClickListener) {
             this.clickListener = itemClickListener;
         }
+
         @Override
         public void onClick(View view) {
             clickListener.onClick(view, getPosition(), false);
         }
+
         @Override
         public boolean onLongClick(View view) {
             clickListener.onClick(view, getPosition(), true);

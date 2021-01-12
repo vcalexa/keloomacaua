@@ -126,4 +126,44 @@ public class CardMoves {
     private int getLast(List<Integer> list) {
         return list.get(list.size() - 1);
     }
+
+    public List<Integer> getPlayer1Cards() {
+        return player1Cards;
+    }
+
+    public void setPlayer1Cards(List<Integer> player1Cards) {
+        this.player1Cards = player1Cards;
+    }
+
+    public List<Integer> getPlayer2Cards() {
+        return player2Cards;
+    }
+
+    public void setPlayer2Cards(List<Integer> player2Cards) {
+        this.player2Cards = player2Cards;
+    }
+
+    public List<Integer> getDeckOfCards() {
+        return deckOfCards;
+    }
+
+    public void setDeckOfCards(List<Integer> deckOfCards) {
+        this.deckOfCards = deckOfCards;
+    }
+
+    public List<Integer> getCardsPlayed() {
+        return cardsPlayed;
+    }
+
+    public void setCardsPlayed(List<Integer> cardsPlayed) {
+        this.cardsPlayed = cardsPlayed;
+    }
+
+    public int getPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(int playerTurn) {
+        this.playerTurn = playerTurn;
+    }
 }

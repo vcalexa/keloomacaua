@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Card {
 
-    private static String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
-    private static String[] ranks = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
+    private static String[] suits = {"hearts", "spades", "diamonds", "clubs"};
+    private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
 
     public String getImageViewName(int n) {
         return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
@@ -37,11 +37,11 @@ public class Card {
     }
 
     public boolean hasSameSuite(int card1, int card2) {
-        return getCardSuite(card1) == getCardSuite(card2);
+        return getCardSuite(card1).equals(getCardSuite(card2));
     }
 
     public boolean hasSameRank(int card1, int card2) {
-        return getCardRank(card1) == getCardRank(card2);
+        return getCardRank(card1).equals(getCardRank(card2));
     }
 
     private static List<String> listOf(String rank, String suite) {
@@ -50,4 +50,5 @@ public class Card {
         cardList.add(suite);
         return cardList;
     }
+
 }

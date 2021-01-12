@@ -19,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    RecyclerView.Adapter bottomCardsAdaptor;
-    List<ActualCard> cardList = new ArrayList<>();
+    MyAdapter bottomCardsAdaptor;
 
     public void calculate(View view) {
         //EditText editText = (EditText) findViewById(R.id.editTextNumber);
@@ -33,24 +32,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Card card = new Card();
-        ActualCard card1 = new ActualCard(1, String.format("%s_of_%s", "two", card.getCardSuite(1)).toLowerCase());
-        ActualCard card2 = new ActualCard(2, String.format("%s_of_%s", "three", card.getCardSuite(2)).toLowerCase());
-        ActualCard card3 = new ActualCard(3, String.format("%s_of_%s", "ace", card.getCardSuite(3)).toLowerCase());
-        ActualCard card4 = new ActualCard(4, String.format("%s_of_%s", "king", card.getCardSuite(4)).toLowerCase());
-        ActualCard card5 = new ActualCard(5, String.format("%s_of_%s", "queen", card.getCardSuite(5)).toLowerCase());
+        cardMoves.deal();
+        List<Integer> player1Cards = cardMoves.getPlayer1Cards();
+        List<Integer> player2Cards = cardMoves.getPlayer2Cards();
 
-        cardList.add(card1);
-        cardList.add(card2);
-        cardList.add(card3);
-        cardList.add(card4);
-        cardList.add(card5);
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView = findViewById(R.id.recycleViewCards);
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), cardList);
+        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), player1Cards);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
         /*player2Cards = findViewById(R.id.player2Cards);
