@@ -111,7 +111,7 @@ public class CardMoves {
             activePlayerCards = player1Cards;
         }
 
-        String[] specialCards = {"Ace", "Joker"};
+        String[] specialCards = {"ace", "joker"};
 
         for (int playerCard : activePlayerCards) {
             if (card.hasSameRank(getLast(cardsPlayed), playerCard) ||
