@@ -22,8 +22,8 @@ public class Card {
                 i++;
             }
         }
-        cardMap.put(52, listOf("Joker", "Black"));
-        cardMap.put(53, listOf("Joker", "Color"));
+        cardMap.put(52, listOf("joker", "black"));
+        cardMap.put(53, listOf("joker", "color"));
 
         return cardMap;
     }
