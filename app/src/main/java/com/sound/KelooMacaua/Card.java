@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Card {
 
-    private static String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
-    private static String[] ranks = {"Ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "Jack", "Queen", "King"};
+    private static String[] suits = {"hearts", "spades", "diamonds", "clubs"};
+    private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
 
     public String getImageViewName(int n) {
         return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
@@ -22,8 +22,8 @@ public class Card {
                 i++;
             }
         }
-        cardMap.put(52, listOf("Joker", "Black"));
-        cardMap.put(53, listOf("Joker", "Color"));
+        cardMap.put(52, listOf("joker", "black"));
+        cardMap.put(53, listOf("joker", "color"));
 
         return cardMap;
     }
