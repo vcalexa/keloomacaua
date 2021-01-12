@@ -7,7 +7,7 @@ import java.util.List;
 public class Card {
 
     private static String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
-    private static String[] ranks = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
+    private static String[] ranks = {"Ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "Jack", "Queen", "King"};
 
     public String getImageViewName(int n) {
         return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
