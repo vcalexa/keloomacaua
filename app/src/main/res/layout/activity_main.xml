@@ -50,48 +50,36 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button3"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
+        android:id="@+id/stauOTuraId"
+        android:layout_width="152dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginEnd="158dp"
-        android:layout_marginBottom="191dp"
+        android:layout_marginEnd="156dp"
+        android:layout_marginBottom="192dp"
         android:text="Stau o tura" />
 
     <Button
-        android:id="@+id/button4"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
+        android:id="@+id/macauaId"
+        android:layout_width="143dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginEnd="-3dp"
-        android:layout_marginBottom="188dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="192dp"
         android:text="Macaua!" />
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:id="@+id/iaCarteId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginBottom="193dp"
+        android:layout_marginStart="-3dp"
+        android:layout_marginBottom="192dp"
         android:text="Ia carti" />
-
-    <!--<ImageView
-        android:id="@+id/player2Cards"
-        android:layout_width="105dp"
-        android:layout_height="166dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="300dp"
-        android:layout_marginBottom="-6dp"
-        android:layout_weight="1"
-        android:src="@drawable/ace_of_clubs">
-
-    </ImageView>-->
 
     <ImageView
         android:id="@+id/tablePile"

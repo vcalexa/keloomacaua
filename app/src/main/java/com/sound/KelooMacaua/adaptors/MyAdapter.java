@@ -21,11 +21,13 @@ import com.sound.KelooMacaua.R;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Integer> actualCards;
     private final Context context;
+    private ImageView tablePile;
 
-    public MyAdapter(Context context, List<Integer> actualCards) {
+    public MyAdapter(Context context, List<Integer> actualCards, ImageView tablePile) {
         super();
         this.context = context;
         this.actualCards = actualCards;
+        this.tablePile = tablePile;
     }
 
     @NonNull
@@ -47,10 +49,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         viewHolder.setClickListener((view, position, isLongClick) -> {
             if (isLongClick) {
                 Toast.makeText(context, "#" + position + " - " + actualCards.get(position) + " (Long click)", Toast.LENGTH_SHORT).show();
-                context.startActivity(new Intent(context, MainActivity.class));
+                //context.startActivity(new Intent(context, MainActivity.class));
             } else {
                 Toast.makeText(context, "#" + position + " - " + actualCards.get(position),
                         Toast.LENGTH_SHORT).show();
+
+                int clickedImageId = context.getResources().getIdentifier(card.getImageViewName(actualCards.get(position)),
+                        "drawable", context.getPackageName());
+
+                tablePile.setImageResource(clickedImageId);
+
+                actualCards.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, actualCards.size());
+
+
             }
         });
     }
@@ -80,12 +93,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         @Override
         public void onClick(View view) {
-            clickListener.onClick(view, getPosition(), false);
+            clickListener.onClick(view, getLayoutPosition(), false);
         }
 
         @Override
         public boolean onLongClick(View view) {
-            clickListener.onClick(view, getPosition(), true);
+            clickListener.onClick(view, getLayoutPosition(), true);
             return true;
         }
     }

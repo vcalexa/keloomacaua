@@ -2,6 +2,7 @@ package com.sound.KelooMacaua;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     MyAdapter bottomCardsAdaptor;
 
+    Button iaCarteButton;
+
     public void calculate(View view) {
         //EditText editText = (EditText) findViewById(R.id.editTextNumber);
         //Integer inputNo = Integer.parseInt(editText.getText().toString());
@@ -36,24 +39,29 @@ public class MainActivity extends AppCompatActivity {
         List<Integer> player1Cards = cardMoves.getPlayer1Cards();
         List<Integer> player2Cards = cardMoves.getPlayer2Cards();
 
+        tablePile = findViewById(R.id.tablePile);
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView = findViewById(R.id.recycleViewCards);
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), player1Cards);
+        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), player1Cards, tablePile);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
-        /*player2Cards = findViewById(R.id.player2Cards);
-        tablePile = findViewById(R.id.tablePile);
-
-        player2Cards.setOnClickListener(new View.OnClickListener() {
+        iaCarteButton = findViewById(R.id.iaCarteId);
+        iaCarteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tablePile.setImageResource(R.drawable.ace_of_clubs);
-                player2Cards.setVisibility(View.GONE);
+                cardMoves.player1Takes(1);
+                recyclerView.setAdapter(bottomCardsAdaptor);
             }
-        });*/
+        });
+
+        // player2Cards = findViewById(R.id.player2Cards);
+
+
+       // tablePile.setImageResource(R.drawable.ace_of_clubs);
+
 
         /*Random rand = new Random();
 
@@ -74,5 +82,5 @@ public class MainActivity extends AppCompatActivity {
         }*/
 
 
+        }
     }
-}
