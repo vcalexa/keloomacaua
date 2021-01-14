@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CardMoves {
-    private Card card = new Card();
+    private CardUtils cardUtils = new CardUtils();
     private List<Integer> player1Cards;
     private List<Integer> player2Cards;
     private List<Integer> deckOfCards;
@@ -26,6 +26,10 @@ public class CardMoves {
             single_instance = new CardMoves();
 
         return single_instance;
+    }
+
+    public CardUtils getCardUtils() {
+        return single_instance.cardUtils;
     }
 
     public void deal() {
@@ -58,14 +62,14 @@ public class CardMoves {
 
     public void player1Move(List<Integer> playedCards, int playerTurn) {
         for (int i = player1Cards.size() - 1; i >= 0; i--) {
-            deckOfCards.add(playedCards.get(i));
+            cardsPlayed.add(playedCards.get(i));
             player1Cards.remove(i);
         }
     }
 
     public void player2Move(List<Integer> playedCards) {
         for (int i = player2Cards.size() - 1; i >= 0; i--) {
-            deckOfCards.add(playedCards.get(i));
+            cardsPlayed.add(playedCards.get(i));
             player2Cards.remove(i);
         }
     }
@@ -87,8 +91,7 @@ public class CardMoves {
     private List<Integer> activePlayerCards(int playerTurn) {
         if (playerTurn == 1) {
             return player1Cards;
-        }
-        else {
+        } else {
             return player2Cards;
         }
     }
@@ -114,17 +117,40 @@ public class CardMoves {
         String[] specialCards = {"ace", "joker"};
 
         for (int playerCard : activePlayerCards) {
-            if (card.hasSameRank(getLast(cardsPlayed), playerCard) ||
-                    card.hasSameSuite(getLast(cardsPlayed), playerCard) ||
-                    Arrays.stream(specialCards).anyMatch(card.getCardRank(playerCard)::equals)) {
+            if (cardUtils.hasSameRank(getLast(cardsPlayed), playerCard) ||
+                    cardUtils.hasSameSuite(getLast(cardsPlayed), playerCard) ||
+                    Arrays.asList(specialCards).contains(cardUtils.getCardRank(playerCard))) {
                 canMove = true;
             }
         }
+        return canMove;
+
+    }
+
+    @SuppressLint("NewApi")
+    public boolean playIfPossible(int cardNumber) {
+        boolean canMove = false;
+
+        String[] specialCards = {"ace", "joker"};
+
+        if (cardUtils.hasSameRank(getLast(cardsPlayed), cardNumber) ||
+                cardUtils.hasSameSuite(getLast(cardsPlayed), cardNumber) ||
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber))) {
+            cardsPlayed.add(cardNumber);
+                //player1Move(toPlay, 1);
+            canMove = true;
+        }
+
+
         return canMove;
     }
 
     private int getLast(List<Integer> list) {
         return list.get(list.size() - 1);
+    }
+
+    public int getLast() {
+        return getLast(cardsPlayed);
     }
 
     public List<Integer> getPlayer1Cards() {

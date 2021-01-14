@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Card {
+public class CardUtils {
 
     private static String[] suits = {"hearts", "spades", "diamonds", "clubs"};
     private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
@@ -13,7 +13,7 @@ public class Card {
         return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
     }
 
-    private static HashMap<Integer, List<String>> cardMap() {
+    public static HashMap<Integer, List<String>> cardMap() {
         int i = 0;
         HashMap<Integer, List<String>> cardMap = new HashMap<>();
         for (String suite : suits) {

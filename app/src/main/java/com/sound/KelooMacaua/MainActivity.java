@@ -11,12 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sound.KelooMacaua.adaptors.MyAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ImageView player2Cards;
-    ImageView tablePile;
+    ImageView tableCard;
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
@@ -35,17 +34,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cardMoves.deal();
         List<Integer> player1Cards = cardMoves.getPlayer1Cards();
         List<Integer> player2Cards = cardMoves.getPlayer2Cards();
 
-        tablePile = findViewById(R.id.tablePile);
+        tableCard = findViewById(R.id.tablePile);
+
+        String firstCardTitle = cardMoves.getCardUtils().getImageViewName(cardMoves.getLast());
+        int firstCardId = getResources().getIdentifier(firstCardTitle,
+                "drawable", getPackageName());
+
+        tableCard.setImageResource(firstCardId);
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView = findViewById(R.id.recycleViewCards);
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), player1Cards, tablePile);
+        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), player1Cards, tableCard);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
         iaCarteButton = findViewById(R.id.iaCarteId);

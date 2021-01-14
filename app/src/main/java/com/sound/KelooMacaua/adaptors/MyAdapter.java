@@ -1,7 +1,6 @@
 package com.sound.KelooMacaua.adaptors;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sound.KelooMacaua.Card;
+import com.sound.KelooMacaua.CardMoves;
+import com.sound.KelooMacaua.CardUtils;
 import com.sound.KelooMacaua.ItemClickListener;
-import com.sound.KelooMacaua.MainActivity;
 import com.sound.KelooMacaua.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -40,8 +39,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        Card card = new Card();
-        String imageTitle = card.getImageViewName(actualCards.get(i));
+        CardMoves cardMoves = CardMoves.getInstance();
+        CardUtils cardUtils = cardMoves.getCardUtils();
+        String imageTitle = cardUtils.getImageViewName(actualCards.get(i));
 
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
@@ -51,18 +51,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 Toast.makeText(context, "#" + position + " - " + actualCards.get(position) + " (Long click)", Toast.LENGTH_SHORT).show();
                 //context.startActivity(new Intent(context, MainActivity.class));
             } else {
-                Toast.makeText(context, "#" + position + " - " + actualCards.get(position),
-                        Toast.LENGTH_SHORT).show();
+                if(cardMoves.playIfPossible(actualCards.get(position))) {
+                    Toast.makeText(context, "Played:" + position + " - " + imageTitle,
+                            Toast.LENGTH_SHORT).show();
 
-                int clickedImageId = context.getResources().getIdentifier(card.getImageViewName(actualCards.get(position)),
-                        "drawable", context.getPackageName());
+                    int clickedImageId = context.getResources().getIdentifier(imageTitle,
+                            "drawable", context.getPackageName());
 
-                tablePile.setImageResource(clickedImageId);
+                    tablePile.setImageResource(clickedImageId);
 
-                actualCards.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, actualCards.size());
-
+                    actualCards.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, actualCards.size());
+                } else {
+                    Toast.makeText(context, "Cannot play:" + position + " - " + imageTitle,
+                            Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
