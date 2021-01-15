@@ -23,11 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     Button iaCarteButton;
 
-    public void calculate(View view) {
-        //EditText editText = (EditText) findViewById(R.id.editTextNumber);
-        //Integer inputNo = Integer.parseInt(editText.getText().toString());
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CardMoves cardMoves = CardMoves.getInstance();
@@ -47,44 +42,19 @@ public class MainActivity extends AppCompatActivity {
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView = findViewById(R.id.recycleViewCards);
-        //recyclerView.setHasFixedSize(true);
+
         recyclerView.setLayoutManager(layoutManager);
         bottomCardsAdaptor = new MyAdapter(getApplicationContext(), player1Cards, tableCard);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
+        recyclerView.scrollToPosition(player1Cards.size() - 1);
+
         iaCarteButton = findViewById(R.id.iaCarteId);
-        iaCarteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cardMoves.player1Takes(1);
-                recyclerView.setAdapter(bottomCardsAdaptor);
-            }
+        iaCarteButton.setOnClickListener(view -> {
+            cardMoves.player1Takes(1);
+            recyclerView.setAdapter(bottomCardsAdaptor);
+            recyclerView.scrollToPosition(player1Cards.size() - 1);
         });
 
-        // player2Cards = findViewById(R.id.player2Cards);
-
-
-       // tablePile.setImageResource(R.drawable.ace_of_clubs);
-
-
-        /*Random rand = new Random();
-
-        LinearLayout layout = findViewById(R.id.layout_bottom);
-        for (int i = 0; i < 5; i++) {
-            ImageView image = new ImageView(this);
-            image.setLayoutParams(new android.view.ViewGroup.LayoutParams(100, 330));
-            image.setMaxHeight(170);
-            image.setMaxWidth(170);
-
-            int n = rand.nextInt(53) + 1;
-            Card cardx = new Card();
-            int imageId = getResources().getIdentifier(String.format("%s_of_%s", cardx.getCardRank(n), cardx.getCardSuite(n)).toLowerCase(),
-                    "drawable", getPackageName());
-            //image.setImageResource(imageId);
-            // Adds the view to the layout
-            //layout.addView(image);
-        }*/
-
-
-        }
     }
+}

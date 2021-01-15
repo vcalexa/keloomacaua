@@ -51,9 +51,7 @@ public class CardMoves {
             player2Cards.add(deckOfCards.get(i - 5));
         }
 
-        for (int i = 53; i >= 44; i--) {
-            deckOfCards.remove(i);
-        }
+        deckOfCards.subList(44, 54).clear();
 
         //Play first card and remove from deck
         cardsPlayed.add(deckOfCards.get(deckOfCards.size() - 1));
@@ -75,10 +73,14 @@ public class CardMoves {
     }
 
     public void player1Takes(Integer numberOfCards) {
-        for (int i = 0; i < numberOfCards; i++) {
-            player1Cards.add(getLast(deckOfCards));
-            deckOfCards.remove(deckOfCards.size() - 1);
+        if (!deckOfCards.isEmpty()) {
+            for (int i = 0; i < numberOfCards; i++) {
+                player1Cards.add(getLast(deckOfCards));
+                deckOfCards.remove(deckOfCards.size() - 1);
+            }
         }
+
+        turnPlayerCardsOver();
     }
 
     public void player2Takes(Integer numberOfCards) {
@@ -137,12 +139,28 @@ public class CardMoves {
                 cardUtils.hasSameSuite(getLast(cardsPlayed), cardNumber) ||
                 Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber))) {
             cardsPlayed.add(cardNumber);
-                //player1Move(toPlay, 1);
+
+            //player1Move(toPlay, 1);
             canMove = true;
+
+            turnPlayerCardsOver();
         }
 
 
         return canMove;
+    }
+
+    private void turnPlayerCardsOver() {
+        if (deckOfCards.isEmpty()) {
+            int lastCard = getLast();
+
+            deckOfCards = new ArrayList<>(cardsPlayed);
+            deckOfCards.remove(deckOfCards.size() - 1);
+
+            cardsPlayed = new ArrayList<>();
+            cardsPlayed.add(lastCard);
+            Collections.shuffle(deckOfCards);
+        }
     }
 
     private int getLast(List<Integer> list) {
