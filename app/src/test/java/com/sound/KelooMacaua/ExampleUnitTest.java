@@ -8,7 +8,7 @@ import org.junit.Test;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    private Card card = new Card();
+    private CardUtils card = new CardUtils();
     private CardMoves cardMoves = CardMoves.getInstance();
 
 
