@@ -1,4 +1,4 @@
-package com.sound.keloomacaua.activities;
+package com.sound.keloomacaua.activities.ui.game;
 
 import android.os.Bundle;
 import android.widget.Button;

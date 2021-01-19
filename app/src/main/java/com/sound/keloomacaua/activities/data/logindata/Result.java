@@ -1,4 +1,4 @@
-package com.sound.keloomacaua.activities.data;
+package com.sound.keloomacaua.activities.data.logindata;
 
 /**
  * A generic class that holds a result success w/ data or an error exception.

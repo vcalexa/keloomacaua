@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.activities.MainActivity;
+import com.sound.keloomacaua.activities.ui.game.MainActivity;
 
 
 public class LoginActivity extends AppCompatActivity {
