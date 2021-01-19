@@ -1,4 +1,4 @@
-package com.sound.KelooMacaua.adaptors;
+package com.sound.keloomacaua.adaptors;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,10 +12,10 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sound.KelooMacaua.CardMoves;
-import com.sound.KelooMacaua.CardUtils;
-import com.sound.KelooMacaua.ItemClickListener;
-import com.sound.KelooMacaua.R;
+import com.sound.keloomacaua.game.CardMoves;
+import com.sound.keloomacaua.game.CardUtils;
+import com.sound.keloomacaua.interfaces.ItemClickListener;
+import com.sound.keloomacaua.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Integer> actualCards;

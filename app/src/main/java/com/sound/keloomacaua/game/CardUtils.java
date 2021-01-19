@@ -1,4 +1,4 @@
-package com.sound.KelooMacaua;
+package com.sound.keloomacaua.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;

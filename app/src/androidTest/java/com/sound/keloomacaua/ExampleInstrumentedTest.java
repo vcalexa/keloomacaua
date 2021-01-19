@@ -1,4 +1,4 @@
-package com.sound.KelooMacaua;
+package com.sound.keloomacaua;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.sound.KelooMacaua", appContext.getPackageName());
+        assertEquals("com.sound.keloomacaua", appContext.getPackageName());
     }
 }

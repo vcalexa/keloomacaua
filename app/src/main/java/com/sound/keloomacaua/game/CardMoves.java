@@ -1,4 +1,4 @@
-package com.sound.KelooMacaua;
+package com.sound.keloomacaua.game;
 
 import android.annotation.SuppressLint;
 

@@ -1,7 +1,6 @@
-package com.sound.KelooMacaua;
+package com.sound.keloomacaua.activities;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -9,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sound.KelooMacaua.adaptors.MyAdapter;
+import com.sound.keloomacaua.game.CardMoves;
+import com.sound.keloomacaua.R;
+import com.sound.keloomacaua.adaptors.MyAdapter;
 
 import java.util.List;
 
@@ -55,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(bottomCardsAdaptor);
             recyclerView.scrollToPosition(player1Cards.size() - 1);
         });
+
+
+
+
+
 
     }
 }
