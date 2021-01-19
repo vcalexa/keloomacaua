@@ -8,8 +8,8 @@ import android.app.Activity;
 import android.util.Patterns;
 
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.activities.data.LoginRepository;
-import com.sound.keloomacaua.activities.data.Result;
+import com.sound.keloomacaua.activities.data.logindata.LoginRepository;
+import com.sound.keloomacaua.activities.data.logindata.Result;
 import com.sound.keloomacaua.activities.data.model.LoggedInUser;
 
 public class LoginViewModel extends ViewModel {

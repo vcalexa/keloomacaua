@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
-import com.sound.keloomacaua.activities.data.LoginDataSource;
-import com.sound.keloomacaua.activities.data.LoginRepository;
+import com.sound.keloomacaua.activities.data.logindata.LoginDataSource;
+import com.sound.keloomacaua.activities.data.logindata.LoginRepository;
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

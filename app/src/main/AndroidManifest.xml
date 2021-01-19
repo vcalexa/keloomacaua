@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.keloomacaua">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.ui.game.MainActivity"
             android:label="@string/title_activity_login" />
         <activity android:name=".activities.ui.login.LoginActivity">
             <intent-filter>
