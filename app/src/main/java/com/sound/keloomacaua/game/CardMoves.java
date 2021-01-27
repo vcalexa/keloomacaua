@@ -2,12 +2,14 @@ package com.sound.keloomacaua.game;
 
 import android.annotation.SuppressLint;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class CardMoves {
+public class CardMoves implements Serializable {
+    private long gameId;
     private CardUtils cardUtils = new CardUtils();
     private List<Integer> player1Cards;
     private List<Integer> player2Cards;
@@ -21,11 +23,30 @@ public class CardMoves {
         this.deal();
     }
 
+    private CardMoves(boolean toJoin) {
+
+    }
+
     public static CardMoves getInstance() {
         if (single_instance == null)
             single_instance = new CardMoves();
 
         return single_instance;
+    }
+
+    public static CardMoves getEmptyInstance() {
+        if (single_instance == null)
+            single_instance = new CardMoves(true);
+
+        return single_instance;
+    }
+
+    public long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(long gameId) {
+        this.gameId = gameId;
     }
 
     public CardUtils getCardUtils() {
@@ -98,7 +119,7 @@ public class CardMoves {
         }
     }
 
-    private void changeTurn() {
+    public void changeTurn() {
         if (playerTurn == 1) {
             playerTurn = 2;
         }

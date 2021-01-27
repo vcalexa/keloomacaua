@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.keloomacaua">
+        <activity android:name=".activities.ui.game.CreateOrJoinActivity"></activity>
         <activity
             android:name=".activities.ui.game.MainActivity"
             android:label="@string/title_activity_login" />

@@ -39,6 +39,7 @@ public class LoginDataSource {
                 new LoggedInUser(
                         java.util.UUID.randomUUID().toString(),
                         email);
+        mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, task -> {
                     if (task.isSuccessful()) {

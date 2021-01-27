@@ -1,10 +1,11 @@
 package com.sound.keloomacaua.game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class CardUtils {
+public class CardUtils implements Serializable {
 
     private static String[] suits = {"hearts", "spades", "diamonds", "clubs"};
     private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};

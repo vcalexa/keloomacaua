@@ -50,7 +50,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/stauOTuraId"
+        android:id="@+id/gataTura"
         android:layout_width="152dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -58,7 +58,7 @@
         android:layout_centerInParent="true"
         android:layout_marginEnd="156dp"
         android:layout_marginBottom="192dp"
-        android:text="Stau o tura" />
+        android:text="Gata Tura" />
 
     <Button
         android:id="@+id/macauaId"

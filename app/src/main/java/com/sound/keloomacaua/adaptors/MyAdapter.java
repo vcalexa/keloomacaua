@@ -29,6 +29,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         this.tablePile = tablePile;
     }
 
+    public List<Integer> getActualCards() {
+        return actualCards;
+    }
+
+    public void setActualCards(List<Integer> actualCards) {
+        this.actualCards = actualCards;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {

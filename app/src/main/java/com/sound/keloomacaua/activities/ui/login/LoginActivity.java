@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.sound.keloomacaua.R;
+import com.sound.keloomacaua.activities.ui.game.CreateOrJoinActivity;
 import com.sound.keloomacaua.activities.ui.game.MainActivity;
 
 
@@ -33,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
+        //final Button loginButton = findViewById(R.id.login);
         final Button registerButton = findViewById(R.id.register);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
@@ -41,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
             if (loginFormState == null) {
                 return;
             }
-            loginButton.setEnabled(loginFormState.isDataValid());
+            // loginButton.setEnabled(loginFormState.isDataValid());
             registerButton.setEnabled(loginFormState.isDataValid());
             if (loginFormState.getUsernameError() != null) {
                 usernameEditText.setError(getString(loginFormState.getUsernameError()));
@@ -61,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             if (loginResult.getSuccess() != null) {
                 updateUiWithUser(loginResult.getSuccess());
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), CreateOrJoinActivity.class);
                 startActivity(intent);
             }
             setResult(Activity.RESULT_OK);
@@ -96,11 +97,11 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         });
 
-        loginButton.setOnClickListener(v -> {
+        /*loginButton.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
             loginViewModel.login(usernameEditText.getText().toString(),
                     passwordEditText.getText().toString(), LoginActivity.this);
-        });
+        });*/
 
         registerButton.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);

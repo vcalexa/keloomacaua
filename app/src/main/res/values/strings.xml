@@ -10,5 +10,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="register_failed">"Register failed"</string>
-    <string name="action_register">Register</string>
+    <string name="action_register">Login or Register</string>
+    <string name="create_new_game">Create New Game</string>
 </resources>
