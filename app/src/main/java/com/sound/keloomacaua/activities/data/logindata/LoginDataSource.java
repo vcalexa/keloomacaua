@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.sound.keloomacaua.activities.data.model.LoggedInUser;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
@@ -18,18 +19,25 @@ public class LoginDataSource {
     private FirebaseAuth mAuth;
 
     public Result<LoggedInUser> registerUser(String email, String password, Activity activity) {
-        LoggedInUser regsiterUser =
-                new LoggedInUser(
-                        java.util.UUID.randomUUID().toString(),
-                        email);
+        final boolean[] success = {false};
+        final LoggedInUser[] regsiterUser = {new LoggedInUser(
+                UUID.randomUUID().toString(),
+                email)};
         mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(activity, task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(activity, "User succesfully registeted to database",
                         Toast.LENGTH_SHORT).show();
+                success[0] = true;
+            } else {
+                success[0] = false;
             }
         });
-        return new Result.Success<>(regsiterUser);
+        if (success[0]) {
+            return new Result.Success<>(regsiterUser);
+        } else {
+            return login(email, password, activity);
+        }
 
     }
 

@@ -6,26 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".activities.ui.game.CreateOrJoinActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/gameList"
+        android:layout_width="match_parent"
+        android:layout_height="570dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.68"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createNewGame" />
+
     <Button
         android:id="@+id/createNewGame"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="@string/create_new_game"
-        app:layout_constraintBottom_toTopOf="@+id/joinGame"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/joinGame"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="504dp"
-        android:text="Join Game"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

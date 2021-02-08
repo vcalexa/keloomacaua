@@ -22,6 +22,7 @@ import com.sound.keloomacaua.activities.ui.game.MainActivity;
 
 
 public class LoginActivity extends AppCompatActivity {
+    public static ProgressBar loadingProgressBar = null;
 
     private LoginViewModel loginViewModel;
 
@@ -36,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = findViewById(R.id.password);
         //final Button loginButton = findViewById(R.id.login);
         final Button registerButton = findViewById(R.id.register);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        loadingProgressBar = findViewById(R.id.loading);
 
         loginViewModel.getLoginFormState().observe(this, loginFormState -> {
             if (loginFormState == null) {
@@ -91,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loginViewModel.login(usernameEditText.getText().toString(),
+                loginViewModel.register(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString(), LoginActivity.this);
             }
             return false;
@@ -105,7 +106,8 @@ public class LoginActivity extends AppCompatActivity {
 
         registerButton.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
-            loginViewModel.register(usernameEditText.getText().toString(),
+            String username = usernameEditText.getText().toString();
+            loginViewModel.register(username,
                     passwordEditText.getText().toString(), LoginActivity.this);
         });
     }

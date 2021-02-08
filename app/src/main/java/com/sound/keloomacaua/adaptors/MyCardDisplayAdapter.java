@@ -17,12 +17,12 @@ import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.interfaces.ItemClickListener;
 import com.sound.keloomacaua.R;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder> {
     private List<Integer> actualCards;
     private final Context context;
     private ImageView tablePile;
 
-    public MyAdapter(Context context, List<Integer> actualCards, ImageView tablePile) {
+    public MyCardDisplayAdapter(Context context, List<Integer> actualCards, ImageView tablePile) {
         super();
         this.context = context;
         this.actualCards = actualCards;
@@ -41,7 +41,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.item, viewGroup, false);
+                .inflate(R.layout.item_image, viewGroup, false);
         return new ViewHolder(v);
     }
 
@@ -88,13 +88,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
             View.OnLongClickListener {
         ImageView imgThumbnail;
-        //TextView textView;
         private ItemClickListener clickListener;
 
         ViewHolder(View itemView) {
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
-            //textView = itemView.findViewById(R.id.textView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

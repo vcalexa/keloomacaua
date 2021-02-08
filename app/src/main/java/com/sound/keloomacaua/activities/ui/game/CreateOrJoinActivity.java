@@ -3,6 +3,8 @@ package com.sound.keloomacaua.activities.ui.game;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Build;
@@ -18,33 +20,69 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
+import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
+import com.sound.keloomacaua.adaptors.MyJoinGameAdapter;
 import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.Game;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CreateOrJoinActivity extends AppCompatActivity {
-    private Button joinGame;
+    //private Button joinFirstAvailableGame;
     private Button createGame;
     private DatabaseReference mdataRef;
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
+    MyJoinGameAdapter myJoinGameAdapter;
+    List<Game> gameList = new ArrayList<>();
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createorjoin);
+        mdataRef = FirebaseDatabase.getInstance().getReference();
 
-        joinGame = findViewById(R.id.joinGame);
+        //joinFirstAvailableGame = findViewById(R.id.joinGame);
         createGame = findViewById(R.id.createNewGame);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // user is signed in, show user data
+        }
+        else {
+            // user is signed out, show sign-in form
+        }
 
-        mdataRef = FirebaseDatabase.getInstance().getReference();
+        mdataRef.child("games").addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot gameSnapshot : snapshot.getChildren()) {
+                    Game game = gameSnapshot.getValue(Game.class);
+                    gameList.add(game);
+                }
+                recyclerView.setLayoutManager(layoutManager);
+                myJoinGameAdapter = new MyJoinGameAdapter(getApplicationContext(), gameList);
+                recyclerView.setAdapter(myJoinGameAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView = findViewById(R.id.gameList);
 
         createGame.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
                 CardMoves cardMoves = CardMoves.getInstance();
 
                 Game game = new Game();
@@ -66,11 +104,10 @@ public class CreateOrJoinActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.putExtra("game", game);
                 startActivity(intent);
-                finish();
             }
         });
 
-        joinGame.setOnClickListener(new View.OnClickListener() {
+        /*joinFirstAvailableGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -99,7 +136,6 @@ public class CreateOrJoinActivity extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                 intent.putExtra("game", game);
                                 startActivity(intent);
-                                finish();
                             }
                         }
                     }
@@ -110,7 +146,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
 
 
     }

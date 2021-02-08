@@ -1,6 +1,5 @@
 package com.sound.keloomacaua.activities.ui.game;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -22,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.adaptors.MyAdapter;
+import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
 import com.sound.keloomacaua.game.Game;
 
 import java.util.ArrayList;
@@ -31,10 +30,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     ImageView tableCard;
     private DatabaseReference mdataRef;
+    FirebaseUser user;
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    MyAdapter bottomCardsAdaptor;
+    MyCardDisplayAdapter bottomCardsAdaptor;
 
     Button iaCarteButton;
     Button gataTura;
@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        boolean joinFromListPlayer1 = getIntent().getBooleanExtra("joinedFromListPlayer1", false);
+        boolean joinFromListPlayer2 = getIntent().getBooleanExtra("joinedFromListPlayer2", false);
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
         CardMoves cardMoves = CardMoves.getInstance();
@@ -59,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mdataRef = FirebaseDatabase.getInstance().getReference();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (game.getPlayer1Joined().equals(user.getEmail())) {
             isPlayerOne = true;
@@ -69,12 +71,23 @@ public class MainActivity extends AppCompatActivity {
             isPlayerTwo = true;
         }
 
+
         mdataRef.child("games").child(String.valueOf(game.getGameId()))
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         Game game = snapshot.getValue(Game.class);
+                        if(joinFromListPlayer1){
+                            game.setPlayer1Joined(user.getEmail());
+                            mdataRef.child("games").child(String.valueOf(game.getGameId()))
+                                    .setValue(game);
+                        }
+                        if(joinFromListPlayer2){
+                            game.setPlayer2Joined(user.getEmail());
+                            mdataRef.child("games").child(String.valueOf(game.getGameId()))
+                                    .setValue(game);
+                        }
 
                         if (isPlayerOne) {
                             if (game.getPlayersTurn() == 2) {
@@ -116,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycleViewCards);
 
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyAdapter(getApplicationContext(), playerCards[0], tableCard);
+        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), playerCards[0], tableCard);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
         recyclerView.scrollToPosition(playerCards[0].size() - 1);
@@ -170,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });
-
 
 
         });
