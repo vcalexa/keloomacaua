@@ -35,6 +35,7 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
     private List<Game> createdGames;
     private final Context context;
     private DatabaseReference mdataRef;
+    private boolean pressed = false;
 
     public MyJoinGameAdapter(Context context, List<Game> createdGames) {
         super();
@@ -69,21 +70,26 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
         mdataRef = FirebaseDatabase.getInstance().getReference();
 
         viewHolder.player1Name.setOnClickListener(view -> {
-
+            pressed = true;
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             mdataRef.child("games").child(String.valueOf(game.getGameId())).addValueEventListener(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    Game game = snapshot.getValue(Game.class);
-                    game.setPlayer1Joined(user.getEmail());
+                    if (pressed) {
+                        Game game = snapshot.getValue(Game.class);
+                        game.setPlayer1Joined(user.getEmail());
+                        mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 
-                    Intent intent = new Intent(context, MainActivity.class);
-                    intent.putExtra("game", game);
-                    intent.putExtra("joinedFromListPlayer1", true);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                        Intent intent = new Intent(context, MainActivity.class);
+                        intent.putExtra("game", game);
+                        intent.putExtra("joinedFromListPlayer1", true);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                        pressed = false;
+                    }
+
                 }
 
                 @Override
@@ -95,21 +101,26 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
         });
 
         viewHolder.player2Name.setOnClickListener(view -> {
-
+            pressed = true;
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             mdataRef.child("games").child(String.valueOf(game.getGameId())).addValueEventListener(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    Game game = snapshot.getValue(Game.class);
-                    game.setPlayer2Joined(user.getEmail());
+                    if (pressed) {
+                        Game game = snapshot.getValue(Game.class);
+                        game.setPlayer2Joined(user.getEmail());
+                        mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 
-                    Intent intent = new Intent(context, MainActivity.class);
-                    intent.putExtra("game", game);
-                    intent.putExtra("joinedFromListPlayer2", true);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                        Intent intent = new Intent(context, MainActivity.class);
+                        intent.putExtra("game", game);
+                        intent.putExtra("joinedFromListPlayer2", true);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                        pressed = false;
+                    }
+
 
                 }
 

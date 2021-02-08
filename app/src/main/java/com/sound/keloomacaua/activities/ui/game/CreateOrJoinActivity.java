@@ -36,7 +36,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     MyJoinGameAdapter myJoinGameAdapter;
-    List<Game> gameList = new ArrayList<>();
+    List<Game> gameList;
     FirebaseUser user;
 
     @Override
@@ -51,8 +51,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             // user is signed in, show user data
-        }
-        else {
+        } else {
             // user is signed out, show sign-in form
         }
 
@@ -60,6 +59,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                gameList = new ArrayList<>();
                 for (DataSnapshot gameSnapshot : snapshot.getChildren()) {
                     Game game = gameSnapshot.getValue(Game.class);
                     gameList.add(game);
