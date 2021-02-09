@@ -1,13 +1,11 @@
 package com.sound.keloomacaua.activities.ui.game;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,9 +17,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
+import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.Game;
 
 import java.util.ArrayList;
@@ -29,20 +27,20 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ImageView tableCard;
-    private DatabaseReference mdataRef;
-    FirebaseUser user;
+    public DatabaseReference mdataRef;
+    public FirebaseUser user;
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     MyCardDisplayAdapter bottomCardsAdaptor;
 
-    Button iaCarteButton;
-    Button gataTura;
+    public Button iaCarteButton;
+    public Button gataTura;
 
-    boolean isPlayerOne;
-    boolean isPlayerTwo;
+    public boolean isPlayerOne;
+    public boolean isPlayerTwo;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
         CardMoves cardMoves = CardMoves.getInstance();
+        cardMoves.setGame(game);
+
         final List<Integer>[] playerCards = new List[]{new ArrayList<>()};
         if (game.getPlayersTurn() == 1) {
             playerCards[0] = game.getPlayer1Cards();
@@ -78,16 +78,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         Game game = snapshot.getValue(Game.class);
-                        if(joinFromListPlayer1){
+                        game.setPlayersTurn(cardMoves.getPlayerTurn());
+                        if (joinFromListPlayer1) {
                             game.setPlayer1Joined(user.getEmail());
-                            mdataRef.child("games").child(String.valueOf(game.getGameId()))
-                                    .setValue(game);
                         }
-                        if(joinFromListPlayer2){
+                        if (joinFromListPlayer2) {
                             game.setPlayer2Joined(user.getEmail());
-                            mdataRef.child("games").child(String.valueOf(game.getGameId()))
-                                    .setValue(game);
                         }
+
+                        //mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 
                         if (isPlayerOne) {
                             if (game.getPlayersTurn() == 2) {
@@ -129,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycleViewCards);
 
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), playerCards[0], tableCard);
+        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), playerCards[0], tableCard, this);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
         recyclerView.scrollToPosition(playerCards[0].size() - 1);
@@ -150,12 +149,13 @@ public class MainActivity extends AppCompatActivity {
 
                             game.setPlayedCards(cardMoves.getCardsPlayed());
                             game.setDeckRemainingCards(cardMoves.getDeckOfCards());
+                            game.setPlayersTurn(cardMoves.getPlayerTurn());
 
                             if (isPlayerOne) {
                                 game.setPlayer1Cards(cardMoves.getPlayer1Cards());
                                 playerCards[0] = game.getPlayer1Cards();
 
-                                game.setPlayersTurn(2);
+                                //game.setPlayersTurn(2);
                                 bottomCardsAdaptor.setActualCards(playerCards[0]);
                                 iaCarteButton.setEnabled(false);
                                 recyclerView.setAdapter(bottomCardsAdaptor);
@@ -163,18 +163,17 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             if (isPlayerTwo) {
-                                game.setPlayer2Cards(cardMoves.getPlayer1Cards());
+                                game.setPlayer2Cards(cardMoves.getPlayer2Cards());
                                 playerCards[0] = game.getPlayer2Cards();
 
-                                game.setPlayersTurn(1);
+                                //game.setPlayersTurn(1);
                                 bottomCardsAdaptor.setActualCards(playerCards[0]);
                                 iaCarteButton.setEnabled(false);
                                 recyclerView.setAdapter(bottomCardsAdaptor);
                                 recyclerView.scrollToPosition(finalPlayerCards.size() - 1);
                             }
 
-                            mdataRef.child("games").child(String.valueOf(game.getGameId()))
-                                    .setValue(game);
+                            // mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
                         }
 
 
@@ -196,5 +195,9 @@ public class MainActivity extends AppCompatActivity {
                 cardMoves.changeTurn();
             }
         });
+    }
+
+    public boolean isPlayerOne() {
+        return isPlayerOne;
     }
 }

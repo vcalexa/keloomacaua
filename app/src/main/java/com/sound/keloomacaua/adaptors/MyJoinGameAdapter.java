@@ -111,7 +111,7 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
                     if (pressed) {
                         Game game = snapshot.getValue(Game.class);
                         game.setPlayer2Joined(user.getEmail());
-                        mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
+                        //mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 
                         Intent intent = new Intent(context, MainActivity.class);
                         intent.putExtra("game", game);

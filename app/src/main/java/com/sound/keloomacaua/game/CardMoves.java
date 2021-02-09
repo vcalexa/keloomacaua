@@ -1,6 +1,12 @@
 package com.sound.keloomacaua.game;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,22 +15,24 @@ import java.util.Collections;
 import java.util.List;
 
 public class CardMoves implements Serializable {
-    private long gameId;
     private CardUtils cardUtils = new CardUtils();
-    private List<Integer> player1Cards;
-    private List<Integer> player2Cards;
-    private List<Integer> deckOfCards;
-    private List<Integer> cardsPlayed;
-    private int playerTurn;
+    private Game game;
+    public DatabaseReference mdataRef;
 
     private static CardMoves single_instance = null;
 
     private CardMoves() {
-        this.deal();
+        game = new Game();
+        mdataRef = FirebaseDatabase.getInstance().getReference();
     }
 
     private CardMoves(boolean toJoin) {
 
+    }
+
+    public void createNewGame(){
+        game = new Game();
+        this.deal();
     }
 
     public static CardMoves getInstance() {
@@ -42,11 +50,11 @@ public class CardMoves implements Serializable {
     }
 
     public long getGameId() {
-        return gameId;
+        return game.getGameId();
     }
 
     public void setGameId(long gameId) {
-        this.gameId = gameId;
+        this.game.setGameId(gameId);
     }
 
     public CardUtils getCardUtils() {
@@ -54,50 +62,49 @@ public class CardMoves implements Serializable {
     }
 
     public void deal() {
-        player1Cards = new ArrayList<>();
-        player2Cards = new ArrayList<>();
-        deckOfCards = new ArrayList<>();
-        cardsPlayed = new ArrayList<>();
-        playerTurn = 1;
+        game.setPlayer1Cards(new ArrayList<>());
+        game.setPlayer2Cards(new ArrayList<>());
+        game.setDeckRemainingCards(new ArrayList<>());
+        game.setPlayedCards(new ArrayList<>());
+        game.setPlayersTurn(1);
 
         //Create list of all integers from 1 to 54 = number of all cards and randomize their order
         for (int i = 0; i < 54; i++) {
-            deckOfCards.add(i);
+            game.getDeckRemainingCards().add(i);
         }
-        Collections.shuffle(deckOfCards);
+        Collections.shuffle(game.getDeckRemainingCards());
 
         //Add cards to players an remove from deck
         for (int i = 53; i >= 49; i--) {
-            player1Cards.add(deckOfCards.get(i));
-            player2Cards.add(deckOfCards.get(i - 5));
+            game.getPlayer1Cards().add(game.getDeckRemainingCards().get(i));
+            game.getPlayer2Cards().add(game.getDeckRemainingCards().get(i - 5));
         }
 
-        deckOfCards.subList(44, 54).clear();
+        game.getDeckRemainingCards().subList(44, 54).clear();
 
         //Play first card and remove from deck
-        cardsPlayed.add(deckOfCards.get(deckOfCards.size() - 1));
-        deckOfCards.remove(deckOfCards.size() - 1);
+        game.getPlayedCards().add(game.getDeckRemainingCards().get(game.getDeckRemainingCards().size() - 1));
+        game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
     }
 
-    public void player1Move(List<Integer> playedCards, int playerTurn) {
-        for (int i = player1Cards.size() - 1; i >= 0; i--) {
-            cardsPlayed.add(playedCards.get(i));
-            player1Cards.remove(i);
-        }
+
+    public void player1Move(int index) {
+        game.getPlayedCards().add(game.getPlayer1Cards().get(index));
+        game.getPlayer1Cards().remove(index);
+        mdataRef.child("games").child(String.valueOf(game.getGameId())).child("player1Cards").setValue(game.getPlayer1Cards());
     }
 
-    public void player2Move(List<Integer> playedCards) {
-        for (int i = player2Cards.size() - 1; i >= 0; i--) {
-            cardsPlayed.add(playedCards.get(i));
-            player2Cards.remove(i);
-        }
+    public void player2Move(int index) {
+        game.getPlayedCards().add(game.getPlayer1Cards().get(index));
+        game.getPlayer1Cards().remove(index);
+        mdataRef.child("games").child(String.valueOf(game.getGameId())).child("player2Cards").setValue(game.getPlayer2Cards());
     }
 
     public void player1Takes(Integer numberOfCards) {
-        if (!deckOfCards.isEmpty()) {
+        if (!game.getDeckRemainingCards().isEmpty()) {
             for (int i = 0; i < numberOfCards; i++) {
-                player1Cards.add(getLast(deckOfCards));
-                deckOfCards.remove(deckOfCards.size() - 1);
+                game.getPlayer1Cards().add(getLast(game.getDeckRemainingCards()));
+                game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
             }
         }
 
@@ -106,25 +113,26 @@ public class CardMoves implements Serializable {
 
     public void player2Takes(Integer numberOfCards) {
         for (int i = 0; i < numberOfCards; i++) {
-            player2Cards.add(getLast(deckOfCards));
-            deckOfCards.remove(deckOfCards.size() - 1);
+            game.getPlayer2Cards().add(getLast(game.getDeckRemainingCards()));
+            game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
         }
     }
 
     private List<Integer> activePlayerCards(int playerTurn) {
         if (playerTurn == 1) {
-            return player1Cards;
+            return game.getPlayer1Cards();
         } else {
-            return player2Cards;
+            return game.getPlayer2Cards();
         }
     }
 
     public void changeTurn() {
-        if (playerTurn == 1) {
-            playerTurn = 2;
-        }
-        if (playerTurn == 2) {
-            playerTurn = 1;
+        if (game.getPlayersTurn() == 1) {
+            setPlayerTurn(2);
+            mdataRef.child("games").child(String.valueOf(game.getGameId())).child("playersTurn").setValue(2);
+        } else if (getPlayerTurn() == 2) {
+            setPlayerTurn(1);
+            mdataRef.child("games").child(String.valueOf(game.getGameId())).child("playersTurn").setValue(1);
         }
     }
 
@@ -134,14 +142,14 @@ public class CardMoves implements Serializable {
 
         List<Integer> activePlayerCards = new ArrayList<>();
         if (playerTurn == 1) {
-            activePlayerCards = player1Cards;
+            activePlayerCards = game.getPlayer1Cards();
         }
 
         String[] specialCards = {"ace", "joker"};
 
         for (int playerCard : activePlayerCards) {
-            if (cardUtils.hasSameRank(getLast(cardsPlayed), playerCard) ||
-                    cardUtils.hasSameSuite(getLast(cardsPlayed), playerCard) ||
+            if (cardUtils.hasSameRank(getLast(game.getPlayedCards()), playerCard) ||
+                    cardUtils.hasSameSuite(getLast(game.getPlayedCards()), playerCard) ||
                     Arrays.asList(specialCards).contains(cardUtils.getCardRank(playerCard))) {
                 canMove = true;
             }
@@ -156,10 +164,10 @@ public class CardMoves implements Serializable {
 
         String[] specialCards = {"ace", "joker"};
 
-        if (cardUtils.hasSameRank(getLast(cardsPlayed), cardNumber) ||
-                cardUtils.hasSameSuite(getLast(cardsPlayed), cardNumber) ||
+        if (cardUtils.hasSameRank(getLast(game.getPlayedCards()), cardNumber) ||
+                cardUtils.hasSameSuite(getLast(game.getPlayedCards()), cardNumber) ||
                 Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber))) {
-            cardsPlayed.add(cardNumber);
+            game.getPlayedCards().add(cardNumber);
 
             //player1Move(toPlay, 1);
             canMove = true;
@@ -172,15 +180,15 @@ public class CardMoves implements Serializable {
     }
 
     private void turnPlayerCardsOver() {
-        if (deckOfCards.isEmpty()) {
+        if (game.getDeckRemainingCards().isEmpty()) {
             int lastCard = getLast();
 
-            deckOfCards = new ArrayList<>(cardsPlayed);
-            deckOfCards.remove(deckOfCards.size() - 1);
+            game.setDeckRemainingCards(new ArrayList<>(game.getPlayedCards()));
+            game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
 
-            cardsPlayed = new ArrayList<>();
-            cardsPlayed.add(lastCard);
-            Collections.shuffle(deckOfCards);
+            game.setPlayedCards(new ArrayList<>());
+            game.getPlayedCards().add(lastCard);
+            Collections.shuffle(game.getDeckRemainingCards());
         }
     }
 
@@ -189,46 +197,54 @@ public class CardMoves implements Serializable {
     }
 
     public int getLast() {
-        return getLast(cardsPlayed);
+        return getLast(game.getPlayedCards());
     }
 
     public List<Integer> getPlayer1Cards() {
-        return player1Cards;
+        return game.getPlayer1Cards();
     }
 
     public void setPlayer1Cards(List<Integer> player1Cards) {
-        this.player1Cards = player1Cards;
+        this.game.setPlayer1Cards(player1Cards);
     }
 
     public List<Integer> getPlayer2Cards() {
-        return player2Cards;
+        return game.getPlayer2Cards();
     }
 
     public void setPlayer2Cards(List<Integer> player2Cards) {
-        this.player2Cards = player2Cards;
+        this.game.setPlayer1Cards(player2Cards);
     }
 
     public List<Integer> getDeckOfCards() {
-        return deckOfCards;
+        return game.getDeckRemainingCards();
     }
 
-    public void setDeckOfCards(List<Integer> deckOfCards) {
-        this.deckOfCards = deckOfCards;
+    public void setDeckOfCards(List<Integer> deckRemainingCards) {
+        this.game.setPlayer1Cards(deckRemainingCards);
     }
 
     public List<Integer> getCardsPlayed() {
-        return cardsPlayed;
+        return game.getPlayedCards();
     }
 
     public void setCardsPlayed(List<Integer> cardsPlayed) {
-        this.cardsPlayed = cardsPlayed;
+        this.game.setPlayedCards(cardsPlayed);
     }
 
     public int getPlayerTurn() {
-        return playerTurn;
+        return game.getPlayersTurn();
     }
 
     public void setPlayerTurn(int playerTurn) {
-        this.playerTurn = playerTurn;
+        this.game.setPlayersTurn(playerTurn);
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 }

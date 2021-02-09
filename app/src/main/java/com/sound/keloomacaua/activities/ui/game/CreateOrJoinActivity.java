@@ -1,7 +1,6 @@
 package com.sound.keloomacaua.activities.ui.game;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,7 +55,6 @@ public class CreateOrJoinActivity extends AppCompatActivity {
         }
 
         mdataRef.child("games").addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 gameList = new ArrayList<>();
@@ -79,26 +77,21 @@ public class CreateOrJoinActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.gameList);
 
         createGame.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
 
                 CardMoves cardMoves = CardMoves.getInstance();
+                cardMoves.createNewGame();
 
-                Game game = new Game();
+                Game game = cardMoves.getGame();
                 game.setDateTime(new Date());
-                game.setPlayer1Cards(cardMoves.getPlayer1Cards());
-                game.setPlayer2Cards(cardMoves.getPlayer2Cards());
-                game.setDeckRemainingCards(cardMoves.getDeckOfCards());
                 game.setPlayer1Joined(user.getEmail());
                 game.setPlayer2Joined("waiting...");
-                game.setPlayedCards(cardMoves.getCardsPlayed());
                 game.setWhoWon(-1);
-
-                game.setPlayersTurn(cardMoves.getPlayerTurn());
 
                 long gameId = System.currentTimeMillis();
                 game.setGameId(gameId);
+
                 mdataRef.child("games").child(String.valueOf(gameId)).setValue(game);
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -113,7 +106,6 @@ public class CreateOrJoinActivity extends AppCompatActivity {
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 mdataRef.child("games").addValueEventListener(new ValueEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 

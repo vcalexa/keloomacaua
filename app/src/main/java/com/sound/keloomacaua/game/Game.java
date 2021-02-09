@@ -1,15 +1,9 @@
 package com.sound.keloomacaua.game;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class Game implements Serializable {
     private Date dateTime;
     private long gameId;
