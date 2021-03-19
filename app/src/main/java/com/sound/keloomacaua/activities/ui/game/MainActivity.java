@@ -55,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
         cardMoves.setGame(game);
 
         final List<Integer>[] playerCards = new List[]{new ArrayList<>()};
-//        if (game.getPlayersTurn() == 1) {
-//        } else if (game.getPlayersTurn() == 2) {
-//        }
 
         mdataRef = FirebaseDatabase.getInstance().getReference();
 
@@ -86,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                             game.setPlayer2Joined(user.getEmail());
                         }
 
-                        //mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
+                        mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 
                         if (isPlayerOne) {
                             if (game.getPlayersTurn() == 2) {
@@ -173,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                                 recyclerView.scrollToPosition(finalPlayerCards.size() - 1);
                             }
 
-                            // mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
+                             mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
                         }
 
 
