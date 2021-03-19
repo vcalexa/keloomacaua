@@ -12,4 +12,7 @@
     <string name="register_failed">"Register failed"</string>
     <string name="action_register">Login or Register</string>
     <string name="create_new_game">Create New Game</string>
+    <string name="my_hand">my hand</string>
+    <string name="top_card">top card</string>
+    <string name="oponent_deck">oponent deck</string>
 </resources>
