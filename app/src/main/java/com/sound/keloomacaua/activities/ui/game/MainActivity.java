@@ -55,20 +55,20 @@ public class MainActivity extends AppCompatActivity {
         cardMoves.setGame(game);
 
         final List<Integer>[] playerCards = new List[]{new ArrayList<>()};
-        if (game.getPlayersTurn() == 1) {
-            playerCards[0] = game.getPlayer1Cards();
-        } else if (game.getPlayersTurn() == 2) {
-            playerCards[0] = game.getPlayer2Cards();
-        }
+//        if (game.getPlayersTurn() == 1) {
+//        } else if (game.getPlayersTurn() == 2) {
+//        }
 
         mdataRef = FirebaseDatabase.getInstance().getReference();
 
         if (game.getPlayer1Joined().equals(user.getEmail())) {
             isPlayerOne = true;
+            playerCards[0] = game.getPlayer1Cards();
         }
 
         if (game.getPlayer2Joined().equals(user.getEmail())) {
             isPlayerTwo = true;
+            playerCards[0] = game.getPlayer2Cards();
         }
 
 
