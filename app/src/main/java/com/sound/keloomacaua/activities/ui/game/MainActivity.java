@@ -27,7 +27,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ImageView tableCard;
-    public DatabaseReference mdataRef;
+    public DatabaseReference mGameRef;
     public FirebaseUser user;
 
     RecyclerView recyclerView;
@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         final List<Integer>[] playerCards = new List[]{new ArrayList<>()};
 
-        mdataRef = FirebaseDatabase.getInstance().getReference();
+        mGameRef = FirebaseDatabase.getInstance().getReference()
+                .child("games").child(String.valueOf(game.getGameId()));
 
         if (game.getPlayer1Joined().equals(user.getEmail())) {
             isPlayerOne = true;
@@ -69,49 +70,48 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        mdataRef.child("games").child(String.valueOf(game.getGameId()))
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        mGameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        Game game = snapshot.getValue(Game.class);
-                        game.setPlayersTurn(cardMoves.getPlayerTurn());
-                        if (joinFromListPlayer1) {
-                            game.setPlayer1Joined(user.getEmail());
-                        }
-                        if (joinFromListPlayer2) {
-                            game.setPlayer2Joined(user.getEmail());
-                        }
+                Game game = snapshot.getValue(Game.class);
+                game.setPlayersTurn(cardMoves.getPlayerTurn());
+                if (joinFromListPlayer1) {
+                    game.setPlayer1Joined(user.getEmail());
+                }
+                if (joinFromListPlayer2) {
+                    game.setPlayer2Joined(user.getEmail());
+                }
 
-                        mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
+                mGameRef.setValue(game);
 
-                        if (isPlayerOne) {
-                            if (game.getPlayersTurn() == 2) {
-                                iaCarteButton.setEnabled(false);
-                                gataTura.setEnabled(false);
+                if (isPlayerOne) {
+                    if (game.getPlayersTurn() == 2) {
+                        iaCarteButton.setEnabled(false);
+                        gataTura.setEnabled(false);
 
-                            } else {
-                                iaCarteButton.setEnabled(true);
-                                gataTura.setEnabled(true);
-                            }
-                        }
-
-                        if (isPlayerTwo) {
-                            if (game.getPlayersTurn() == 1) {
-                                iaCarteButton.setEnabled(false);
-                                gataTura.setEnabled(false);
-                            } else {
-                                iaCarteButton.setEnabled(true);
-                                gataTura.setEnabled(true);
-                            }
-                        }
+                    } else {
+                        iaCarteButton.setEnabled(true);
+                        gataTura.setEnabled(true);
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
+                if (isPlayerTwo) {
+                    if (game.getPlayersTurn() == 1) {
+                        iaCarteButton.setEnabled(false);
+                        gataTura.setEnabled(false);
+                    } else {
+                        iaCarteButton.setEnabled(true);
+                        gataTura.setEnabled(true);
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         tableCard = findViewById(R.id.tablePile);
 
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             cardMoves.player1Takes(1);
             cardMoves.changeTurn();
 
-            mdataRef.child("games").child(String.valueOf(game.getGameId()))
+            mGameRef
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                                 recyclerView.scrollToPosition(finalPlayerCards.size() - 1);
                             }
 
-                             mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
+                            mGameRef.setValue(game);
                         }
 
 
