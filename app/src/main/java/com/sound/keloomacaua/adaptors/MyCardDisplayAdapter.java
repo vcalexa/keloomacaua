@@ -1,46 +1,43 @@
 package com.sound.keloomacaua.adaptors;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sound.keloomacaua.activities.ui.game.MainActivity;
+import com.google.firebase.database.DatabaseReference;
+import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.interfaces.ItemClickListener;
-import com.sound.keloomacaua.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder> {
-    private List<Integer> actualCards;
+    private final List<Integer> actualCards;
     private final Context context;
-    private ImageView tablePile;
     private static ItemClickListener clickListener;
-    MainActivity activity;
+    private DatabaseReference gameReference;
 
-    public MyCardDisplayAdapter(Context context, List<Integer> actualCards, ImageView tablePile, MainActivity activity) {
+    public MyCardDisplayAdapter(Context context, boolean isPlayerOne, DatabaseReference firebaseReference) {
         super();
         this.context = context;
-        this.actualCards = actualCards;
-        this.tablePile = tablePile;
-        this.activity = activity;
+        this.actualCards = new ArrayList<>();
+        this.gameReference = firebaseReference;
     }
 
-    public List<Integer> getActualCards() {
-        return actualCards;
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     public void setActualCards(List<Integer> actualCards) {
-        this.actualCards = actualCards;
+        this.actualCards.clear();
+        this.actualCards.addAll(actualCards);
+        this.notifyDataSetChanged();
     }
 
     @NonNull
@@ -57,38 +54,17 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
         CardMoves cardMoves = CardMoves.getInstance();
         CardUtils cardUtils = cardMoves.getCardUtils();
         String imageTitle = cardUtils.getImageViewName(actualCards.get(i));
-        int turn = cardMoves.getPlayerTurn();
 
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
 
-        boolean isPlayerOne = activity.isPlayerOne();
-
         viewHolder.setClickListener((view, position, isLongClick) -> {
             String imageTitleFromHand = cardUtils.getImageViewName(actualCards.get(position));
-            if ((isPlayerOne && cardMoves.getPlayerTurn() == 1) || (!isPlayerOne && turn == 2) &&
-                    cardMoves.playIfPossible(actualCards.get(position))) {
+            if (cardMoves.hasMoved(position)) {
                 Toast.makeText(context, "Played:" + position + " - " + imageTitleFromHand,
                         Toast.LENGTH_SHORT).show();
-
-                int clickedImageId = context.getResources().getIdentifier(imageTitleFromHand, "drawable", context.getPackageName());
-
-                tablePile.setImageResource(clickedImageId);
-                if (isPlayerOne) {
-                    cardMoves.player1Move(position);
-                } else {
-                    cardMoves.player2Move(position);
-                }
-
-                cardMoves.changeTurn();
-
-                activity.iaCarteButton.setEnabled(false);
-                activity.gataTura.setEnabled(false);
-
-                //actualCards.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, actualCards.size());
+                gameReference.setValue(cardMoves.getGame());
             } else {
                 Toast.makeText(context, "Cannot play:" + position + " - " + imageTitleFromHand,
                         Toast.LENGTH_SHORT).show();

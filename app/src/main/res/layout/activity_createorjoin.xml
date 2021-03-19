@@ -10,6 +10,7 @@
         android:id="@+id/gameList"
         android:layout_width="match_parent"
         android:layout_height="570dp"
+        tools:listitem="@layout/item_game"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.68"
         app:layout_constraintStart_toStartOf="parent"
