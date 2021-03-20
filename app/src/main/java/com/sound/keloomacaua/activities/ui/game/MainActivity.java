@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,8 @@ import com.sound.keloomacaua.game.Game;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class MainActivity extends AppCompatActivity {
     ImageView tableCard;
     public DatabaseReference mGameRef;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     public Button iaCarteButton;
     public Button gataTura;
+    public TextView leftOverCards;
 
     public boolean isPlayerOne;
     public boolean isPlayerTwo;
@@ -87,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
 
         iaCarteButton = findViewById(R.id.iaCarteId);
+        leftOverCards = findViewById(R.id.leftOverTextView);
+        leftOverCards.setText(format("Mai are %s carti.", cardMoves.getOpponentCardsCount()));
         iaCarteButton.setOnClickListener(view -> {
             if (isPlayerOne) {
                 cardMoves.player1Takes(1);
