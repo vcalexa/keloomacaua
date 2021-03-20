@@ -1,15 +1,15 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -19,7 +19,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
 import com.sound.keloomacaua.adaptors.MyJoinGameAdapter;
 import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.Game;
@@ -31,17 +30,16 @@ import java.util.List;
 public class CreateOrJoinActivity extends AppCompatActivity {
     //private Button joinFirstAvailableGame;
     private Button createGame;
-    private DatabaseReference mdataRef;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     MyJoinGameAdapter myJoinGameAdapter;
-    List<Game> gameList;
     FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createorjoin);
+        DatabaseReference mdataRef;
         mdataRef = FirebaseDatabase.getInstance().getReference();
 
         //joinFirstAvailableGame = findViewById(R.id.joinGame);
@@ -54,17 +52,22 @@ public class CreateOrJoinActivity extends AppCompatActivity {
             // user is signed out, show sign-in form
         }
 
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView = findViewById(R.id.gameList);
+        recyclerView.setLayoutManager(layoutManager);
+
+        myJoinGameAdapter = new MyJoinGameAdapter(mdataRef);
+        recyclerView.setAdapter(myJoinGameAdapter);
+
         mdataRef.child("games").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                gameList = new ArrayList<>();
+                List<Game> gameList = new ArrayList<>();
                 for (DataSnapshot gameSnapshot : snapshot.getChildren()) {
                     Game game = gameSnapshot.getValue(Game.class);
                     gameList.add(game);
                 }
-                recyclerView.setLayoutManager(layoutManager);
-                myJoinGameAdapter = new MyJoinGameAdapter(getApplicationContext(), gameList);
-                recyclerView.setAdapter(myJoinGameAdapter);
+                myJoinGameAdapter.setCreatedGames(gameList);
             }
 
             @Override
@@ -73,8 +76,6 @@ public class CreateOrJoinActivity extends AppCompatActivity {
             }
         });
 
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView = findViewById(R.id.gameList);
 
         createGame.setOnClickListener(new View.OnClickListener() {
             @Override

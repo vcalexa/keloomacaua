@@ -46,10 +46,10 @@ public class LoginViewModel extends ViewModel {
             if (taskRegister.isSuccessful()) {
                 Toast.makeText(activity, "User succesfully registeted to database",
                         Toast.LENGTH_SHORT).show();
-                LoggedInUser regsiterUser =
-                        new LoggedInUser(
-                                java.util.UUID.randomUUID().toString(),
-                                username);
+//                LoggedInUser regsiterUser =
+//                        new LoggedInUser(
+//                                java.util.UUID.randomUUID().toString(),
+//                                username);
 
                 loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
 
@@ -59,9 +59,9 @@ public class LoginViewModel extends ViewModel {
                             if (taskLogin.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("LoginViewModel", "signInWithEmail:success");
-                                final LoggedInUser[] loginUser = {new LoggedInUser(
-                                        UUID.randomUUID().toString(),
-                                        username)};
+//                                final LoggedInUser[] loginUser = {new LoggedInUser(
+//                                        UUID.randomUUID().toString(),
+//                                        username)};
 
                                 loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
                             } else {

@@ -1,37 +1,29 @@
 package com.sound.keloomacaua.game;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+// FIXME: this assumes there are only 2 players
 public class CardMoves implements Serializable {
-    private CardUtils cardUtils = new CardUtils();
+    private final CardUtils cardUtils = new CardUtils();
     private Game game;
-    public DatabaseReference mdataRef;
 
     private static CardMoves single_instance = null;
+    private int player;
 
     private CardMoves() {
         game = new Game();
-        mdataRef = FirebaseDatabase.getInstance().getReference();
     }
 
     private CardMoves(boolean toJoin) {
 
     }
 
-    public void createNewGame(){
-        game = new Game();
+    public void createNewGame() {
+        this.game = new Game();
         this.deal();
     }
 
@@ -47,14 +39,6 @@ public class CardMoves implements Serializable {
             single_instance = new CardMoves(true);
 
         return single_instance;
-    }
-
-    public long getGameId() {
-        return game.getGameId();
-    }
-
-    public void setGameId(long gameId) {
-        this.game.setGameId(gameId);
     }
 
     public CardUtils getCardUtils() {
@@ -91,13 +75,11 @@ public class CardMoves implements Serializable {
     public void player1Move(int index) {
         game.getPlayedCards().add(game.getPlayer1Cards().get(index));
         game.getPlayer1Cards().remove(index);
-        mdataRef.child("games").child(String.valueOf(game.getGameId())).child("player1Cards").setValue(game.getPlayer1Cards());
     }
 
     public void player2Move(int index) {
-        game.getPlayedCards().add(game.getPlayer1Cards().get(index));
-        game.getPlayer1Cards().remove(index);
-        mdataRef.child("games").child(String.valueOf(game.getGameId())).child("player2Cards").setValue(game.getPlayer2Cards());
+        game.getPlayedCards().add(game.getPlayer2Cards().get(index));
+        game.getPlayer2Cards().remove(index);
     }
 
     public void player1Takes(Integer numberOfCards) {
@@ -112,14 +94,18 @@ public class CardMoves implements Serializable {
     }
 
     public void player2Takes(Integer numberOfCards) {
-        for (int i = 0; i < numberOfCards; i++) {
-            game.getPlayer2Cards().add(getLast(game.getDeckRemainingCards()));
-            game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
+        if (!game.getDeckRemainingCards().isEmpty()) {
+            for (int i = 0; i < numberOfCards; i++) {
+                game.getPlayer2Cards().add(getLast(game.getDeckRemainingCards()));
+                game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
+            }
         }
+
+        turnPlayerCardsOver();
     }
 
-    private List<Integer> activePlayerCards(int playerTurn) {
-        if (playerTurn == 1) {
+    public List<Integer> localPlayerCards() {
+        if (player == 1) {
             return game.getPlayer1Cards();
         } else {
             return game.getPlayer2Cards();
@@ -127,56 +113,33 @@ public class CardMoves implements Serializable {
     }
 
     public void changeTurn() {
-        if (game.getPlayersTurn() == 1) {
-            setPlayerTurn(2);
-            mdataRef.child("games").child(String.valueOf(game.getGameId())).child("playersTurn").setValue(2);
-        } else if (getPlayerTurn() == 2) {
-            setPlayerTurn(1);
-            mdataRef.child("games").child(String.valueOf(game.getGameId())).child("playersTurn").setValue(1);
-        }
+        game.setPlayersTurn(3 - game.getPlayersTurn());
     }
 
-    @SuppressLint("NewApi")
-    public boolean canMove(int playerTurn) {
-        boolean canMove = false;
-
-        List<Integer> activePlayerCards = new ArrayList<>();
-        if (playerTurn == 1) {
-            activePlayerCards = game.getPlayer1Cards();
-        }
-
-        String[] specialCards = {"ace", "joker"};
-
-        for (int playerCard : activePlayerCards) {
-            if (cardUtils.hasSameRank(getLast(game.getPlayedCards()), playerCard) ||
-                    cardUtils.hasSameSuite(getLast(game.getPlayedCards()), playerCard) ||
-                    Arrays.asList(specialCards).contains(cardUtils.getCardRank(playerCard))) {
-                canMove = true;
-            }
-        }
-        return canMove;
-
-    }
-
-    @SuppressLint("NewApi")
-    public boolean playIfPossible(int cardNumber) {
+    public boolean isMovePossible(int cardNumber) {
         boolean canMove = false;
 
         String[] specialCards = {"ace", "joker"};
+        int topCard = getLast();
 
-        if (cardUtils.hasSameRank(getLast(game.getPlayedCards()), cardNumber) ||
-                cardUtils.hasSameSuite(getLast(game.getPlayedCards()), cardNumber) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber))) {
-            game.getPlayedCards().add(cardNumber);
-
-            //player1Move(toPlay, 1);
+        if (cardUtils.hasSameRank(topCard, cardNumber) || cardUtils.hasSameSuite(topCard, cardNumber) || Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber))) {
             canMove = true;
-
-            turnPlayerCardsOver();
         }
 
-
         return canMove;
+    }
+
+    public boolean hasMoved(int position) {
+        if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
+            if (player == 1) {
+                player1Move(position);
+            } else {
+                player2Move(position);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void turnPlayerCardsOver() {
@@ -200,44 +163,8 @@ public class CardMoves implements Serializable {
         return getLast(game.getPlayedCards());
     }
 
-    public List<Integer> getPlayer1Cards() {
-        return game.getPlayer1Cards();
-    }
-
-    public void setPlayer1Cards(List<Integer> player1Cards) {
-        this.game.setPlayer1Cards(player1Cards);
-    }
-
-    public List<Integer> getPlayer2Cards() {
-        return game.getPlayer2Cards();
-    }
-
-    public void setPlayer2Cards(List<Integer> player2Cards) {
-        this.game.setPlayer1Cards(player2Cards);
-    }
-
-    public List<Integer> getDeckOfCards() {
-        return game.getDeckRemainingCards();
-    }
-
-    public void setDeckOfCards(List<Integer> deckRemainingCards) {
-        this.game.setPlayer1Cards(deckRemainingCards);
-    }
-
-    public List<Integer> getCardsPlayed() {
-        return game.getPlayedCards();
-    }
-
-    public void setCardsPlayed(List<Integer> cardsPlayed) {
-        this.game.setPlayedCards(cardsPlayed);
-    }
-
     public int getPlayerTurn() {
         return game.getPlayersTurn();
-    }
-
-    public void setPlayerTurn(int playerTurn) {
-        this.game.setPlayersTurn(playerTurn);
     }
 
     public Game getGame() {
@@ -246,5 +173,9 @@ public class CardMoves implements Serializable {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public void setPlayer(int player) {
+        this.player = player;
     }
 }

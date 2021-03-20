@@ -1,5 +1,6 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,14 +21,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
 import com.sound.keloomacaua.game.CardMoves;
+import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.game.Game;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ImageView tableCard;
-    public DatabaseReference mdataRef;
+    public DatabaseReference mGameRef;
     public FirebaseUser user;
 
     RecyclerView recyclerView;
@@ -49,19 +50,20 @@ public class MainActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         boolean joinFromListPlayer1 = getIntent().getBooleanExtra("joinedFromListPlayer1", false);
         boolean joinFromListPlayer2 = getIntent().getBooleanExtra("joinedFromListPlayer2", false);
+
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
         CardMoves cardMoves = CardMoves.getInstance();
-        cardMoves.setGame(game);
 
-        final List<Integer>[] playerCards = new List[]{new ArrayList<>()};
-        if (game.getPlayersTurn() == 1) {
-            playerCards[0] = game.getPlayer1Cards();
-        } else if (game.getPlayersTurn() == 2) {
-            playerCards[0] = game.getPlayer2Cards();
+        mGameRef = FirebaseDatabase.getInstance().getReference()
+                .child("games").child(String.valueOf(game.getGameId()));
+
+        if (joinFromListPlayer1) {
+            game.setPlayer1Joined(user.getEmail());
         }
-
-        mdataRef = FirebaseDatabase.getInstance().getReference();
+        if (joinFromListPlayer2) {
+            game.setPlayer2Joined(user.getEmail());
+        }
 
         if (game.getPlayer1Joined().equals(user.getEmail())) {
             isPlayerOne = true;
@@ -71,133 +73,77 @@ public class MainActivity extends AppCompatActivity {
             isPlayerTwo = true;
         }
 
-
-        mdataRef.child("games").child(String.valueOf(game.getGameId()))
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        Game game = snapshot.getValue(Game.class);
-                        game.setPlayersTurn(cardMoves.getPlayerTurn());
-                        if (joinFromListPlayer1) {
-                            game.setPlayer1Joined(user.getEmail());
-                        }
-                        if (joinFromListPlayer2) {
-                            game.setPlayer2Joined(user.getEmail());
-                        }
-
-                        //mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
-
-                        if (isPlayerOne) {
-                            if (game.getPlayersTurn() == 2) {
-                                iaCarteButton.setEnabled(false);
-                                gataTura.setEnabled(false);
-
-                            } else {
-                                iaCarteButton.setEnabled(true);
-                                gataTura.setEnabled(true);
-                            }
-                        }
-
-                        if (isPlayerTwo) {
-                            if (game.getPlayersTurn() == 1) {
-                                iaCarteButton.setEnabled(false);
-                                gataTura.setEnabled(false);
-                            } else {
-                                iaCarteButton.setEnabled(true);
-                                gataTura.setEnabled(true);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+        cardMoves.setPlayer(isPlayerOne ? 1 : 2);
+        cardMoves.setGame(game);
 
         tableCard = findViewById(R.id.tablePile);
 
-        String firstCardTitle = cardMoves.getCardUtils().getImageViewName(cardMoves.getLast());
-        int firstCardId = getResources().getIdentifier(firstCardTitle,
-                "drawable", getPackageName());
-
-        tableCard.setImageResource(firstCardId);
-
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView = findViewById(R.id.recycleViewCards);
-
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), playerCards[0], tableCard, this);
+        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), isPlayerOne, mGameRef);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
-        recyclerView.scrollToPosition(playerCards[0].size() - 1);
+        recyclerView.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
 
         iaCarteButton = findViewById(R.id.iaCarteId);
-        List<Integer> finalPlayerCards = playerCards[0];
         iaCarteButton.setOnClickListener(view -> {
-
-            cardMoves.player1Takes(1);
+            if (isPlayerOne) {
+                cardMoves.player1Takes(1);
+            } else {
+                cardMoves.player2Takes(1);
+            }
             cardMoves.changeTurn();
-
-            mdataRef.child("games").child(String.valueOf(game.getGameId()))
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                            Game game = snapshot.getValue(Game.class);
-
-                            game.setPlayedCards(cardMoves.getCardsPlayed());
-                            game.setDeckRemainingCards(cardMoves.getDeckOfCards());
-                            game.setPlayersTurn(cardMoves.getPlayerTurn());
-
-                            if (isPlayerOne) {
-                                game.setPlayer1Cards(cardMoves.getPlayer1Cards());
-                                playerCards[0] = game.getPlayer1Cards();
-
-                                //game.setPlayersTurn(2);
-                                bottomCardsAdaptor.setActualCards(playerCards[0]);
-                                iaCarteButton.setEnabled(false);
-                                recyclerView.setAdapter(bottomCardsAdaptor);
-                                recyclerView.scrollToPosition(finalPlayerCards.size() - 1);
-                            }
-
-                            if (isPlayerTwo) {
-                                game.setPlayer2Cards(cardMoves.getPlayer2Cards());
-                                playerCards[0] = game.getPlayer2Cards();
-
-                                //game.setPlayersTurn(1);
-                                bottomCardsAdaptor.setActualCards(playerCards[0]);
-                                iaCarteButton.setEnabled(false);
-                                recyclerView.setAdapter(bottomCardsAdaptor);
-                                recyclerView.scrollToPosition(finalPlayerCards.size() - 1);
-                            }
-
-                            // mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
-                        }
-
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-
-
+            mGameRef.setValue(cardMoves.getGame());
         });
 
         gataTura = findViewById(R.id.gataTura);
         gataTura.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                iaCarteButton.setEnabled(false);
-                gataTura.setEnabled(false);
                 cardMoves.changeTurn();
+                mGameRef.setValue(cardMoves.getGame());
             }
         });
+
+        mGameRef.setValue(game);
+
+        mGameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Game game = snapshot.getValue(Game.class);
+                updateStateFromGame(game);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
     }
 
-    public boolean isPlayerOne() {
-        return isPlayerOne;
+    @SuppressLint("NotifyDataSetChanged")
+    private void updateStateFromGame(Game game) {
+        CardMoves cardMoves = CardMoves.getInstance();
+        CardUtils cardUtils = cardMoves.getCardUtils();
+
+        //firebase becomes single source of truth
+        cardMoves.setGame(game);
+
+        // buttons
+        int turn = game.getPlayersTurn();
+        boolean enableButtons = (isPlayerOne && turn == 1) || (!isPlayerOne && turn == 2);
+        iaCarteButton.setEnabled(enableButtons);
+        gataTura.setEnabled(enableButtons);
+
+        // top of pile
+        String imageTitleFromHand = cardUtils.getImageViewName(cardMoves.getLast());
+        int clickedImageId = getResources().getIdentifier(imageTitleFromHand, "drawable", getPackageName());
+        tableCard.setImageResource(clickedImageId);
+
+        // cards in hand
+        List<Integer> cards = cardMoves.localPlayerCards();
+        bottomCardsAdaptor.setActualCards(cards);
+        recyclerView.scrollToPosition(cards.size() - 1);
     }
 }
