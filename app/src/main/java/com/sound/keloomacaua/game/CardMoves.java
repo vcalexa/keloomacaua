@@ -74,12 +74,20 @@ public class CardMoves implements Serializable {
 
     public void player1Move(int index) {
         game.getPlayedCards().add(game.getPlayer1Cards().get(index));
-        game.getPlayer1Cards().remove(index);
+        if(game.getPlayer1Cards().size()==1){
+            // do nothing for now
+        } else {
+            game.getPlayer1Cards().remove(index);
+        }
     }
 
     public void player2Move(int index) {
-        game.getPlayedCards().add(game.getPlayer2Cards().get(index));
-        game.getPlayer2Cards().remove(index);
+        game.getPlayedCards().add(game.getPlayer1Cards().get(index));
+        if(game.getPlayer1Cards().size()==1){
+            // do nothing for now
+        } else {
+            game.getPlayer1Cards().remove(index);
+        }
     }
 
     public void player1Takes(Integer numberOfCards) {
@@ -130,7 +138,7 @@ public class CardMoves implements Serializable {
         if (cardUtils.hasSameRank(topCard, cardNumber) ||
                 cardUtils.hasSameSuite(topCard, cardNumber) ||
                 Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(getLast(game.getPlayedCards())))) {
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) {
             canMove = true;
         }
 
@@ -161,6 +169,11 @@ public class CardMoves implements Serializable {
             game.getPlayedCards().add(lastCard);
             Collections.shuffle(game.getDeckRemainingCards());
         }
+    }
+    public Integer getOpponentCardsCount(){
+        //if(getPlayerTurn() ==1)
+            return game.getPlayer1Cards().size();
+        //else return game.getPlayer2Cards().size();
     }
 
     private int getLast(List<Integer> list) {
