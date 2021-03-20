@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         // cards in hand
         List<Integer> cards = cardMoves.localPlayerCards();
-        bottomCardsAdaptor.setActualCards(cards);
+        bottomCardsAdaptor.setOwnCards(cards);
         recyclerView.scrollToPosition(cards.size() - 1);
     }
 }

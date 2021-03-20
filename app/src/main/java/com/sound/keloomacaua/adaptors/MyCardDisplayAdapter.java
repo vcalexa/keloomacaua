@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder> {
-    private final List<Integer> actualCards;
+    private final List<Integer> ownCards;
     private final Context context;
     private static ItemClickListener clickListener;
     private DatabaseReference gameReference;
@@ -29,14 +29,14 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     public MyCardDisplayAdapter(Context context, boolean isPlayerOne, DatabaseReference firebaseReference) {
         super();
         this.context = context;
-        this.actualCards = new ArrayList<>();
+        this.ownCards = new ArrayList<>();
         this.gameReference = firebaseReference;
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setActualCards(List<Integer> actualCards) {
-        this.actualCards.clear();
-        this.actualCards.addAll(actualCards);
+    public void setOwnCards(List<Integer> ownCards) {
+        this.ownCards.clear();
+        this.ownCards.addAll(ownCards);
         this.notifyDataSetChanged();
     }
 
@@ -53,14 +53,14 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         CardMoves cardMoves = CardMoves.getInstance();
         CardUtils cardUtils = cardMoves.getCardUtils();
-        String imageTitle = cardUtils.getImageViewName(actualCards.get(i));
+        String imageTitle = cardUtils.getImageViewName(ownCards.get(i));
 
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
 
         viewHolder.setClickListener((view, position, isLongClick) -> {
-            String imageTitleFromHand = cardUtils.getImageViewName(actualCards.get(position));
+            String imageTitleFromHand = cardUtils.getImageViewName(ownCards.get(position));
             if (cardMoves.hasMoved(position)) {
                 Toast.makeText(context, "Played:" + position + " - " + imageTitleFromHand,
                         Toast.LENGTH_SHORT).show();
@@ -70,13 +70,17 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
                         Toast.LENGTH_SHORT).show();
             }
 
+            if(cardMoves.isGameOver()){
+                Toast.makeText(context, "GAME OVER!!", Toast.LENGTH_LONG);
+            }
+
         });
     }
 
 
     @Override
     public int getItemCount() {
-        return actualCards.size();
+        return ownCards.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
