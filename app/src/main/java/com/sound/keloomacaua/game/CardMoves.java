@@ -112,6 +112,11 @@ public class CardMoves implements Serializable {
         }
     }
 
+    public boolean isGameOver() {
+        boolean gameOver = ((game.getPlayer1Cards().size() == 0) || (game.getPlayer2Cards().size() == 0)) ? true : false;
+        return gameOver;
+    }
+
     public void changeTurn() {
         game.setPlayersTurn(3 - game.getPlayersTurn());
     }
@@ -122,7 +127,10 @@ public class CardMoves implements Serializable {
         String[] specialCards = {"ace", "joker"};
         int topCard = getLast();
 
-        if (cardUtils.hasSameRank(topCard, cardNumber) || cardUtils.hasSameSuite(topCard, cardNumber) || Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber))) {
+        if (cardUtils.hasSameRank(topCard, cardNumber) ||
+                cardUtils.hasSameSuite(topCard, cardNumber) ||
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(getLast(game.getPlayedCards())))) {
             canMove = true;
         }
 
