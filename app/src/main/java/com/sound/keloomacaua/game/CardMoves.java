@@ -13,6 +13,7 @@ public class CardMoves implements Serializable {
 
     private static CardMoves single_instance = null;
     private int player;
+    private boolean skipTurnDone = true;
 
     private CardMoves() {
         game = new Game();
@@ -73,8 +74,10 @@ public class CardMoves implements Serializable {
 
 
     public void player1Move(int index) {
+        if (cardUtils.getCardRank(index).equals("four")) skipTurnDone = false;
+
         game.getPlayedCards().add(game.getPlayer1Cards().get(index));
-        if(game.getPlayer1Cards().size()==1){
+        if (game.getPlayer1Cards().size() == 1) {
             // do nothing for now
         } else {
             game.getPlayer1Cards().remove(index);
@@ -82,8 +85,10 @@ public class CardMoves implements Serializable {
     }
 
     public void player2Move(int index) {
+        if (cardUtils.getCardRank(index).equals("four")) skipTurnDone = false;
+
         game.getPlayedCards().add(game.getPlayer2Cards().get(index));
-        if(game.getPlayer2Cards().size()==1){
+        if (game.getPlayer2Cards().size() == 1) {
             // do nothing for now
         } else {
             game.getPlayer2Cards().remove(index);
@@ -135,15 +140,28 @@ public class CardMoves implements Serializable {
         String[] specialCards = {"ace", "joker"};
         int topCard = getLast();
 
-        if (cardUtils.hasSameRank(topCard, cardNumber) ||
+        if ((cardUtils.hasSameRank(topCard, cardNumber) ||
                 cardUtils.hasSameSuite(topCard, cardNumber) ||
                 Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) {
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) &&
+                !isSkipTurn(cardNumber, topCard))
+        // OR (top card is not 4 OR (top card is 4 AND cardNUmber == 4))
+        {
             canMove = true;
         }
 
         return canMove;
     }
+
+    private boolean isSkipTurn(int cardNumber, int topCard) {
+        boolean skip = false;
+        if ((cardUtils.getCardRank(topCard).equals("four")) && (!cardUtils.getCardRank(cardNumber).equals("four") && skipTurnDone == false)) {
+            skip = true;
+            skipTurnDone = true;
+        }
+        return skip;
+    }
+
 
     public boolean hasMoved(int position) {
         if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
@@ -170,9 +188,10 @@ public class CardMoves implements Serializable {
             Collections.shuffle(game.getDeckRemainingCards());
         }
     }
-    public Integer getOpponentCardsCount(){
+
+    public Integer getOpponentCardsCount() {
         //if(getPlayerTurn() ==1)
-            return game.getPlayer1Cards().size();
+        return game.getPlayer1Cards().size();
         //else return game.getPlayer2Cards().size();
     }
 
@@ -184,7 +203,7 @@ public class CardMoves implements Serializable {
         return getLast(game.getPlayedCards());
     }
 
-    public int getPlayerTurn() {
+    private int getPlayerTurn() {
         return game.getPlayersTurn();
     }
 
