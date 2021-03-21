@@ -1,10 +1,16 @@
 package com.sound.keloomacaua.game;
 
+import android.widget.Toast;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.sound.keloomacaua.game.CardUtils.getCardRank;
+import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
+import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 
 // FIXME: this assumes there are only 2 players
 public class CardMoves implements Serializable {
@@ -14,6 +20,14 @@ public class CardMoves implements Serializable {
     private static CardMoves single_instance = null;
     private int player;
     private boolean skipTurnDone = true;
+
+    public boolean isSkipTurnDone() {
+        return skipTurnDone;
+    }
+
+    public void setSkipTurnDone(boolean skipTurnDone) {
+        this.skipTurnDone = skipTurnDone;
+    }
 
     private CardMoves() {
         game = new Game();
@@ -74,7 +88,15 @@ public class CardMoves implements Serializable {
 
 
     public void player1Move(int index) {
-        if (cardUtils.getCardRank(index).equals("four")) skipTurnDone = false;
+        if (!isSkipTurnDone()) {
+            setSkipTurnDone(true);
+            changeTurn();
+        }
+
+        if (getCardRank(index).equals("four")) {
+            setSkipTurnDone(false);
+            System.out.println("Card 4 was played!!!");
+        }
 
         game.getPlayedCards().add(game.getPlayer1Cards().get(index));
         if (game.getPlayer1Cards().size() == 1) {
@@ -85,7 +107,16 @@ public class CardMoves implements Serializable {
     }
 
     public void player2Move(int index) {
-        if (cardUtils.getCardRank(index).equals("four")) skipTurnDone = false;
+        if (!isSkipTurnDone()) {
+            setSkipTurnDone(true);
+            changeTurn();
+        }
+
+        if (getCardRank(index).equals("four")) {
+            setSkipTurnDone(false);
+            System.out.println("Card 4 was played!!!");
+            changeTurn();
+        }
 
         game.getPlayedCards().add(game.getPlayer2Cards().get(index));
         if (game.getPlayer2Cards().size() == 1) {
@@ -132,6 +163,7 @@ public class CardMoves implements Serializable {
 
     public void changeTurn() {
         game.setPlayersTurn(3 - game.getPlayersTurn());
+        //if (!skipTurnDone) setSkipTurnDone(true);
     }
 
     public boolean isMovePossible(int cardNumber) {
@@ -140,12 +172,14 @@ public class CardMoves implements Serializable {
         String[] specialCards = {"ace", "joker"};
         int topCard = getLast();
 
-        if ((cardUtils.hasSameRank(topCard, cardNumber) ||
-                cardUtils.hasSameSuite(topCard, cardNumber) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) &&
-                !isSkipTurn(cardNumber, topCard))
-        {
+        if (isSkipTurn(cardNumber, topCard)) {
+            // canMove = false;
+            //changeTurn();
+        } else if ((hasSameRank(topCard, cardNumber) ||
+                hasSameSuite(topCard, cardNumber) ||
+                Arrays.asList(specialCards).contains(getCardRank(cardNumber)) ||
+                Arrays.asList(specialCards).contains(getCardRank(topCard)))
+        ) {
             canMove = true;
         }
 
@@ -154,9 +188,10 @@ public class CardMoves implements Serializable {
 
     private boolean isSkipTurn(int cardNumber, int topCard) {
         boolean skip = false;
-        if ((cardUtils.getCardRank(topCard).equals("four")) && (!cardUtils.getCardRank(cardNumber).equals("four") && skipTurnDone == false)) {
+        if ((getCardRank(topCard).equals("four")) && (!getCardRank(cardNumber).equals("four") && !isSkipTurnDone())) {
+            System.out.println("STAI O TURA");
             skip = true;
-            skipTurnDone = true;
+
         }
         return skip;
     }
@@ -188,9 +223,9 @@ public class CardMoves implements Serializable {
         }
     }
 
-    public int  getOpponentCardsCount() {
-        if(getPlayerTurn() ==1)
-        return game.getPlayer1Cards().size();
+    public int getOpponentCardsCount() {
+        if (getPlayerTurn() == 1)
+            return game.getPlayer1Cards().size();
         else return game.getPlayer2Cards().size();
     }
 
