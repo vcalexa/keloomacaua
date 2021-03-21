@@ -145,7 +145,6 @@ public class CardMoves implements Serializable {
                 Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
                 Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) &&
                 !isSkipTurn(cardNumber, topCard))
-        // OR (top card is not 4 OR (top card is 4 AND cardNUmber == 4))
         {
             canMove = true;
         }
