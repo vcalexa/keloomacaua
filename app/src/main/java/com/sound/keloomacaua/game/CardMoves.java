@@ -82,11 +82,11 @@ public class CardMoves implements Serializable {
     }
 
     public void player2Move(int index) {
-        game.getPlayedCards().add(game.getPlayer1Cards().get(index));
+        game.getPlayedCards().add(game.getPlayer2Cards().get(index));
         if(game.getPlayer2Cards().size()==1){
             // do nothing for now
         } else {
-            game.getPlayer1Cards().remove(index);
+            game.getPlayer2Cards().remove(index);
         }
     }
 
