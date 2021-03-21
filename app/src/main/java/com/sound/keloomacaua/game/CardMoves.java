@@ -189,10 +189,10 @@ public class CardMoves implements Serializable {
         }
     }
 
-    public Integer getOpponentCardsCount() {
-        //if(getPlayerTurn() ==1)
+    public int  getOpponentCardsCount() {
+        if(getPlayerTurn() ==1)
         return game.getPlayer1Cards().size();
-        //else return game.getPlayer2Cards().size();
+        else return game.getPlayer2Cards().size();
     }
 
     private int getLast(List<Integer> list) {
