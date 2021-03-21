@@ -57,7 +57,7 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
 
         viewHolder.player1Name.setOnClickListener(view -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            game.setPlayer1Joined(user.getEmail());
+            game.setPlayer1Joined(user.getDisplayName());
             mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
             Intent intent = new Intent(view.getContext(), MainActivity.class);
             intent.putExtra("game", game);
@@ -68,7 +68,7 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
 
         viewHolder.player2Name.setOnClickListener(view -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            game.setPlayer2Joined(user.getEmail());
+            game.setPlayer2Joined(user.getDisplayName());
             mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
             Intent intent = new Intent(view.getContext(), MainActivity.class);
             intent.putExtra("game", game);

@@ -1,5 +1,7 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import static java.lang.String.format;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
@@ -26,8 +28,6 @@ import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.game.Game;
 
 import java.util.List;
-
-import static java.lang.String.format;
 
 public class MainActivity extends AppCompatActivity {
     ImageView tableCard;
@@ -63,17 +63,17 @@ public class MainActivity extends AppCompatActivity {
                 .child("games").child(String.valueOf(game.getGameId()));
 
         if (joinFromListPlayer1) {
-            game.setPlayer1Joined(user.getEmail());
+            game.setPlayer1Joined(user.getDisplayName());
         }
         if (joinFromListPlayer2) {
-            game.setPlayer2Joined(user.getEmail());
+            game.setPlayer2Joined(user.getDisplayName());
         }
 
-        if (game.getPlayer1Joined().equals(user.getEmail())) {
+        if (game.getPlayer1Joined().equals(user.getDisplayName())) {
             isPlayerOne = true;
         }
 
-        if (game.getPlayer2Joined().equals(user.getEmail())) {
+        if (game.getPlayer2Joined().equals(user.getDisplayName())) {
             isPlayerTwo = true;
         }
 
@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
