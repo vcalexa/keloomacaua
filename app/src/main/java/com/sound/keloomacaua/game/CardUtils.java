@@ -10,7 +10,7 @@ public class CardUtils implements Serializable {
     private static String[] suits = {"hearts", "spades", "diamonds", "clubs"};
     private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
 
-    public String getImageViewName(int n) {
+    public static String getImageViewName(int n) {
         return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
     }
 
@@ -29,19 +29,19 @@ public class CardUtils implements Serializable {
         return cardMap;
     }
 
-    public String getCardRank(int cardNumber) {
+    public static String getCardRank(int cardNumber) {
         return cardMap().get(cardNumber).get(0);
     }
 
-    public String getCardSuite(int cardNumber) {
+    public static String getCardSuite(int cardNumber) {
         return cardMap().get(cardNumber).get(1);
     }
 
-    public boolean hasSameSuite(int card1, int card2) {
+    public static boolean hasSameSuite(int card1, int card2) {
         return getCardSuite(card1).equals(getCardSuite(card2));
     }
 
-    public boolean hasSameRank(int card1, int card2) {
+    public static boolean hasSameRank(int card1, int card2) {
         return getCardRank(card1).equals(getCardRank(card2));
     }
 
