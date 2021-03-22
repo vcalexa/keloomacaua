@@ -160,6 +160,10 @@ public class MainActivity extends AppCompatActivity {
         btnSpades.setVisibility(pickSuiteVisibility);
         if (pickSuiteActive) {
             btnDone.setEnabled(false);
+            btnPickCards.setEnabled(false);
+        }
+        if (game.moveStarted) {
+            btnPickCards.setEnabled(false);
         }
 
         if (game.suiteOverride.isEmpty()) {

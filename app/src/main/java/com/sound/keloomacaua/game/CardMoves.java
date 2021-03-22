@@ -80,11 +80,20 @@ public class CardMoves implements Serializable {
             game.suiteOverride = "";
         }
 
+        game.moveStarted = true;
+
         game.getPlayedCards().add(card);
-        if (player.getCards().size() == 1) {
-            // do nothing for now
-        } else {
+        if (player.getCards().size() > 1) {
             player.getCards().remove(cardIndex);
+            if (!canMakeAnyMove()) {
+                //auto move to next turn if there is no more action possible
+                changeTurn();
+            }
+        } else {
+            //announce game over
+            removeLast(player.getCards());
+            game.setWhoWon(getPlayerTurn());
+            game.setState(GameState.Finished);
         }
     }
 
@@ -118,6 +127,7 @@ public class CardMoves implements Serializable {
         int nextPlayer = (currentPlayer + 1) % numPlayers;
         game.setPlayersTurn(nextPlayer);
         if (shouldSkipTurn(getTopCard())) setSkipTurnDone(true);
+        game.moveStarted = false;
     }
 
     public void changeSuite(String suite) {
@@ -127,6 +137,19 @@ public class CardMoves implements Serializable {
     }
 
     static final List<String> specialCards = Arrays.asList("ace", "joker");
+
+    public boolean canMakeAnyMove() {
+        List<Integer> cards = game.getPlayers().get(player).getCards();
+        for (int card : cards) {
+            if (isMovePossible(card)) {
+                return true;
+            }
+        }
+        if (game.playerPicksSuite != -1) {
+            return true;
+        }
+        return false;
+    }
 
     public boolean isMovePossible(int cardNumber) {
         boolean canMove = false;
@@ -138,7 +161,9 @@ public class CardMoves implements Serializable {
         boolean correctRank = hasSameRank(topCard, cardNumber);
         boolean isSpecial = specialCards.contains(getCardRank(cardNumber)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
 
-        if (shouldSkipTurn(topCard)) {
+        if (game.moveStarted) {
+            canMove = correctRank;
+        } else if (shouldSkipTurn(topCard)) {
             canMove = false;
         } else if (correctRank || correctSuite || isSpecial) {
             canMove = true;
