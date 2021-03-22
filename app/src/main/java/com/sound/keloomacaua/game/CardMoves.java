@@ -19,15 +19,6 @@ public class CardMoves implements Serializable {
 
     private static CardMoves single_instance = null;
     private int player;
-    private boolean skipTurnDone = true;
-
-    public boolean isSkipTurnDone() {
-        return skipTurnDone;
-    }
-
-    public void setSkipTurnDone(boolean skipTurnDone) {
-        this.skipTurnDone = skipTurnDone;
-    }
 
     private CardMoves() {
         game = new Game();
@@ -61,11 +52,13 @@ public class CardMoves implements Serializable {
     }
 
     public void playCard(int cardIndex) {
+        System.out.println(getCardRank(cardIndex));
 
         if (getCardRank(cardIndex).equals(FOUR_CARD)) {
-            setSkipTurnDone(false);
+            game.setActiveSkipTurns(game.getActiveSkipTurns() + 1);
+            //setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
-            changeTurn();
+            //changeTurn();
         }
 
         Player player = game.getPlayers().get(this.player);
@@ -117,7 +110,6 @@ public class CardMoves implements Serializable {
         int currentPlayer = game.getPlayersTurn();
         int nextPlayer = (currentPlayer + 1) % numPlayers;
         game.setPlayersTurn(nextPlayer);
-        if (!isSkipTurnDone()) setSkipTurnDone(true);
     }
 
     public void changeSuite(String suite) {
@@ -138,8 +130,9 @@ public class CardMoves implements Serializable {
         boolean correctRank = hasSameRank(topCard, cardNumber);
         boolean isSpecial = specialCards.contains(getCardRank(cardNumber)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
 
-        if (shouldSkipTurn(topCard)) {
+        if (shouldSkipTurn()) {
             canMove = false;
+            changeTurn();
         } else if (correctRank || correctSuite || isSpecial) {
             canMove = true;
         }
@@ -147,9 +140,9 @@ public class CardMoves implements Serializable {
         return canMove;
     }
 
-    private boolean shouldSkipTurn(int topCard) {
+    private boolean shouldSkipTurn() {
         boolean skip = false;
-        if (getCardRank(topCard).equals(FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
+        if ((game.getActiveSkipTurns() > 0) && !hasFourCard()) {
             skip = true;
         }
         return skip;
@@ -157,19 +150,21 @@ public class CardMoves implements Serializable {
 
     private boolean hasFourCard() {
         boolean hasFour = false;
-        for (Integer card:localPlayerCards()) {
-            if (getCardRank(card).equals(FOUR_CARD)){
-                hasFour  = true;
+        for (Integer card : localPlayerCards()) {
+            if (getCardRank(card).equals(FOUR_CARD)) {
+                hasFour = true;
                 break;
             }
         }
-        return  hasFour;
+        return hasFour;
     }
 
 
     public boolean hasMoved(int position) {
         if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
             playCard(position);
+            if (game.getActiveSkipTurns() > 0)
+                game.setActiveSkipTurns(game.getActiveSkipTurns() - 1);
             return true;
         } else {
             return false;
