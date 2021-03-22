@@ -56,7 +56,6 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
-
         viewHolder.setClickListener((view, position, isLongClick) -> {
             String imageTitleFromHand = CardUtils.getImageViewName(ownCards.get(position));
             if (cardMoves.hasMoved(position)) {
@@ -84,11 +83,13 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
             View.OnLongClickListener {
         ImageView imgThumbnail;
+        View container;
 
 
         ViewHolder(View itemView) {
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
+            container = itemView;
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

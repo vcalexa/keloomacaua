@@ -97,17 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         mGameRef.setValue(game);
 
-        mGameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Game game = snapshot.getValue(Game.class);
-                updateStateFromGame(game);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+        mGameRef.addValueEventListener(gameUpdateListener);
 
         View.OnClickListener suiteListener = view -> {
             String suite = "";
@@ -131,6 +121,24 @@ public class MainActivity extends AppCompatActivity {
         btnHearts.setOnClickListener(suiteListener);
         btnSpades.setOnClickListener(suiteListener);
     }
+
+    @Override
+    protected void onDestroy() {
+        mGameRef.removeEventListener(gameUpdateListener);
+        super.onDestroy();
+    }
+
+    private final ValueEventListener gameUpdateListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            Game game = snapshot.getValue(Game.class);
+            updateStateFromGame(game);
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+        }
+    };
 
     @SuppressLint("NotifyDataSetChanged")
     private void updateStateFromGame(Game game) {
