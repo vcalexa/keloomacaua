@@ -24,9 +24,9 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     private final List<Integer> ownCards;
     private final Context context;
     private static ItemClickListener clickListener;
-    private DatabaseReference gameReference;
+    private final DatabaseReference gameReference;
 
-    public MyCardDisplayAdapter(Context context, boolean isPlayerOne, DatabaseReference firebaseReference) {
+    public MyCardDisplayAdapter(Context context, DatabaseReference firebaseReference) {
         super();
         this.context = context;
         this.ownCards = new ArrayList<>();
@@ -47,7 +47,6 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
                 .inflate(R.layout.item_image, viewGroup, false);
         return new ViewHolder(v);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
@@ -70,7 +69,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
                         Toast.LENGTH_SHORT).show();
             }
 
-            if(cardMoves.isGameOver()){
+            if (cardMoves.isGameOver()) {
                 Toast.makeText(context, "GAME OVER!!", Toast.LENGTH_LONG);
             }
 

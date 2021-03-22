@@ -11,7 +11,11 @@ public class CardUtils implements Serializable {
     private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
 
     public static String getImageViewName(int n) {
-        return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
+        if (n < 0) {
+            return "card_back";
+        } else {
+            return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
+        }
     }
 
     public static HashMap<Integer, List<String>> cardMap() {

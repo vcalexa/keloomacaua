@@ -17,8 +17,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.adaptors.MyJoinGameAdapter;
-import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.Game;
+import com.sound.keloomacaua.game.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.gameList);
 
-        myJoinGameAdapter = new MyJoinGameAdapter(mdataRef);
+        myJoinGameAdapter = new MyJoinGameAdapter();
         recyclerView.setAdapter(myJoinGameAdapter);
 
         mdataRef.child("games").addValueEventListener(new ValueEventListener() {
@@ -67,13 +67,9 @@ public class CreateOrJoinActivity extends AppCompatActivity {
 
 
         createGame.setOnClickListener(view -> {
-
-            CardMoves cardMoves = CardMoves.getInstance();
-            cardMoves.createNewGame();
-
-            Game game = cardMoves.getGame();
-            game.setPlayer1Joined(user.getDisplayName());
-            game.setPlayer2Joined("waiting...");
+            Game game = new Game();
+            Player player = new Player(user.getUid(), user.getDisplayName());
+            game.getPlayers().add(player);
 
             mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 

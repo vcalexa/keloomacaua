@@ -14,4 +14,7 @@
     <string name="my_hand">my hand</string>
     <string name="top_card">top card</string>
     <string name="oponent_deck">oponent deck</string>
+    <string name="waiting_for_player">waiting...</string>
+    <string name="waiting_for_other_player">Asteapta alt jucator</string>
+    <string name="opponent_cards_count">Mai are %d carti.</string>
 </resources>
