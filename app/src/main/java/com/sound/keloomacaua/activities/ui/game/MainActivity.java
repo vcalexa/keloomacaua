@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         btnHearts = findViewById(R.id.switch_to_hearts);
         btnSpades = findViewById(R.id.switch_to_spades);
         imgSuiteOverride = findViewById(R.id.suite_override);
+        btnDone = findViewById(R.id.btn_done);
+        imgTopCard = findViewById(R.id.img_top_card);
+        cardsInHand = findViewById(R.id.cards_in_hand);
+        btnPickCards = findViewById(R.id.btn_take_cards);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -74,24 +78,18 @@ public class MainActivity extends AppCompatActivity {
         mGameRef = FirebaseDatabase.getInstance().getReference().child("games").child(String.valueOf(game.getGameId()));
         mGameRef.setValue(game);
 
-        imgTopCard = findViewById(R.id.img_top_card);
-
-        cardsInHand = findViewById(R.id.cards_in_hand);
         bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), mGameRef);
         cardsInHand.setAdapter(bottomCardsAdaptor);
 
         cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
 
-        btnPickCards = findViewById(R.id.btn_take_cards);
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
         btnPickCards.setOnClickListener(view -> {
             cardMoves.pickCards(1);
-            cardMoves.changeTurn();
             mGameRef.setValue(cardMoves.getGame());
         });
 
-        btnDone = findViewById(R.id.btn_done);
         btnDone.setOnClickListener(view -> {
             cardMoves.changeTurn();
             mGameRef.setValue(cardMoves.getGame());
@@ -110,6 +108,28 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
+        View.OnClickListener suiteListener = view -> {
+            String suite = "";
+            int id = view.getId();
+            if (id == R.id.switch_to_clubs) {
+                suite = "clubs";
+            } else if (id == R.id.switch_to_diamonds) {
+                suite = "diamonds";
+            } else if (id == R.id.switch_to_hearts) {
+                suite = "hearts";
+            } else if (id == R.id.switch_to_spades) {
+                suite = "spades";
+            } else {
+                return;
+            }
+            cardMoves.changeSuite(suite);
+            mGameRef.setValue(cardMoves.getGame());
+        };
+        btnClubs.setOnClickListener(suiteListener);
+        btnDiamonds.setOnClickListener(suiteListener);
+        btnHearts.setOnClickListener(suiteListener);
+        btnSpades.setOnClickListener(suiteListener);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -123,6 +143,24 @@ public class MainActivity extends AppCompatActivity {
         boolean enableButtons = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
         btnPickCards.setEnabled(enableButtons);
         btnDone.setEnabled(enableButtons);
+
+        boolean pickSuiteActive = game.playerPicksSuite == cardMoves.getPlayer();
+        int pickSuiteVisibility = pickSuiteActive ? View.VISIBLE : View.INVISIBLE;
+        btnClubs.setVisibility(pickSuiteVisibility);
+        btnDiamonds.setVisibility(pickSuiteVisibility);
+        btnHearts.setVisibility(pickSuiteVisibility);
+        btnSpades.setVisibility(pickSuiteVisibility);
+        if (pickSuiteActive) {
+            btnDone.setEnabled(false);
+        }
+
+        if (game.suiteOverride.isEmpty()) {
+            imgSuiteOverride.setVisibility(View.INVISIBLE);
+        } else {
+            imgSuiteOverride.setVisibility(View.VISIBLE);
+            int suiteImageId = getResources().getIdentifier(game.suiteOverride, "drawable", getPackageName());
+            imgSuiteOverride.setImageResource(suiteImageId);
+        }
 
         // top of pile
         String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.getTopCard());

@@ -121,6 +121,7 @@
         android:layout_width="@dimen/actionButtonWidth"
         android:layout_height="@dimen/actionButtonWidth"
         android:layout_marginStart="4dp"
+        android:visibility="invisible"
         android:padding="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="8dp"

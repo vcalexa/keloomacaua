@@ -1,6 +1,7 @@
 package com.sound.keloomacaua.game;
 
 import static com.sound.keloomacaua.game.CardUtils.getCardRank;
+import static com.sound.keloomacaua.game.CardUtils.getCardSuite;
 import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
 import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 
@@ -69,6 +70,16 @@ public class CardMoves implements Serializable {
 
         Player player = game.getPlayers().get(this.player);
         int card = player.getCards().get(cardIndex);
+
+        //suite override
+        if (getCardRank(card).equals("ace")) {
+            game.playerPicksSuite = this.player;
+        }
+        if (!game.suiteOverride.isEmpty()) {
+            //reset override when card is played
+            game.suiteOverride = "";
+        }
+
         game.getPlayedCards().add(card);
         if (player.getCards().size() == 1) {
             // do nothing for now
@@ -84,6 +95,7 @@ public class CardMoves implements Serializable {
             ensureEnoughSpareCards();
             player.getCards().add(removeLast(game.getDeckRemainingCards()));
         }
+        changeTurn();
     }
 
     public List<Integer> localPlayerCards() {
@@ -108,18 +120,27 @@ public class CardMoves implements Serializable {
         if (shouldSkipTurn(getTopCard())) setSkipTurnDone(true);
     }
 
+    public void changeSuite(String suite) {
+        game.suiteOverride = suite;
+        game.playerPicksSuite = -1;
+        changeTurn();
+    }
+
+    static final List<String> specialCards = Arrays.asList("ace", "joker");
+
     public boolean isMovePossible(int cardNumber) {
         boolean canMove = false;
 
-        String[] specialCards = {"ace", "joker"};
         int topCard = getTopCard();
+
+        boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, cardNumber))
+                || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(cardNumber)));
+        boolean correctRank = hasSameRank(topCard, cardNumber);
+        boolean isSpecial = specialCards.contains(getCardRank(cardNumber)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
 
         if (shouldSkipTurn(topCard)) {
             canMove = false;
-        } else if (hasSameRank(topCard, cardNumber) ||
-                hasSameSuite(topCard, cardNumber) ||
-                Arrays.asList(specialCards).contains(getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(getCardRank(topCard))) {
+        } else if (correctRank || correctSuite || isSpecial) {
             canMove = true;
         }
 
@@ -203,5 +224,9 @@ public class CardMoves implements Serializable {
 
     public void setPlayer(int player) {
         this.player = player;
+    }
+
+    public int getPlayer() {
+        return this.player;
     }
 }
