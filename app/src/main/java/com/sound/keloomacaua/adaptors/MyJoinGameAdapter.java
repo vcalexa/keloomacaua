@@ -36,8 +36,8 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
 
     public void setCreatedGames(List<Game> createdGames) {
         List<Game> filteredGames = createdGames.stream().filter(
-                game -> (game.getState() == GameState.Waiting)
-                        || (game.findPlayer(this.userId) != -1)
+                game -> (game.getState() == GameState.Started && game.findPlayer(this.userId) != -1)
+                        || (game.getState() == GameState.Waiting)
         ).collect(Collectors.toList());
         this.createdGames.clear();
         this.createdGames.addAll(filteredGames);
@@ -73,7 +73,7 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
                 game.getPlayers().add(player);
             }
             //only join games that allow this user
-            if (game.findPlayer(userId) != -1) {
+            if (game.getState() != GameState.Finished && game.findPlayer(userId) != -1) {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
                 intent.putExtra("game", game);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
