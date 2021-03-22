@@ -31,24 +31,28 @@ public class CreateOrJoinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createorjoin);
-        DatabaseReference mdataRef;
-        mdataRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference dataRef = FirebaseDatabase.getInstance().getReference();
 
         Button createGame = findViewById(R.id.createNewGame);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId;
+        String username;
         if (user == null) {
             // user is signed out, go back to sign-in form
             finish();
             return;
+        } else {
+            userId = user.getUid();
+            username = user.getDisplayName() != null ? user.getDisplayName() : "waiting ...";
         }
 
         recyclerView = findViewById(R.id.gameList);
 
-        myJoinGameAdapter = new MyJoinGameAdapter();
+        myJoinGameAdapter = new MyJoinGameAdapter(userId, username);
         recyclerView.setAdapter(myJoinGameAdapter);
 
-        mdataRef.child("games").addValueEventListener(new ValueEventListener() {
+        dataRef.child("games").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Game> gameList = new ArrayList<>();
@@ -68,10 +72,8 @@ public class CreateOrJoinActivity extends AppCompatActivity {
 
         createGame.setOnClickListener(view -> {
             Game game = new Game();
-            Player player = new Player(user.getUid(), user.getDisplayName());
+            Player player = new Player(userId, username);
             game.getPlayers().add(player);
-
-            mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
 
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.putExtra("game", game);

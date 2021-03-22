@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
-        currentPlayerIndex = game.hasPlayer(user.getUid());
+        currentPlayerIndex = game.findPlayer(user.getUid());
 
         CardMoves cardMoves = CardMoves.getInstance();
         cardMoves.setGame(game);
@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     private void updateStateFromGame(Game game) {
         CardMoves cardMoves = CardMoves.getInstance();
-        CardUtils cardUtils = cardMoves.getCardUtils();
 
         //firebase becomes single source of truth
         cardMoves.setGame(game);
@@ -117,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         gataTura.setEnabled(enableButtons);
 
         // top of pile
-        String imageTitleFromHand = cardUtils.getImageViewName(cardMoves.getTopCard());
+        String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.getTopCard());
         int clickedImageId = getResources().getIdentifier(imageTitleFromHand, "drawable", getPackageName());
         tableCard.setImageResource(clickedImageId);
 

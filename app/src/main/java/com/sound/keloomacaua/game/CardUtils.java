@@ -7,8 +7,8 @@ import java.util.List;
 
 public class CardUtils implements Serializable {
 
-    private static String[] suits = {"hearts", "spades", "diamonds", "clubs"};
-    private static String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
+    private static final String[] suits = {"hearts", "spades", "diamonds", "clubs"};
+    private static final String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
 
     public static String getImageViewName(int n) {
         if (n < 0) {

@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.activities.ui.game.MainActivity;
 import com.sound.keloomacaua.game.Game;
@@ -22,18 +20,27 @@ import com.sound.keloomacaua.game.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.ViewHolder> {
     private final List<Game> createdGames;
+    private final String userId;
+    private final String localUsername;
 
-    public MyJoinGameAdapter() {
+    public MyJoinGameAdapter(String localUserId, String localUsername) {
         super();
         this.createdGames = new ArrayList<>();
+        this.userId = localUserId != null ? localUserId : "unknown";
+        this.localUsername = localUsername != null ? localUsername : "no name";
     }
 
     public void setCreatedGames(List<Game> createdGames) {
+        List<Game> filteredGames = createdGames.stream().filter(
+                game -> (game.getState() == GameState.Waiting)
+                        || (game.findPlayer(this.userId) != -1)
+        ).collect(Collectors.toList());
         this.createdGames.clear();
-        this.createdGames.addAll(createdGames);
+        this.createdGames.addAll(filteredGames);
         notifyDataSetChanged();
     }
 
@@ -60,21 +67,13 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
         }
 
         viewHolder.gameView.setOnClickListener(view -> {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user == null) {
-                // FIXME: should not be able to get here without user
-                return;
-            }
-            String userId = user.getUid();
-            String username = user.getDisplayName();
-            username = username != null ? username : "no name";
-            if (game.getState() == GameState.Waiting && game.hasPlayer(userId) == -1) {
+            if (game.getState() == GameState.Waiting && game.findPlayer(userId) == -1) {
                 //create second player
-                Player player = new Player(userId, username);
+                Player player = new Player(userId, this.localUsername);
                 game.getPlayers().add(player);
             }
             //only join games that allow this user
-            if (game.hasPlayer(userId) != -1) {
+            if (game.findPlayer(userId) != -1) {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
                 intent.putExtra("game", game);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
