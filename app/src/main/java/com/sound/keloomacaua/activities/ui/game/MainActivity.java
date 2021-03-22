@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
-        currentPlayerIndex = game.hasPlayer(user.getUid());
+        currentPlayerIndex = game.findPlayer(user.getUid());
 
         CardMoves cardMoves = CardMoves.getInstance();
         cardMoves.setGame(game);

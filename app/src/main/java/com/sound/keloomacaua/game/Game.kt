@@ -12,7 +12,7 @@ class Game : Serializable {
 
     var state: GameState = GameState.Waiting
 
-    fun hasPlayer(playerId: String): Int {
+    fun findPlayer(playerId: String): Int {
         players.forEachIndexed { index, player ->
             if (player.id == playerId) {
                 return index
