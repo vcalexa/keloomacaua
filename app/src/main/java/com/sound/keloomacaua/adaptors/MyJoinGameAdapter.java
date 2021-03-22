@@ -5,8 +5,8 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -14,21 +14,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.activities.ui.game.MainActivity;
 import com.sound.keloomacaua.game.Game;
+import com.sound.keloomacaua.game.GameState;
+import com.sound.keloomacaua.game.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.ViewHolder> {
     private final List<Game> createdGames;
-    private final DatabaseReference mdataRef;
 
-    public MyJoinGameAdapter(DatabaseReference gameDatabase) {
+    public MyJoinGameAdapter() {
         super();
-        this.mdataRef = gameDatabase;
         this.createdGames = new ArrayList<>();
     }
 
@@ -50,31 +49,39 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int gameIndex) {
         Game game = createdGames.get(gameIndex);
+        viewHolder.gameState.setText(String.valueOf(game.getState().toString()));
+        if (game.getPlayers().size() > 0) {
+            viewHolder.player1Name.setText(game.getPlayers().get(0).getName());
+        }
+        if (game.getPlayers().size() > 1) {
+            viewHolder.player2Name.setText(game.getPlayers().get(1).getName());
+        } else {
+            viewHolder.player2Name.setText(R.string.waiting_for_player);
+        }
 
-        viewHolder.gameId.setText(String.valueOf(game.getGameId()));
-        viewHolder.player1Name.setText(game.getPlayer1Joined());
-        viewHolder.player2Name.setText(game.getPlayer2Joined());
-
-        viewHolder.player1Name.setOnClickListener(view -> {
+        viewHolder.gameView.setOnClickListener(view -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            game.setPlayer1Joined(user.getDisplayName());
-            mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
-            Intent intent = new Intent(view.getContext(), MainActivity.class);
-            intent.putExtra("game", game);
-            intent.putExtra("joinedFromListPlayer1", true);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            view.getContext().startActivity(intent);
-        });
-
-        viewHolder.player2Name.setOnClickListener(view -> {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            game.setPlayer2Joined(user.getDisplayName());
-            mdataRef.child("games").child(String.valueOf(game.getGameId())).setValue(game);
-            Intent intent = new Intent(view.getContext(), MainActivity.class);
-            intent.putExtra("game", game);
-            intent.putExtra("joinedFromListPlayer2", true);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            view.getContext().startActivity(intent);
+            if (user == null) {
+                // FIXME: should not be able to get here without user
+                return;
+            }
+            String userId = user.getUid();
+            String username = user.getDisplayName();
+            username = username != null ? username : "no name";
+            if (game.getState() == GameState.Waiting && game.hasPlayer(userId) == -1) {
+                //create second player
+                Player player = new Player(userId, username);
+                game.getPlayers().add(player);
+            }
+            //only join games that allow this user
+            if (game.hasPlayer(userId) != -1) {
+                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                intent.putExtra("game", game);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                view.getContext().startActivity(intent);
+            } else {
+                Toast.makeText(view.getContext(), "You're not allowed to join this game", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -84,15 +91,17 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView gameId;
-        Button player1Name;
-        Button player2Name;
+        TextView gameState;
+        TextView player1Name;
+        TextView player2Name;
+        View gameView;
 
         ViewHolder(View itemView) {
             super(itemView);
-            gameId = itemView.findViewById(R.id.gameId);
+            gameState = itemView.findViewById(R.id.gameState);
             player1Name = itemView.findViewById(R.id.player1Name);
             player2Name = itemView.findViewById(R.id.player2Name);
+            gameView = itemView.findViewById(R.id.lobbyItem);
         }
     }
 }

@@ -1,27 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lobbyItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <TextView
-        android:id="@+id/gameId"
+        android:id="@+id/gameState"
         android:layout_width="73dp"
         android:layout_height="wrap_content"
-        android:text="GameId"
-        android:layout_margin="2dp"/>
+        android:layout_gravity="center_vertical"
+        android:layout_margin="2dp"
+        tools:text="GameState" />
 
-    <Button
-        android:id="@+id/player1Name"
-        android:layout_width="150dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Player1Name"
-        android:layout_margin="2dp"/>
+        android:layout_margin="4dp"
+        android:layout_weight="0.3"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
-    <Button
-        android:id="@+id/player2Name"
-        android:layout_width="150dp"
+        <TextView
+            android:id="@+id/player1Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            tools:text="Player1" />
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Player1Name"
-        android:layout_margin="2dp"/>
+        android:layout_margin="4dp"
+        android:layout_weight="0.3"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <TextView
+            android:id="@+id/player2Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            tools:text="Player2" />
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

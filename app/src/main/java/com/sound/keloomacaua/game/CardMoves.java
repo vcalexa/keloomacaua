@@ -1,9 +1,6 @@
 package com.sound.keloomacaua.game;
 
-import android.widget.Toast;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +11,7 @@ import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 
 // FIXME: this assumes there are only 2 players
 public class CardMoves implements Serializable {
+    private static final int CARDS_PER_PLAYER = 5;
     private final CardUtils cardUtils = new CardUtils();
     private Game game;
 
@@ -61,10 +59,8 @@ public class CardMoves implements Serializable {
     }
 
     public void deal() {
-        game.setPlayer1Cards(new ArrayList<>());
-        game.setPlayer2Cards(new ArrayList<>());
-        game.setDeckRemainingCards(new ArrayList<>());
-        game.setPlayedCards(new ArrayList<>());
+        game.getDeckRemainingCards().clear();
+        game.getPlayedCards().clear();
         game.setPlayersTurn(1);
 
         //Create list of all integers from 1 to 54 = number of all cards and randomize their order
@@ -73,113 +69,80 @@ public class CardMoves implements Serializable {
         }
         Collections.shuffle(game.getDeckRemainingCards());
 
-        //Add cards to players an remove from deck
-        for (int i = 53; i >= 49; i--) {
-            game.getPlayer1Cards().add(game.getDeckRemainingCards().get(i));
-            game.getPlayer2Cards().add(game.getDeckRemainingCards().get(i - 5));
+        for (int i = 0; i < CARDS_PER_PLAYER; i++) {
+            List<Player> players = game.getPlayers();
+            players.forEach(player -> {
+                player.getCards().add(removeLast(game.getDeckRemainingCards()));
+            });
         }
-
-        game.getDeckRemainingCards().subList(44, 54).clear();
 
         //Play first card and remove from deck
-        game.getPlayedCards().add(game.getDeckRemainingCards().get(game.getDeckRemainingCards().size() - 1));
-        game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
+        game.getPlayedCards().add(removeLast(game.getDeckRemainingCards()));
     }
 
-
-    public void player1Move(int index) {
+    public void playCard(int cardIndex) {
         if (!isSkipTurnDone()) {
             setSkipTurnDone(true);
             changeTurn();
         }
 
-        if (getCardRank(index).equals("four")) {
-            setSkipTurnDone(false);
-            System.out.println("Card 4 was played!!!");
-        }
-
-        game.getPlayedCards().add(game.getPlayer1Cards().get(index));
-        if (game.getPlayer1Cards().size() == 1) {
-            // do nothing for now
-        } else {
-            game.getPlayer1Cards().remove(index);
-        }
-    }
-
-    public void player2Move(int index) {
-        if (!isSkipTurnDone()) {
-            setSkipTurnDone(true);
-            changeTurn();
-        }
-
-        if (getCardRank(index).equals("four")) {
+        if (getCardRank(cardIndex).equals("four")) {
             setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
             changeTurn();
         }
 
-        game.getPlayedCards().add(game.getPlayer2Cards().get(index));
-        if (game.getPlayer2Cards().size() == 1) {
+        Player player = game.getPlayers().get(this.player);
+        int card = player.getCards().get(cardIndex);
+        game.getPlayedCards().add(card);
+        if (player.getCards().size() == 1) {
             // do nothing for now
         } else {
-            game.getPlayer2Cards().remove(index);
+            player.getCards().remove(cardIndex);
         }
     }
 
-    public void player1Takes(Integer numberOfCards) {
-        if (!game.getDeckRemainingCards().isEmpty()) {
-            for (int i = 0; i < numberOfCards; i++) {
-                game.getPlayer1Cards().add(getLast(game.getDeckRemainingCards()));
-                game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
-            }
+    public void pickCards(int numberOfCards) {
+        Player player = game.getPlayers().get(this.player);
+
+        for (int i = 0; i < numberOfCards; i++) {
+            ensureEnoughSpareCards();
+            player.getCards().add(removeLast(game.getDeckRemainingCards()));
         }
-
-        turnPlayerCardsOver();
-    }
-
-    public void player2Takes(Integer numberOfCards) {
-        if (!game.getDeckRemainingCards().isEmpty()) {
-            for (int i = 0; i < numberOfCards; i++) {
-                game.getPlayer2Cards().add(getLast(game.getDeckRemainingCards()));
-                game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
-            }
-        }
-
-        turnPlayerCardsOver();
     }
 
     public List<Integer> localPlayerCards() {
-        if (player == 1) {
-            return game.getPlayer1Cards();
-        } else {
-            return game.getPlayer2Cards();
-        }
+        Player player = game.getPlayers().get(this.player);
+        return player.getCards();
     }
 
     public boolean isGameOver() {
-        boolean gameOver = ((game.getPlayer1Cards().size() == 0) || (game.getPlayer2Cards().size() == 0)) ? true : false;
-        return gameOver;
+        for (Player value : game.getPlayers()) {
+            if (value.getCards().size() == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void changeTurn() {
-        game.setPlayersTurn(3 - game.getPlayersTurn());
-        //if (!skipTurnDone) setSkipTurnDone(true);
+        int numPlayers = game.getPlayers().size();
+        int currentPlayer = game.getPlayersTurn();
+        int nextPlayer = (currentPlayer + 1) % numPlayers;
+        game.setPlayersTurn(nextPlayer);
     }
 
     public boolean isMovePossible(int cardNumber) {
         boolean canMove = false;
 
         String[] specialCards = {"ace", "joker"};
-        int topCard = getLast();
+        int topCard = getTopCard();
 
-        if (isSkipTurn(cardNumber, topCard)) {
-            // canMove = false;
-            //changeTurn();
-        } else if ((hasSameRank(topCard, cardNumber) ||
-                hasSameSuite(topCard, cardNumber) ||
-                Arrays.asList(specialCards).contains(getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(getCardRank(topCard)))
-        ) {
+        if ((cardUtils.hasSameRank(topCard, cardNumber) ||
+                cardUtils.hasSameSuite(topCard, cardNumber) ||
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
+                Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) &&
+                !isSkipTurn(cardNumber, topCard)) {
             canMove = true;
         }
 
@@ -188,10 +151,9 @@ public class CardMoves implements Serializable {
 
     private boolean isSkipTurn(int cardNumber, int topCard) {
         boolean skip = false;
-        if ((getCardRank(topCard).equals("four")) && (!getCardRank(cardNumber).equals("four") && !isSkipTurnDone())) {
-            System.out.println("STAI O TURA");
+        if ((cardUtils.getCardRank(topCard).equals("four")) && (!cardUtils.getCardRank(cardNumber).equals("four") && skipTurnDone == false)) {
             skip = true;
-
+            skipTurnDone = true;
         }
         return skip;
     }
@@ -199,42 +161,51 @@ public class CardMoves implements Serializable {
 
     public boolean hasMoved(int position) {
         if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
-            if (player == 1) {
-                player1Move(position);
-            } else {
-                player2Move(position);
-            }
+            playCard(position);
             return true;
         } else {
             return false;
         }
     }
 
-    private void turnPlayerCardsOver() {
+    private void ensureEnoughSpareCards() {
         if (game.getDeckRemainingCards().isEmpty()) {
-            int lastCard = getLast();
+            int lastCard = removeLast(game.getPlayedCards());
 
-            game.setDeckRemainingCards(new ArrayList<>(game.getPlayedCards()));
-            game.getDeckRemainingCards().remove(game.getDeckRemainingCards().size() - 1);
-
-            game.setPlayedCards(new ArrayList<>());
-            game.getPlayedCards().add(lastCard);
+            game.getDeckRemainingCards().addAll(game.getPlayedCards());
             Collections.shuffle(game.getDeckRemainingCards());
+
+            game.getPlayedCards().clear();
+            game.getPlayedCards().add(lastCard);
         }
     }
 
+    // FIXME: assumes there are only 2 players
     public int getOpponentCardsCount() {
-        if (getPlayerTurn() == 1)
-            return game.getPlayer1Cards().size();
-        else return game.getPlayer2Cards().size();
+        if (game.getPlayers().size() < 2) {
+            return -1;
+        }
+        int otherPlayerIndex = (game.getPlayers().size() - player - 1);
+        return game.getPlayers().get(otherPlayerIndex).getCards().size();
     }
 
-    private int getLast(List<Integer> list) {
+    public int getTopCard() {
+        Integer lastCard = peekLast(game.getPlayedCards());
+        return lastCard != null ? lastCard : -1;
+    }
+
+    private <T> T peekLast(List<T> list) {
+        if (list.isEmpty()) {
+            return null;
+        }
         return list.get(list.size() - 1);
     }
 
-    public int getLast() {
-        return getLast(game.getPlayedCards());
+    private <T> T removeLast(List<T> list) {
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.remove(list.size() - 1);
     }
 
     private int getPlayerTurn() {

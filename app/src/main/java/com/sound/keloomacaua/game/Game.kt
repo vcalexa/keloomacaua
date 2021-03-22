@@ -4,12 +4,26 @@ import java.io.Serializable
 
 class Game : Serializable {
     var gameId: Long = System.currentTimeMillis()
-    var player1Joined: String? = null
-    var player2Joined: String? = null
+    var players: MutableList<Player> = mutableListOf()
     var playersTurn = 0
-    var player1Cards: List<Int>? = null
-    var player2Cards: List<Int>? = null
-    var deckRemainingCards: List<Int>? = null
-    var playedCards: List<Int>? = null
+    var deckRemainingCards: MutableList<Int> = mutableListOf()
+    var playedCards: MutableList<Int> = mutableListOf()
     var whoWon = -1
+
+    var state: GameState = GameState.Waiting
+
+    fun hasPlayer(playerId: String): Int {
+        players.forEachIndexed { index, player ->
+            if (player.id == playerId) {
+                return index
+            }
+        }
+        return -1;
+    }
+}
+
+enum class GameState : Serializable {
+    Waiting,
+    Started,
+    Finished,
 }

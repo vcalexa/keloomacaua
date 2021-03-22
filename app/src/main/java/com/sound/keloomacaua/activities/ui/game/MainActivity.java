@@ -1,10 +1,7 @@
 package com.sound.keloomacaua.activities.ui.game;
 
-import static java.lang.String.format;
-
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +23,7 @@ import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
 import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.game.Game;
+import com.sound.keloomacaua.game.GameState;
 
 import java.util.List;
 
@@ -41,10 +39,7 @@ public class MainActivity extends AppCompatActivity {
     public Button iaCarteButton;
     public Button gataTura;
     public TextView leftOverCards;
-
-    public boolean isPlayerOne;
-    public boolean isPlayerTwo;
-
+    int currentPlayerIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,64 +47,45 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
-        boolean joinFromListPlayer1 = getIntent().getBooleanExtra("joinedFromListPlayer1", false);
-        boolean joinFromListPlayer2 = getIntent().getBooleanExtra("joinedFromListPlayer2", false);
 
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
+        currentPlayerIndex = game.hasPlayer(user.getUid());
+
         CardMoves cardMoves = CardMoves.getInstance();
-
-        mGameRef = FirebaseDatabase.getInstance().getReference()
-                .child("games").child(String.valueOf(game.getGameId()));
-
-        if (joinFromListPlayer1) {
-            game.setPlayer1Joined(user.getDisplayName());
-        }
-        if (joinFromListPlayer2) {
-            game.setPlayer2Joined(user.getDisplayName());
-        }
-
-        if (game.getPlayer1Joined().equals(user.getDisplayName())) {
-            isPlayerOne = true;
-        }
-
-        if (game.getPlayer2Joined().equals(user.getDisplayName())) {
-            isPlayerTwo = true;
-        }
-
-        cardMoves.setPlayer(isPlayerOne ? 1 : 2);
         cardMoves.setGame(game);
+        cardMoves.setPlayer(currentPlayerIndex);
+        if (game.getState() == GameState.Waiting && game.getPlayers().size() > 1) {
+            game.setState(GameState.Started);
+            cardMoves.deal();
+        }
+
+        mGameRef = FirebaseDatabase.getInstance().getReference().child("games").child(String.valueOf(game.getGameId()));
+        mGameRef.setValue(game);
 
         tableCard = findViewById(R.id.tablePile);
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView = findViewById(R.id.recycleViewCards);
         recyclerView.setLayoutManager(layoutManager);
-        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), isPlayerOne, mGameRef);
+        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), mGameRef);
         recyclerView.setAdapter(bottomCardsAdaptor);
 
         recyclerView.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
 
         iaCarteButton = findViewById(R.id.iaCarteId);
         leftOverCards = findViewById(R.id.leftOverTextView);
-        leftOverCards.setText(format("Mai are %s carti.", cardMoves.getOpponentCardsCount()));
+
         iaCarteButton.setOnClickListener(view -> {
-            if (isPlayerOne) {
-                cardMoves.player1Takes(1);
-            } else {
-                cardMoves.player2Takes(1);
-            }
+            cardMoves.pickCards(1);
             cardMoves.changeTurn();
             mGameRef.setValue(cardMoves.getGame());
         });
 
         gataTura = findViewById(R.id.gataTura);
-        gataTura.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cardMoves.changeTurn();
-                mGameRef.setValue(cardMoves.getGame());
-            }
+        gataTura.setOnClickListener(view -> {
+            cardMoves.changeTurn();
+            mGameRef.setValue(cardMoves.getGame());
         });
 
         mGameRef.setValue(game);
@@ -136,13 +112,12 @@ public class MainActivity extends AppCompatActivity {
         cardMoves.setGame(game);
 
         // buttons
-        int turn = game.getPlayersTurn();
-        boolean enableButtons = (isPlayerOne && turn == 1) || (!isPlayerOne && turn == 2);
+        boolean enableButtons = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
         iaCarteButton.setEnabled(enableButtons);
         gataTura.setEnabled(enableButtons);
 
         // top of pile
-        String imageTitleFromHand = cardUtils.getImageViewName(cardMoves.getLast());
+        String imageTitleFromHand = cardUtils.getImageViewName(cardMoves.getTopCard());
         int clickedImageId = getResources().getIdentifier(imageTitleFromHand, "drawable", getPackageName());
         tableCard.setImageResource(clickedImageId);
 
@@ -150,5 +125,12 @@ public class MainActivity extends AppCompatActivity {
         List<Integer> cards = cardMoves.localPlayerCards();
         bottomCardsAdaptor.setOwnCards(cards);
         recyclerView.scrollToPosition(cards.size() - 1);
+
+        int opponentCardsCount = cardMoves.getOpponentCardsCount();
+        if (opponentCardsCount >= 0) {
+            leftOverCards.setText(getString(R.string.opponent_cards_count, opponentCardsCount));
+        } else {
+            leftOverCards.setText(R.string.waiting_for_other_player);
+        }
     }
 }
