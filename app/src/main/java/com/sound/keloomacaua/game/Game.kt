@@ -8,6 +8,10 @@ class Game : Serializable {
 
     @JvmField
     var playerPicksSuite: Int = -1
+
+    @JvmField
+    var moveStarted: Boolean = false
+
     var gameId: Long = System.currentTimeMillis()
     var players: MutableList<Player> = mutableListOf()
     var playersTurn = 0
