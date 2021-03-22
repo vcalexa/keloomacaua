@@ -3,6 +3,11 @@ package com.sound.keloomacaua.game
 import java.io.Serializable
 
 class Game : Serializable {
+    @JvmField
+    var suiteOverride: String = ""
+
+    @JvmField
+    var playerPicksSuite: Int = -1
     var gameId: Long = System.currentTimeMillis()
     var players: MutableList<Player> = mutableListOf()
     var playersTurn = 0

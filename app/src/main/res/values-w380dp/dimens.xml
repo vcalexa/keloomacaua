@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cardWidth">160dp</dimen>
+    <dimen name="smallCardWidth">96dp</dimen>
+    <dimen name="actionButtonWidth">72dp</dimen>
+</resources>
