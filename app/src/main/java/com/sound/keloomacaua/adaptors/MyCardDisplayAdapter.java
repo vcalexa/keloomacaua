@@ -51,15 +51,14 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         CardMoves cardMoves = CardMoves.getInstance();
-        CardUtils cardUtils = cardMoves.getCardUtils();
-        String imageTitle = cardUtils.getImageViewName(ownCards.get(i));
+        String imageTitle = CardUtils.getImageViewName(ownCards.get(i));
 
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
 
         viewHolder.setClickListener((view, position, isLongClick) -> {
-            String imageTitleFromHand = cardUtils.getImageViewName(ownCards.get(position));
+            String imageTitleFromHand = CardUtils.getImageViewName(ownCards.get(position));
             if (cardMoves.hasMoved(position)) {
                 Toast.makeText(context, "Played:" + position + " - " + imageTitleFromHand,
                         Toast.LENGTH_SHORT).show();
@@ -70,7 +69,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
             }
 
             if (cardMoves.isGameOver()) {
-                Toast.makeText(context, "GAME OVER!!", Toast.LENGTH_LONG);
+                Toast.makeText(context, "GAME OVER!!", Toast.LENGTH_LONG).show();
             }
 
         });

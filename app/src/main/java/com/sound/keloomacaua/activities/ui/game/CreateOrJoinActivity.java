@@ -44,7 +44,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
             return;
         } else {
             userId = user.getUid();
-            username = user.getDisplayName();
+            username = user.getDisplayName() != null ? user.getDisplayName() : "waiting ...";
         }
 
         recyclerView = findViewById(R.id.gameList);

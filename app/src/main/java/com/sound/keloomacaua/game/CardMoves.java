@@ -1,18 +1,17 @@
 package com.sound.keloomacaua.game;
 
+import static com.sound.keloomacaua.game.CardUtils.getCardRank;
+import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
+import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.sound.keloomacaua.game.CardUtils.getCardRank;
-import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
-import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
-
 // FIXME: this assumes there are only 2 players
 public class CardMoves implements Serializable {
     private static final int CARDS_PER_PLAYER = 5;
-    private final CardUtils cardUtils = new CardUtils();
     private Game game;
 
     private static CardMoves single_instance = null;
@@ -31,31 +30,11 @@ public class CardMoves implements Serializable {
         game = new Game();
     }
 
-    private CardMoves(boolean toJoin) {
-
-    }
-
-    public void createNewGame() {
-        this.game = new Game();
-        this.deal();
-    }
-
     public static CardMoves getInstance() {
         if (single_instance == null)
             single_instance = new CardMoves();
 
         return single_instance;
-    }
-
-    public static CardMoves getEmptyInstance() {
-        if (single_instance == null)
-            single_instance = new CardMoves(true);
-
-        return single_instance;
-    }
-
-    public CardUtils getCardUtils() {
-        return single_instance.cardUtils;
     }
 
     public void deal() {
@@ -71,9 +50,7 @@ public class CardMoves implements Serializable {
 
         for (int i = 0; i < CARDS_PER_PLAYER; i++) {
             List<Player> players = game.getPlayers();
-            players.forEach(player -> {
-                player.getCards().add(removeLast(game.getDeckRemainingCards()));
-            });
+            players.forEach(player -> player.getCards().add(removeLast(game.getDeckRemainingCards())));
         }
 
         //Play first card and remove from deck
@@ -138,10 +115,10 @@ public class CardMoves implements Serializable {
         String[] specialCards = {"ace", "joker"};
         int topCard = getTopCard();
 
-        if ((cardUtils.hasSameRank(topCard, cardNumber) ||
-                cardUtils.hasSameSuite(topCard, cardNumber) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(cardUtils.getCardRank(topCard))) &&
+        if ((hasSameRank(topCard, cardNumber) ||
+                hasSameSuite(topCard, cardNumber) ||
+                Arrays.asList(specialCards).contains(getCardRank(cardNumber)) ||
+                Arrays.asList(specialCards).contains(getCardRank(topCard))) &&
                 !isSkipTurn(cardNumber, topCard)) {
             canMove = true;
         }
@@ -151,7 +128,7 @@ public class CardMoves implements Serializable {
 
     private boolean isSkipTurn(int cardNumber, int topCard) {
         boolean skip = false;
-        if ((cardUtils.getCardRank(topCard).equals("four")) && (!cardUtils.getCardRank(cardNumber).equals("four") && skipTurnDone == false)) {
+        if ((getCardRank(topCard).equals("four")) && (!getCardRank(cardNumber).equals("four") && !skipTurnDone)) {
             skip = true;
             skipTurnDone = true;
         }
@@ -170,6 +147,7 @@ public class CardMoves implements Serializable {
 
     private void ensureEnoughSpareCards() {
         if (game.getDeckRemainingCards().isEmpty()) {
+            //noinspection ConstantConditions
             int lastCard = removeLast(game.getPlayedCards());
 
             game.getDeckRemainingCards().addAll(game.getPlayedCards());

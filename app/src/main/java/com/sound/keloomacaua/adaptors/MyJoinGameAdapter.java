@@ -32,7 +32,6 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
         this.createdGames = new ArrayList<>();
         this.userId = localUserId != null ? localUserId : "unknown";
         this.localUsername = localUsername != null ? localUsername : "no name";
-        ;
     }
 
     public void setCreatedGames(List<Game> createdGames) {
