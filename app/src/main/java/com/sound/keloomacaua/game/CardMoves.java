@@ -12,6 +12,8 @@ import java.util.List;
 // FIXME: this assumes there are only 2 players
 public class CardMoves implements Serializable {
     private static final int CARDS_PER_PLAYER = 5;
+    private static final String FOUR_CARD = "four";
+
     private Game game;
 
     private static CardMoves single_instance = null;
@@ -58,12 +60,8 @@ public class CardMoves implements Serializable {
     }
 
     public void playCard(int cardIndex) {
-        if (!isSkipTurnDone()) {
-            setSkipTurnDone(true);
-            changeTurn();
-        }
 
-        if (getCardRank(cardIndex).equals("four")) {
+        if (getCardRank(cardIndex).equals(FOUR_CARD)) {
             setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
             changeTurn();
@@ -107,6 +105,7 @@ public class CardMoves implements Serializable {
         int currentPlayer = game.getPlayersTurn();
         int nextPlayer = (currentPlayer + 1) % numPlayers;
         game.setPlayersTurn(nextPlayer);
+        if (shouldSkipTurn(getTopCard())) setSkipTurnDone(true);
     }
 
     public boolean isMovePossible(int cardNumber) {
@@ -115,24 +114,28 @@ public class CardMoves implements Serializable {
         String[] specialCards = {"ace", "joker"};
         int topCard = getTopCard();
 
-        if ((hasSameRank(topCard, cardNumber) ||
+        if (shouldSkipTurn(topCard)) {
+            canMove = false;
+        } else if (hasSameRank(topCard, cardNumber) ||
                 hasSameSuite(topCard, cardNumber) ||
                 Arrays.asList(specialCards).contains(getCardRank(cardNumber)) ||
-                Arrays.asList(specialCards).contains(getCardRank(topCard))) &&
-                !isSkipTurn(cardNumber, topCard)) {
+                Arrays.asList(specialCards).contains(getCardRank(topCard))) {
             canMove = true;
         }
 
         return canMove;
     }
 
-    private boolean isSkipTurn(int cardNumber, int topCard) {
+    private boolean shouldSkipTurn(int topCard) {
         boolean skip = false;
-        if ((getCardRank(topCard).equals("four")) && (!getCardRank(cardNumber).equals("four") && !skipTurnDone)) {
+        if (getCardRank(topCard).equals(FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
             skip = true;
-            skipTurnDone = true;
         }
         return skip;
+    }
+
+    private boolean hasFourCard() {
+        return Arrays.asList(localPlayerCards()).contains(FOUR_CARD);
     }
 
 
