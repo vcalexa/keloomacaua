@@ -105,7 +105,7 @@ public class CardMoves implements Serializable {
         int currentPlayer = game.getPlayersTurn();
         int nextPlayer = (currentPlayer + 1) % numPlayers;
         game.setPlayersTurn(nextPlayer);
-        if (shouldSkipTurn(getTopCard())) setSkipTurnDone(true);
+        if (!isSkipTurnDone()) setSkipTurnDone(true);
     }
 
     public boolean isMovePossible(int cardNumber) {
@@ -128,16 +128,13 @@ public class CardMoves implements Serializable {
 
     private boolean shouldSkipTurn(int topCard) {
         boolean skip = false;
-        if (getCardRank(topCard).equals(FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
+        if (getCardRank(topCard).equals(FOUR_CARD) &&
+                !localPlayerCards().contains(FOUR_CARD) &&
+                !skipTurnDone) {
             skip = true;
         }
         return skip;
     }
-
-    private boolean hasFourCard() {
-        return Arrays.asList(localPlayerCards()).contains(FOUR_CARD);
-    }
-
 
     public boolean hasMoved(int position) {
         if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
