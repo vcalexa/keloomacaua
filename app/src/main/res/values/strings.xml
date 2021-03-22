@@ -17,4 +17,9 @@
     <string name="waiting_for_player">waiting...</string>
     <string name="waiting_for_other_player">Asteapta alt jucator</string>
     <string name="opponent_cards_count">Mai are %d carti.</string>
+    <string name="opponent_hand">Opponent hand</string>
+    <string name="game_over">Game over</string>
+    <string name="txt_winner">Winner is %s with:</string>
+    <string name="txt_loser">Loser is %s with:</string>
+    <string name="ok">OK</string>
 </resources>

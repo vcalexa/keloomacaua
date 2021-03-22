@@ -1,6 +1,7 @@
 package com.sound.keloomacaua.activities.ui.game;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -147,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
         //firebase becomes single source of truth
         cardMoves.setGame(game);
 
+        if (game.getState() == GameState.Finished) {
+            startGameOverScreen();
+            return;
+        }
+
         // buttons
         boolean enableButtons = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
         btnPickCards.setEnabled(enableButtons);
@@ -190,5 +196,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             txtOpponentCardsCount.setText(R.string.waiting_for_other_player);
         }
+    }
+
+    private void startGameOverScreen() {
+        Intent intent = new Intent(this, GameOverActivity.class);
+        intent.putExtra("game", CardMoves.getInstance().getGame());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 }
