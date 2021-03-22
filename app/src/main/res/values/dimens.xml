@@ -2,6 +2,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="cardWidth">120dp</dimen>
-    <dimen name="smallCardWidth">96dp</dimen>
+    <dimen name="cardWidth">96dp</dimen>
+    <string name="cardRatio">H,2:3</string>
+    <dimen name="smallCardWidth">64dp</dimen>
+    <dimen name="actionButtonWidth">48dp</dimen>
+    <string name="smallCardRatio">H,3:5</string>
 </resources>

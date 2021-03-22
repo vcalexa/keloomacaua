@@ -2,13 +2,12 @@ package com.sound.keloomacaua.activities.ui.game;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,23 +27,35 @@ import com.sound.keloomacaua.game.GameState;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    ImageView tableCard;
     public DatabaseReference mGameRef;
     public FirebaseUser user;
 
-    RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager;
     MyCardDisplayAdapter bottomCardsAdaptor;
 
-    public Button iaCarteButton;
-    public Button gataTura;
-    public TextView leftOverCards;
+    RecyclerView cardsInHand;
+    ImageView imgTopCard;
+    TextView btnPickCards;
+    View btnDone;
+    TextView txtOpponentCardsCount;
+    View btnUndo;
+    View btnClubs;
+    View btnDiamonds;
+    View btnHearts;
+    View btnSpades;
+    ImageView imgSuiteOverride;
     int currentPlayerIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        btnUndo = findViewById(R.id.btn_undo);
+        btnClubs = findViewById(R.id.switch_to_clubs);
+        btnDiamonds = findViewById(R.id.switch_to_diamonds);
+        btnHearts = findViewById(R.id.switch_to_hearts);
+        btnSpades = findViewById(R.id.switch_to_spades);
+        imgSuiteOverride = findViewById(R.id.suite_override);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -63,27 +74,25 @@ public class MainActivity extends AppCompatActivity {
         mGameRef = FirebaseDatabase.getInstance().getReference().child("games").child(String.valueOf(game.getGameId()));
         mGameRef.setValue(game);
 
-        tableCard = findViewById(R.id.tablePile);
+        imgTopCard = findViewById(R.id.img_top_card);
 
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView = findViewById(R.id.recycleViewCards);
-        recyclerView.setLayoutManager(layoutManager);
+        cardsInHand = findViewById(R.id.cards_in_hand);
         bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), mGameRef);
-        recyclerView.setAdapter(bottomCardsAdaptor);
+        cardsInHand.setAdapter(bottomCardsAdaptor);
 
-        recyclerView.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
+        cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
 
-        iaCarteButton = findViewById(R.id.iaCarteId);
-        leftOverCards = findViewById(R.id.leftOverTextView);
+        btnPickCards = findViewById(R.id.btn_take_cards);
+        txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
-        iaCarteButton.setOnClickListener(view -> {
+        btnPickCards.setOnClickListener(view -> {
             cardMoves.pickCards(1);
             cardMoves.changeTurn();
             mGameRef.setValue(cardMoves.getGame());
         });
 
-        gataTura = findViewById(R.id.gataTura);
-        gataTura.setOnClickListener(view -> {
+        btnDone = findViewById(R.id.btn_done);
+        btnDone.setOnClickListener(view -> {
             cardMoves.changeTurn();
             mGameRef.setValue(cardMoves.getGame());
         });
@@ -112,24 +121,24 @@ public class MainActivity extends AppCompatActivity {
 
         // buttons
         boolean enableButtons = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
-        iaCarteButton.setEnabled(enableButtons);
-        gataTura.setEnabled(enableButtons);
+        btnPickCards.setEnabled(enableButtons);
+        btnDone.setEnabled(enableButtons);
 
         // top of pile
         String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.getTopCard());
         int clickedImageId = getResources().getIdentifier(imageTitleFromHand, "drawable", getPackageName());
-        tableCard.setImageResource(clickedImageId);
+        imgTopCard.setImageResource(clickedImageId);
 
         // cards in hand
         List<Integer> cards = cardMoves.localPlayerCards();
         bottomCardsAdaptor.setOwnCards(cards);
-        recyclerView.scrollToPosition(cards.size() - 1);
+        cardsInHand.scrollToPosition(cards.size() - 1);
 
         int opponentCardsCount = cardMoves.getOpponentCardsCount();
         if (opponentCardsCount >= 0) {
-            leftOverCards.setText(getString(R.string.opponent_cards_count, opponentCardsCount));
+            txtOpponentCardsCount.setText(getString(R.string.opponent_cards_count, opponentCardsCount));
         } else {
-            leftOverCards.setText(R.string.waiting_for_other_player);
+            txtOpponentCardsCount.setText(R.string.waiting_for_other_player);
         }
     }
 }
