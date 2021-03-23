@@ -220,7 +220,7 @@ public class CardMoves {
         int topCard = getTopCard();
 
         boolean isChallengeCard = challengeCards.contains(getCardRank(card));
-        boolean correctChallenge = (game.owedCards == 0 || isChallengeCard) || (isChallengedToSkip() && cardHasRank(card, CARD_FOUR));
+        boolean correctChallenge = (game.owedCards == 0 || isChallengeCard);
         boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, card))
                 || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(card)));
         boolean correctRank = hasSameRank(topCard, card);
@@ -228,6 +228,8 @@ public class CardMoves {
 
         if (game.moveStarted) {
             canMove = correctRank;
+        } else if (isChallengedToSkip()) {
+            canMove = cardHasRank(card, CARD_FOUR);
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
