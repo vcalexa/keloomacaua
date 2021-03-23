@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         bottomCardsAdaptor = new MyCardDisplayAdapter((cardPosition) -> {
             String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.localPlayerCards().get(cardPosition));
             if (cardMoves.canPlayCardAt(cardPosition)) {
-                cardMoves.playCard(cardPosition);
+                cardMoves.playCardAt(cardPosition);
                 mGameRef.setValue(cardMoves.getGame());
             } else {
                 Toast.makeText(this, "Cannot play:" + cardPosition + " - " + imageTitleFromHand,
@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
         btnPickCards.setOnClickListener(view -> {
-            cardMoves.pickCards();
+            cardMoves.takeOwedCards();
             mGameRef.setValue(cardMoves.getGame());
         });
 
         btnDone.setOnClickListener(view -> {
-            cardMoves.changeTurn();
+            cardMoves.endTurn();
             mGameRef.setValue(cardMoves.getGame());
         });
 

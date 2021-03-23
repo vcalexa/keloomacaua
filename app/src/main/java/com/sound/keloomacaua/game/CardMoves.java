@@ -13,13 +13,12 @@ import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 import static com.sound.keloomacaua.game.CardUtils.peekLast;
 import static com.sound.keloomacaua.game.CardUtils.removeLast;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 // FIXME: this assumes there are only 2 players
-public class CardMoves implements Serializable {
+public class CardMoves {
     private static final int CARDS_PER_PLAYER = 5;
     private static final List<String> challengeCards = Arrays.asList(TWO_CARD, THREE_CARD, JOKER_CARD);
     private static final List<String> specialCards = Arrays.asList(ACE_CARD, JOKER_CARD);
@@ -73,14 +72,14 @@ public class CardMoves implements Serializable {
         game.getPlayedCards().add(removeLast(game.getDeckRemainingCards()));
     }
 
-    public void playCard(int cardIndex) {
+    public void playCardAt(int cardPosition) {
         Player player = game.getPlayers().get(this.localPlayerIndex);
-        int card = player.getCards().get(cardIndex);
+        int card = player.getCards().get(cardPosition);
 
         if (cardHasRank(card, FOUR_CARD)) {
             setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
-            changeTurn();
+            endTurn();
         }
 
         //suite override
@@ -110,10 +109,10 @@ public class CardMoves implements Serializable {
 
         game.getPlayedCards().add(card);
         if (player.getCards().size() > 1) {
-            player.getCards().remove(cardIndex);
+            player.getCards().remove(cardPosition);
             if (!canMakeAnyMove()) {
                 //auto move to next turn if there is no more action possible
-                changeTurn();
+                endTurn();
             }
         } else {
             //announce game over
@@ -123,7 +122,7 @@ public class CardMoves implements Serializable {
         }
     }
 
-    public void pickCards() {
+    public void takeOwedCards() {
         Player player = game.getPlayers().get(this.localPlayerIndex);
         int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
@@ -131,10 +130,10 @@ public class CardMoves implements Serializable {
             player.getCards().add(removeLast(game.getDeckRemainingCards()));
         }
         game.owedCards = 0;
-        changeTurn();
+        endTurn();
     }
 
-    public void changeTurn() {
+    public void endTurn() {
         int numPlayers = game.getPlayers().size();
         int currentPlayer = game.getPlayersTurn();
         int nextPlayer = (currentPlayer + 1) % numPlayers;
@@ -146,7 +145,7 @@ public class CardMoves implements Serializable {
     public void changeSuite(String suite) {
         game.suiteOverride = suite;
         game.playerPicksSuite = -1;
-        changeTurn();
+        endTurn();
     }
 
     // ---------------------
@@ -158,22 +157,22 @@ public class CardMoves implements Serializable {
         System.out.println("\n\n\n---topCard=" + getCardRank(getTopCard()) + " of " + getCardSuite(getTopCard()));
         System.out.println("\n\n\n---pickSuite=" + game.playerPicksSuite);
         for (int card : cards) {
-            if (isMovePossible(card)) {
+            if (canPlayCard(card)) {
                 return true;
             }
         }
         return game.playerPicksSuite != -1;
     }
 
-    public boolean canPlayCardAt(int position) {
+    public boolean canPlayCardAt(int cardPositionInHand) {
         if (getPlayerTurn() != localPlayerIndex) {
             return false;
         } else {
-            return isMovePossible(localPlayerCards().get(position));
+            return canPlayCard(localPlayerCards().get(cardPositionInHand));
         }
     }
 
-    public boolean isMovePossible(int card) {
+    public boolean canPlayCard(int card) {
         boolean canMove = false;
 
         int topCard = getTopCard();
