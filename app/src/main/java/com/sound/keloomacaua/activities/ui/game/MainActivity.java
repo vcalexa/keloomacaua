@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView cardsInHand;
     ImageView imgTopCard;
-    TextView btnPickCards;
+    TextView btnTakeCards;
     View btnDone;
     TextView txtOpponentCardsCount;
     View btnUndo;
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         btnDone = findViewById(R.id.btn_done);
         imgTopCard = findViewById(R.id.img_top_card);
         cardsInHand = findViewById(R.id.cards_in_hand);
-        btnPickCards = findViewById(R.id.btn_take_cards);
+        btnTakeCards = findViewById(R.id.btn_take_cards);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
-        btnPickCards.setOnClickListener(view -> {
+        btnTakeCards.setOnClickListener(view -> {
             cardMoves.takeOwedCards();
             cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
             mGameRef.setValue(cardMoves.getGame());
@@ -176,13 +176,13 @@ public class MainActivity extends AppCompatActivity {
         btnHearts.setVisibility(pickSuiteVisibility);
         btnSpades.setVisibility(pickSuiteVisibility);
 
-        btnPickCards.setEnabled(cardMoves.canTakeCards());
+        btnTakeCards.setEnabled(cardMoves.canTakeCards());
         btnDone.setEnabled(cardMoves.canEndTurn());
 
         if (game.owedCards == 0) {
-            btnPickCards.setText(getString(R.string.pick_cards));
+            btnTakeCards.setText(getString(R.string.take_card));
         } else {
-            btnPickCards.setText(getString(R.string.pick_n_cards, game.owedCards));
+            btnTakeCards.setText(getString(R.string.take_n_cards, game.owedCards));
         }
 
         if (game.suiteOverride.isEmpty()) {

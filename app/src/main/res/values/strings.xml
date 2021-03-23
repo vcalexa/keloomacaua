@@ -22,6 +22,6 @@
     <string name="txt_winner">Winner is %s with:</string>
     <string name="txt_loser">Loser is %s with:</string>
     <string name="ok">OK</string>
-    <string name="pick_n_cards">Take %d cards</string>
-    <string name="pick_cards">Take 1 card</string>
+    <string name="take_n_cards">Take %d cards</string>
+    <string name="take_card">Take 1 card</string>
 </resources>
