@@ -170,17 +170,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // buttons
-        boolean isCurrentPlayer = (localPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
-
-        boolean pickSuiteActive = game.playerPicksSuite == cardMoves.getPlayer();
-        int pickSuiteVisibility = pickSuiteActive ? View.VISIBLE : View.INVISIBLE;
+        int pickSuiteVisibility = cardMoves.canPickSuite() ? View.VISIBLE : View.INVISIBLE;
         btnClubs.setVisibility(pickSuiteVisibility);
         btnDiamonds.setVisibility(pickSuiteVisibility);
         btnHearts.setVisibility(pickSuiteVisibility);
         btnSpades.setVisibility(pickSuiteVisibility);
 
-        btnPickCards.setEnabled(isCurrentPlayer && !pickSuiteActive && !game.moveStarted);
-        btnDone.setEnabled(isCurrentPlayer && game.moveStarted && !pickSuiteActive);
+        btnPickCards.setEnabled(cardMoves.canTakeCards());
+        btnDone.setEnabled(cardMoves.canEndTurn());
 
         if (game.owedCards == 0) {
             btnPickCards.setText(getString(R.string.pick_cards));
