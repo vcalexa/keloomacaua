@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnPickCards.setOnClickListener(view -> {
             cardMoves.takeOwedCards();
+            cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
             mGameRef.setValue(cardMoves.getGame());
         });
 
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         mGameRef.addValueEventListener(gameUpdateListener);
 
         View.OnClickListener suiteListener = view -> {
-            String suite = "";
+            String suite;
             int id = view.getId();
             if (id == R.id.switch_to_clubs) {
                 suite = "clubs";
