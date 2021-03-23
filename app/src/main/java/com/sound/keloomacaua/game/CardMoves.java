@@ -30,6 +30,7 @@ public class CardMoves {
 
     private static CardMoves single_instance = null;
     private int localPlayerIndex;
+    private int challengedPlayer = -1;
 
     private CardMoves() {
         game = new Game();
@@ -70,7 +71,6 @@ public class CardMoves {
         Player player = game.getPlayers().get(this.localPlayerIndex);
         int card = player.getCards().get(cardPosition);
 
-        int skipTurns = game.getActiveSkipTurns();
         boolean isFourCard = cardHasRank(card, CARD_FOUR);
         Log.i("DEBUG", format("Skips:%s", game.getActiveSkipTurns()));
         Log.i("DEBUG", format("PlayerToSkip:%s", game.getPlayerToSkipTurn()));
@@ -80,10 +80,8 @@ public class CardMoves {
             game.setActiveSkipTurns(game.getActiveSkipTurns() + 1);
             Log.i("DEBUG", "Card 4 was played!!!");
             Log.i("DEBUG", format("Increase skip turn to:%s", game.getActiveSkipTurns()));
-        }
-        if ((skipTurns > 0) && !isFourCard && (game.getPlayerToSkipTurn() != getPlayerTurn())) {
-            game.setActiveSkipTurns(skipTurns - 1);
-            Log.i("DEBUG", format("Decrease skip turn to:%s", game.getActiveSkipTurns()));
+            // challenge next player to skip turns
+            this.challengedPlayer = getPlayerAfter(localPlayerIndex);
         }
 
         //suite override
@@ -95,18 +93,20 @@ public class CardMoves {
             game.suiteOverride = "";
         }
 
-        //owed cards
-        String cardRank = getCardRank(card);
-        switch (cardRank) {
-            case CARD_TWO:
-                game.owedCards += 2;
-                break;
-            case CARD_THREE:
-                game.owedCards += 3;
-                break;
-            case CARD_JOKER:
-                game.owedCards += 5;
-                break;
+        //owed cards don't accrue when skipping
+        if (game.getActiveSkipTurns() == 0) {
+            String cardRank = getCardRank(card);
+            switch (cardRank) {
+                case CARD_TWO:
+                    game.owedCards += 2;
+                    break;
+                case CARD_THREE:
+                    game.owedCards += 3;
+                    break;
+                case CARD_JOKER:
+                    game.owedCards += 5;
+                    break;
+            }
         }
 
         game.moveStarted = true;
@@ -137,13 +137,29 @@ public class CardMoves {
         endTurn();
     }
 
+    public int getPlayerAfter(int playerIndex) {
+        return (playerIndex + 1) % game.getPlayers().size();
+    }
+
     public void endTurn() {
-        int numPlayers = game.getPlayers().size();
-        int currentPlayer = game.getPlayersTurn();
-        int nextPlayer = (currentPlayer + 1) % numPlayers;
-        game.setPlayersTurn(nextPlayer);
-        if (game.getActiveSkipTurns() > 0) game.setPlayerToSkipTurn(nextPlayer);
+        int nextPlayer = getPlayerAfter(localPlayerIndex);
+
+        if (game.getActiveSkipTurns() > 0) {
+            if (this.challengedPlayer == nextPlayer) {
+                game.setPlayerToSkipTurn(nextPlayer);
+                this.challengedPlayer = -1;
+            } else if (game.getPlayerToSkipTurn() == nextPlayer) {
+                // already skipping
+                game.setActiveSkipTurns(game.getActiveSkipTurns() - 1);
+                nextPlayer = getPlayerAfter(nextPlayer);
+                Log.i("DEBUG", format("Decrease skip turn to:%s", game.getActiveSkipTurns()));
+            }
+        } else {
+            game.setPlayerToSkipTurn(-1);
+        }
+
         game.moveStarted = false;
+        game.setPlayersTurn(nextPlayer);
     }
 
     public void changeSuite(String suite) {
@@ -156,16 +172,38 @@ public class CardMoves {
     // CHECKS --------------
     // ---------------------
 
-    public boolean canMakeAnyMove() {
+    public boolean isCurrentPlayer() {
+        return (localPlayerIndex == game.getPlayersTurn() && getTopCard() != -1);
+    }
+
+    public boolean canPickSuite() {
+        return game.playerPicksSuite == getPlayer();
+    }
+
+    public boolean isChallengedToSkip() {
+        return isCurrentPlayer() && game.getPlayerToSkipTurn() == localPlayerIndex && game.getActiveSkipTurns() > 0;
+    }
+
+    public boolean canTakeCards() {
+        return isCurrentPlayer() && !canPickSuite() && !game.moveStarted && !isChallengedToSkip();
+    }
+
+    public boolean canEndTurn() {
+        return isCurrentPlayer() && !canPickSuite() && (isChallengedToSkip() || (game.moveStarted && canMakeAnyMove()));
+    }
+
+    public boolean canPlayAnyCard() {
         List<Integer> cards = game.getPlayers().get(localPlayerIndex).getCards();
-        System.out.println("\n\n\n---topCard=" + getCardRank(getTopCard()) + " of " + getCardSuite(getTopCard()));
-        System.out.println("\n\n\n---pickSuite=" + game.playerPicksSuite);
         for (int card : cards) {
             if (canPlayCard(card)) {
                 return true;
             }
         }
-        return game.playerPicksSuite != -1;
+        return false;
+    }
+
+    public boolean canMakeAnyMove() {
+        return canPlayAnyCard() || canPickSuite();
     }
 
     public boolean canPlayCardAt(int cardPositionInHand) {
@@ -182,7 +220,7 @@ public class CardMoves {
         int topCard = getTopCard();
 
         boolean isChallengeCard = challengeCards.contains(getCardRank(card));
-        boolean correctChallenge = game.owedCards == 0 || isChallengeCard;
+        boolean correctChallenge = (game.owedCards == 0 || isChallengeCard) || (isChallengedToSkip() && cardHasRank(card, CARD_FOUR));
         boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, card))
                 || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(card)));
         boolean correctRank = hasSameRank(topCard, card);
@@ -190,9 +228,6 @@ public class CardMoves {
 
         if (game.moveStarted) {
             canMove = correctRank;
-        } else if (shouldSkipTurn()) {
-            //noinspection ConstantConditions
-            canMove = false;
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
@@ -206,18 +241,6 @@ public class CardMoves {
 //        System.out.println(cardName + " isSpecial=" + isSpecial);
 
         return canMove;
-    }
-
-    private boolean shouldSkipTurn() {
-        boolean skip = false;
-        if ((game.getActiveSkipTurns() > 0) && (game.getPlayerToSkipTurn() == getPlayer()) && !hasFourCard()) {
-            skip = true;
-        }
-        return skip;
-    }
-
-    private boolean hasFourCard() {
-        return localPlayerCards().stream().anyMatch(card -> cardHasRank(card, CARD_FOUR));
     }
 
     // ---------------------
