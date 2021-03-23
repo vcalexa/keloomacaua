@@ -56,7 +56,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
-        viewHolder.setClickListener((view, position, isLongClick) -> {
+        viewHolder.setClickListener((view, position) -> {
             String imageTitleFromHand = CardUtils.getImageViewName(ownCards.get(position));
             if (cardMoves.hasMoved(position)) {
                 Toast.makeText(context, "Played:" + position + " - " + imageTitleFromHand,
@@ -80,18 +80,15 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
         return ownCards.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-            View.OnLongClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imgThumbnail;
         View container;
-
 
         ViewHolder(View itemView) {
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
             container = itemView;
             itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
         }
 
         void setClickListener(ItemClickListener itemClickListener) {
@@ -100,13 +97,8 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
 
         @Override
         public void onClick(View view) {
-            clickListener.onClick(view, getLayoutPosition(), false);
+            clickListener.onClick(view, getLayoutPosition());
         }
 
-        @Override
-        public boolean onLongClick(View view) {
-            clickListener.onClick(view, getLayoutPosition(), true);
-            return true;
-        }
     }
 }

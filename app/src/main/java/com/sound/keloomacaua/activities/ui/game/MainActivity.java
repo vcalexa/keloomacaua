@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     View btnHearts;
     View btnSpades;
     ImageView imgSuiteOverride;
-    int currentPlayerIndex;
+    int localPlayerIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +66,11 @@ public class MainActivity extends AppCompatActivity {
 
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
-        currentPlayerIndex = game.findPlayer(user.getUid());
+        localPlayerIndex = game.findPlayer(user.getUid());
 
         CardMoves cardMoves = CardMoves.getInstance();
         cardMoves.setGame(game);
-        cardMoves.setPlayer(currentPlayerIndex);
+        cardMoves.setPlayer(localPlayerIndex);
         if (game.getState() == GameState.Waiting && game.getPlayers().size() > 1) {
             game.setState(GameState.Started);
             cardMoves.deal();
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // buttons
-        boolean isCurrentPlayer = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
+        boolean isCurrentPlayer = (localPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
 
         boolean pickSuiteActive = game.playerPicksSuite == cardMoves.getPlayer();
         int pickSuiteVisibility = pickSuiteActive ? View.VISIBLE : View.INVISIBLE;
@@ -188,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
         // cards in hand
         List<Integer> cards = cardMoves.localPlayerCards();
         bottomCardsAdaptor.setOwnCards(cards);
-        cardsInHand.scrollToPosition(cards.size() - 1);
 
         int opponentCardsCount = cardMoves.getOpponentCardsCount();
         if (opponentCardsCount >= 0) {
