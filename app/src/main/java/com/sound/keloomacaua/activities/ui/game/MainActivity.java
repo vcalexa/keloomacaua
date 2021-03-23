@@ -1,11 +1,17 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import static com.sound.keloomacaua.game.CardUtils.SUITE_CLUBS;
+import static com.sound.keloomacaua.game.CardUtils.SUITE_DIAMONDS;
+import static com.sound.keloomacaua.game.CardUtils.SUITE_HEARTS;
+import static com.sound.keloomacaua.game.CardUtils.SUITE_SPADES;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     View btnHearts;
     View btnSpades;
     ImageView imgSuiteOverride;
-    int currentPlayerIndex;
+    int localPlayerIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +72,11 @@ public class MainActivity extends AppCompatActivity {
 
         // To retrieve object in second Activity
         Game game = (Game) getIntent().getSerializableExtra("game");
-        currentPlayerIndex = game.findPlayer(user.getUid());
+        localPlayerIndex = game.findPlayer(user.getUid());
 
         CardMoves cardMoves = CardMoves.getInstance();
         cardMoves.setGame(game);
-        cardMoves.setPlayer(currentPlayerIndex);
+        cardMoves.setPlayer(localPlayerIndex);
         if (game.getState() == GameState.Waiting && game.getPlayers().size() > 1) {
             game.setState(GameState.Started);
             cardMoves.deal();
@@ -79,7 +85,16 @@ public class MainActivity extends AppCompatActivity {
         mGameRef = FirebaseDatabase.getInstance().getReference().child("games").child(String.valueOf(game.getGameId()));
         mGameRef.setValue(game);
 
-        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), mGameRef);
+        bottomCardsAdaptor = new MyCardDisplayAdapter((cardPosition) -> {
+            String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.localPlayerCards().get(cardPosition));
+            if (cardMoves.canPlayCardAt(cardPosition)) {
+                cardMoves.playCardAt(cardPosition);
+                mGameRef.setValue(cardMoves.getGame());
+            } else {
+                Toast.makeText(this, "Cannot play:" + cardPosition + " - " + imageTitleFromHand,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
         cardsInHand.setAdapter(bottomCardsAdaptor);
 
         cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
@@ -87,12 +102,13 @@ public class MainActivity extends AppCompatActivity {
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
         btnPickCards.setOnClickListener(view -> {
-            cardMoves.pickCards();
+            cardMoves.takeOwedCards();
+            cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
             mGameRef.setValue(cardMoves.getGame());
         });
 
         btnDone.setOnClickListener(view -> {
-            cardMoves.changeTurn();
+            cardMoves.endTurn();
             mGameRef.setValue(cardMoves.getGame());
         });
 
@@ -101,16 +117,16 @@ public class MainActivity extends AppCompatActivity {
         mGameRef.addValueEventListener(gameUpdateListener);
 
         View.OnClickListener suiteListener = view -> {
-            String suite = "";
+            String suite;
             int id = view.getId();
             if (id == R.id.switch_to_clubs) {
-                suite = "clubs";
+                suite = SUITE_CLUBS;
             } else if (id == R.id.switch_to_diamonds) {
-                suite = "diamonds";
+                suite = SUITE_DIAMONDS;
             } else if (id == R.id.switch_to_hearts) {
-                suite = "hearts";
+                suite = SUITE_HEARTS;
             } else if (id == R.id.switch_to_spades) {
-                suite = "spades";
+                suite = SUITE_SPADES;
             } else {
                 return;
             }
@@ -154,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // buttons
-        boolean isCurrentPlayer = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
+        boolean isCurrentPlayer = (localPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
 
         boolean pickSuiteActive = game.playerPicksSuite == cardMoves.getPlayer();
         int pickSuiteVisibility = pickSuiteActive ? View.VISIBLE : View.INVISIBLE;
@@ -188,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
         // cards in hand
         List<Integer> cards = cardMoves.localPlayerCards();
         bottomCardsAdaptor.setOwnCards(cards);
-        cardsInHand.scrollToPosition(cards.size() - 1);
 
         int opponentCardsCount = cardMoves.getOpponentCardsCount();
         if (opponentCardsCount >= 0) {

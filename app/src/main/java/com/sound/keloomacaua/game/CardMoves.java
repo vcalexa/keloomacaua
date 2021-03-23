@@ -1,29 +1,33 @@
 package com.sound.keloomacaua.game;
 
+import static com.sound.keloomacaua.game.CardUtils.CARD_ACE;
+import static com.sound.keloomacaua.game.CardUtils.CARD_FOUR;
+import static com.sound.keloomacaua.game.CardUtils.CARD_JOKER;
+import static com.sound.keloomacaua.game.CardUtils.CARD_THREE;
+import static com.sound.keloomacaua.game.CardUtils.CARD_TWO;
+import static com.sound.keloomacaua.game.CardUtils.cardHasRank;
 import static com.sound.keloomacaua.game.CardUtils.getCardRank;
 import static com.sound.keloomacaua.game.CardUtils.getCardSuite;
 import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
 import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
+import static com.sound.keloomacaua.game.CardUtils.peekLast;
+import static com.sound.keloomacaua.game.CardUtils.removeLast;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 // FIXME: this assumes there are only 2 players
-public class CardMoves implements Serializable {
+public class CardMoves {
     private static final int CARDS_PER_PLAYER = 5;
-    private static final String FOUR_CARD = "four";
+    private static final List<String> challengeCards = Arrays.asList(CARD_TWO, CARD_THREE, CARD_JOKER);
+    private static final List<String> specialCards = Arrays.asList(CARD_ACE, CARD_JOKER);
 
     private Game game;
 
     private static CardMoves single_instance = null;
-    private int player;
+    private int localPlayerIndex;
     private boolean skipTurnDone = true;
-
-    public boolean isSkipTurnDone() {
-        return skipTurnDone;
-    }
 
     public void setSkipTurnDone(boolean skipTurnDone) {
         this.skipTurnDone = skipTurnDone;
@@ -40,10 +44,14 @@ public class CardMoves implements Serializable {
         return single_instance;
     }
 
+    // ---------------------
+    // ACTIONS -------------
+    // ---------------------
+
     public void deal() {
         game.getDeckRemainingCards().clear();
         game.getPlayedCards().clear();
-        game.setPlayersTurn(1);
+        game.setPlayersTurn(0);
 
         //Create list of all integers from 1 to 54 = number of all cards and randomize their order
         for (int i = 0; i < 54; i++) {
@@ -60,20 +68,19 @@ public class CardMoves implements Serializable {
         game.getPlayedCards().add(removeLast(game.getDeckRemainingCards()));
     }
 
-    public void playCard(int cardIndex) {
+    public void playCardAt(int cardPosition) {
+        Player player = game.getPlayers().get(this.localPlayerIndex);
+        int card = player.getCards().get(cardPosition);
 
-        if (getCardRank(cardIndex).equals(FOUR_CARD)) {
+        if (cardHasRank(card, CARD_FOUR)) {
             setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
-            changeTurn();
+            endTurn();
         }
 
-        Player player = game.getPlayers().get(this.player);
-        int card = player.getCards().get(cardIndex);
-
         //suite override
-        if (getCardRank(card).equals("ace")) {
-            game.playerPicksSuite = this.player;
+        if (getCardRank(card).equals(CARD_ACE)) {
+            game.playerPicksSuite = this.localPlayerIndex;
         }
         if (!game.suiteOverride.isEmpty()) {
             //reset override when card is played
@@ -83,13 +90,13 @@ public class CardMoves implements Serializable {
         //owed cards
         String cardRank = getCardRank(card);
         switch (cardRank) {
-            case "two":
+            case CARD_TWO:
                 game.owedCards += 2;
                 break;
-            case "three":
+            case CARD_THREE:
                 game.owedCards += 3;
                 break;
-            case "joker":
+            case CARD_JOKER:
                 game.owedCards += 5;
                 break;
         }
@@ -98,45 +105,31 @@ public class CardMoves implements Serializable {
 
         game.getPlayedCards().add(card);
         if (player.getCards().size() > 1) {
-            player.getCards().remove(cardIndex);
+            player.getCards().remove(cardPosition);
             if (!canMakeAnyMove()) {
                 //auto move to next turn if there is no more action possible
-                changeTurn();
+                endTurn();
             }
         } else {
             //announce game over
             removeLast(player.getCards());
-            game.setWhoWon(getPlayerTurn());
+            // System.out.println("gameOver detected winner index is " + game.getPlayersTurn());
             game.setState(GameState.Finished);
         }
     }
 
-    public void pickCards() {
-        Player player = game.getPlayers().get(this.player);
+    public void takeOwedCards() {
+        Player player = game.getPlayers().get(this.localPlayerIndex);
         int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
             ensureEnoughSpareCards();
             player.getCards().add(removeLast(game.getDeckRemainingCards()));
         }
         game.owedCards = 0;
-        changeTurn();
+        endTurn();
     }
 
-    public List<Integer> localPlayerCards() {
-        Player player = game.getPlayers().get(this.player);
-        return player.getCards();
-    }
-
-    public boolean isGameOver() {
-        for (Player value : game.getPlayers()) {
-            if (value.getCards().size() == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void changeTurn() {
+    public void endTurn() {
         int numPlayers = game.getPlayers().size();
         int currentPlayer = game.getPlayersTurn();
         int nextPlayer = (currentPlayer + 1) % numPlayers;
@@ -148,77 +141,84 @@ public class CardMoves implements Serializable {
     public void changeSuite(String suite) {
         game.suiteOverride = suite;
         game.playerPicksSuite = -1;
-        changeTurn();
+        endTurn();
     }
 
-    static final List<String> specialCards = Arrays.asList("ace", "joker");
+    // ---------------------
+    // CHECKS --------------
+    // ---------------------
 
     public boolean canMakeAnyMove() {
-        List<Integer> cards = game.getPlayers().get(player).getCards();
+        List<Integer> cards = game.getPlayers().get(localPlayerIndex).getCards();
         System.out.println("\n\n\n---topCard=" + getCardRank(getTopCard()) + " of " + getCardSuite(getTopCard()));
         System.out.println("\n\n\n---pickSuite=" + game.playerPicksSuite);
         for (int card : cards) {
-            if (isMovePossible(card)) {
+            if (canPlayCard(card)) {
                 return true;
             }
         }
-        if (game.playerPicksSuite != -1) {
-            return true;
-        }
-        return false;
+        return game.playerPicksSuite != -1;
     }
 
-    public boolean isMovePossible(int cardNumber) {
+    public boolean canPlayCardAt(int cardPositionInHand) {
+        if (getPlayerTurn() != localPlayerIndex) {
+            return false;
+        } else {
+            return canPlayCard(localPlayerCards().get(cardPositionInHand));
+        }
+    }
+
+    public boolean canPlayCard(int card) {
         boolean canMove = false;
 
         int topCard = getTopCard();
 
-        boolean isChallengeCard = Arrays.asList("two", "three", "joker").contains(getCardRank(cardNumber));
+        boolean isChallengeCard = challengeCards.contains(getCardRank(card));
         boolean correctChallenge = game.owedCards == 0 || isChallengeCard;
-        boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, cardNumber))
-                || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(cardNumber)));
-        boolean correctRank = hasSameRank(topCard, cardNumber);
-        boolean isSpecial = specialCards.contains(getCardRank(cardNumber)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
+        boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, card))
+                || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(card)));
+        boolean correctRank = hasSameRank(topCard, card);
+        boolean isSpecial = specialCards.contains(getCardRank(card)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
 
         if (game.moveStarted) {
             canMove = correctRank;
         } else if (shouldSkipTurn(topCard)) {
+            //noinspection ConstantConditions
             canMove = false;
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
-        String card = "\n" + getCardRank(cardNumber) + " of " + getCardSuite(cardNumber);
-        System.out.println(card + " " + canMove);
-        System.out.println(card + " isChallenge=" + isChallengeCard);
-        System.out.println(card + " owedCards=" + game.owedCards);
-        System.out.println(card + " correctChallenge=" + isChallengeCard);
-        System.out.println(card + " correctSuite=" + correctSuite);
-        System.out.println(card + " correctRank=" + correctRank);
-        System.out.println(card + " isSpecial=" + isSpecial);
+//        String cardName = "\n" + getCardRank(card) + " of " + getCardSuite(card);
+//        System.out.println(cardName + " " + canMove);
+//        System.out.println(cardName + " isChallenge=" + isChallengeCard);
+//        System.out.println(cardName + " owedCards=" + game.owedCards);
+//        System.out.println(cardName + " correctChallenge=" + isChallengeCard);
+//        System.out.println(cardName + " correctSuite=" + correctSuite);
+//        System.out.println(cardName + " correctRank=" + correctRank);
+//        System.out.println(cardName + " isSpecial=" + isSpecial);
 
         return canMove;
     }
 
     private boolean shouldSkipTurn(int topCard) {
         boolean skip = false;
-        if (getCardRank(topCard).equals(FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
+        if (cardHasRank(topCard, CARD_FOUR) && !hasFourCard() && !skipTurnDone) {
             skip = true;
         }
         return skip;
     }
 
     private boolean hasFourCard() {
-        return Arrays.asList(localPlayerCards()).contains(FOUR_CARD);
+        return localPlayerCards().stream().anyMatch(card -> cardHasRank(card, CARD_FOUR));
     }
 
+    // ---------------------
+    // HELPERS -------------
+    // ---------------------
 
-    public boolean hasMoved(int position) {
-        if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
-            playCard(position);
-            return true;
-        } else {
-            return false;
-        }
+    public List<Integer> localPlayerCards() {
+        Player player = game.getPlayers().get(this.localPlayerIndex);
+        return player.getCards();
     }
 
     private void ensureEnoughSpareCards() {
@@ -239,27 +239,13 @@ public class CardMoves implements Serializable {
         if (game.getPlayers().size() < 2) {
             return -1;
         }
-        int otherPlayerIndex = (game.getPlayers().size() - player - 1);
+        int otherPlayerIndex = (game.getPlayers().size() - localPlayerIndex - 1);
         return game.getPlayers().get(otherPlayerIndex).getCards().size();
     }
 
     public int getTopCard() {
         Integer lastCard = peekLast(game.getPlayedCards());
         return lastCard != null ? lastCard : -1;
-    }
-
-    private <T> T peekLast(List<T> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.get(list.size() - 1);
-    }
-
-    private <T> T removeLast(List<T> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.remove(list.size() - 1);
     }
 
     private int getPlayerTurn() {
@@ -274,11 +260,11 @@ public class CardMoves implements Serializable {
         this.game = game;
     }
 
-    public void setPlayer(int player) {
-        this.player = player;
+    public void setPlayer(int localPlayerIndex) {
+        this.localPlayerIndex = localPlayerIndex;
     }
 
     public int getPlayer() {
-        return this.player;
+        return this.localPlayerIndex;
     }
 }

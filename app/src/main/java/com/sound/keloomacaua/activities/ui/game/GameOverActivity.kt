@@ -6,7 +6,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.FirebaseDatabase
 import com.sound.keloomacaua.R
 import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter
 import com.sound.keloomacaua.game.CardUtils
@@ -20,20 +19,13 @@ class GameOverActivity : AppCompatActivity() {
 
         val game = intent.getSerializableExtra("game") as Game
 
-        val mGameRef = FirebaseDatabase
-            .getInstance()
-            .reference
-            .child("games")
-            .child(game.gameId.toString())
+        println("gameOver screen winner index is ${game.playersTurn}")
 
-        val winner: Player = game.players[game.whoWon]
-        val loser = game.players[game.players.size - game.whoWon - 1]
+        val winner: Player = game.players[game.playersTurn]
+        // FIXME: this assumes only 2 players
+        val loser = game.players[game.players.size - game.playersTurn - 1]
 
-        val bottomCardsAdaptor = MyCardDisplayAdapter(applicationContext, mGameRef)
-        val loserCards = findViewById<RecyclerView>(R.id.opponent_cards)
-        loserCards.adapter = bottomCardsAdaptor
-        bottomCardsAdaptor.setOwnCards(loser.cards)
-
+        //winner
         val winnerText = findViewById<TextView>(R.id.txt_winner)
         winnerText.text = getString(R.string.txt_winner, winner.name);
 
@@ -45,6 +37,11 @@ class GameOverActivity : AppCompatActivity() {
         )
         winnerCard.setImageResource(clickedImageId)
 
+        val loserCardsAdapter = MyCardDisplayAdapter() { /* do nothing on card tap */ }
+        val loserCards = findViewById<RecyclerView>(R.id.loser_cards)
+        loserCards.adapter = loserCardsAdapter
+        loserCardsAdapter.setOwnCards(loser.cards)
+
         val loserText = findViewById<TextView>(R.id.txt_loser)
         loserText.text = getString(R.string.txt_loser, loser.name)
 
@@ -52,5 +49,10 @@ class GameOverActivity : AppCompatActivity() {
         btnDone.setOnClickListener {
             finish()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // TODO: this player can no longer look at the game. mark it as "deleted" and when all players mark it, then remove the game from DB
     }
 }
