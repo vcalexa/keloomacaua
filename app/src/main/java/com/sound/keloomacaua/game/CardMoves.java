@@ -1,9 +1,17 @@
 package com.sound.keloomacaua.game;
 
+import static com.sound.keloomacaua.game.CardUtils.ACE_CARD;
+import static com.sound.keloomacaua.game.CardUtils.FOUR_CARD;
+import static com.sound.keloomacaua.game.CardUtils.JOKER_CARD;
+import static com.sound.keloomacaua.game.CardUtils.THREE_CARD;
+import static com.sound.keloomacaua.game.CardUtils.TWO_CARD;
+import static com.sound.keloomacaua.game.CardUtils.cardHasRank;
 import static com.sound.keloomacaua.game.CardUtils.getCardRank;
 import static com.sound.keloomacaua.game.CardUtils.getCardSuite;
 import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
 import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
+import static com.sound.keloomacaua.game.CardUtils.peekLast;
+import static com.sound.keloomacaua.game.CardUtils.removeLast;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -13,7 +21,8 @@ import java.util.List;
 // FIXME: this assumes there are only 2 players
 public class CardMoves implements Serializable {
     private static final int CARDS_PER_PLAYER = 5;
-    private static final String FOUR_CARD = "four";
+    private static final List<String> challengeCards = Arrays.asList(TWO_CARD, THREE_CARD, JOKER_CARD);
+    private static final List<String> specialCards = Arrays.asList(ACE_CARD, JOKER_CARD);
 
     private Game game;
 
@@ -39,6 +48,10 @@ public class CardMoves implements Serializable {
 
         return single_instance;
     }
+
+    // ---------------------
+    // ACTIONS -------------
+    // ---------------------
 
     public void deal() {
         game.getDeckRemainingCards().clear();
@@ -72,7 +85,7 @@ public class CardMoves implements Serializable {
         int card = player.getCards().get(cardIndex);
 
         //suite override
-        if (getCardRank(card).equals("ace")) {
+        if (getCardRank(card).equals(ACE_CARD)) {
             game.playerPicksSuite = this.player;
         }
         if (!game.suiteOverride.isEmpty()) {
@@ -83,13 +96,13 @@ public class CardMoves implements Serializable {
         //owed cards
         String cardRank = getCardRank(card);
         switch (cardRank) {
-            case "two":
+            case TWO_CARD:
                 game.owedCards += 2;
                 break;
-            case "three":
+            case THREE_CARD:
                 game.owedCards += 3;
                 break;
-            case "joker":
+            case JOKER_CARD:
                 game.owedCards += 5;
                 break;
         }
@@ -122,20 +135,6 @@ public class CardMoves implements Serializable {
         changeTurn();
     }
 
-    public List<Integer> localPlayerCards() {
-        Player player = game.getPlayers().get(this.player);
-        return player.getCards();
-    }
-
-    public boolean isGameOver() {
-        for (Player value : game.getPlayers()) {
-            if (value.getCards().size() == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void changeTurn() {
         int numPlayers = game.getPlayers().size();
         int currentPlayer = game.getPlayersTurn();
@@ -151,7 +150,19 @@ public class CardMoves implements Serializable {
         changeTurn();
     }
 
-    static final List<String> specialCards = Arrays.asList("ace", "joker");
+    // ---------------------
+    // CHECKS --------------
+    // ---------------------
+
+
+    public boolean isGameOver() {
+        for (Player value : game.getPlayers()) {
+            if (value.getCards().size() == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean canMakeAnyMove() {
         List<Integer> cards = game.getPlayers().get(player).getCards();
@@ -162,10 +173,7 @@ public class CardMoves implements Serializable {
                 return true;
             }
         }
-        if (game.playerPicksSuite != -1) {
-            return true;
-        }
-        return false;
+        return game.playerPicksSuite != -1;
     }
 
     public boolean isMovePossible(int cardNumber) {
@@ -173,7 +181,7 @@ public class CardMoves implements Serializable {
 
         int topCard = getTopCard();
 
-        boolean isChallengeCard = Arrays.asList("two", "three", "joker").contains(getCardRank(cardNumber));
+        boolean isChallengeCard = challengeCards.contains(getCardRank(cardNumber));
         boolean correctChallenge = game.owedCards == 0 || isChallengeCard;
         boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, cardNumber))
                 || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(cardNumber)));
@@ -201,16 +209,15 @@ public class CardMoves implements Serializable {
 
     private boolean shouldSkipTurn(int topCard) {
         boolean skip = false;
-        if (getCardRank(topCard).equals(FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
+        if (cardHasRank(topCard, FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
             skip = true;
         }
         return skip;
     }
 
     private boolean hasFourCard() {
-        return Arrays.asList(localPlayerCards()).contains(FOUR_CARD);
+        return localPlayerCards().stream().anyMatch(card -> cardHasRank(card, FOUR_CARD));
     }
-
 
     public boolean hasMoved(int position) {
         if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
@@ -219,6 +226,15 @@ public class CardMoves implements Serializable {
         } else {
             return false;
         }
+    }
+
+    // ---------------------
+    // HELPERS -------------
+    // ---------------------
+
+    public List<Integer> localPlayerCards() {
+        Player player = game.getPlayers().get(this.player);
+        return player.getCards();
     }
 
     private void ensureEnoughSpareCards() {
@@ -246,20 +262,6 @@ public class CardMoves implements Serializable {
     public int getTopCard() {
         Integer lastCard = peekLast(game.getPlayedCards());
         return lastCard != null ? lastCard : -1;
-    }
-
-    private <T> T peekLast(List<T> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.get(list.size() - 1);
-    }
-
-    private <T> T removeLast(List<T> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.remove(list.size() - 1);
     }
 
     private int getPlayerTurn() {

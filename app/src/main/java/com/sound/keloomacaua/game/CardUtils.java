@@ -7,6 +7,12 @@ import java.util.List;
 
 public class CardUtils implements Serializable {
 
+    public static final String TWO_CARD = "two";
+    public static final String THREE_CARD = "three";
+    public static final String FOUR_CARD = "four";
+    public static final String JOKER_CARD = "joker";
+    public static final String ACE_CARD = "ace";
+
     private static final String[] suits = {"hearts", "spades", "diamonds", "clubs"};
     private static final String[] ranks = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
 
@@ -49,6 +55,14 @@ public class CardUtils implements Serializable {
         return getCardRank(card1).equals(getCardRank(card2));
     }
 
+    public static boolean cardHasRank(int card, String rank) {
+        return getCardRank(card).equals(rank);
+    }
+
+    public static boolean cardHasSuite(int card, String suite) {
+        return getCardSuite(card).equals(suite);
+    }
+
     private static List<String> listOf(String rank, String suite) {
         List<String> cardList = new ArrayList<>();
         cardList.add(rank);
@@ -56,4 +70,17 @@ public class CardUtils implements Serializable {
         return cardList;
     }
 
+    public static <T> T peekLast(List<T> list) {
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(list.size() - 1);
+    }
+
+    public static <T> T removeLast(List<T> list) {
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.remove(list.size() - 1);
+    }
 }
