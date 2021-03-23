@@ -180,16 +180,16 @@ public class CardMoves {
         return game.playerPicksSuite == getPlayer();
     }
 
-    public boolean isChallengedToSkip() {
+    public boolean isAskedToSkip() {
         return isCurrentPlayer() && game.getPlayerToSkipTurn() == localPlayerIndex && game.getActiveSkipTurns() > 0;
     }
 
     public boolean canTakeCards() {
-        return isCurrentPlayer() && !canPickSuite() && !game.moveStarted && !isChallengedToSkip();
+        return isCurrentPlayer() && !canPickSuite() && !game.moveStarted && !isAskedToSkip();
     }
 
     public boolean canEndTurn() {
-        return isCurrentPlayer() && !canPickSuite() && (isChallengedToSkip() || (game.moveStarted && canMakeAnyMove()));
+        return isCurrentPlayer() && !canPickSuite() && (isAskedToSkip() || (game.moveStarted && canMakeAnyMove()));
     }
 
     public boolean canPlayAnyCard() {
@@ -228,7 +228,7 @@ public class CardMoves {
 
         if (game.moveStarted) {
             canMove = correctRank;
-        } else if (isChallengedToSkip()) {
+        } else if (isAskedToSkip()) {
             canMove = cardHasRank(card, CARD_FOUR);
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
