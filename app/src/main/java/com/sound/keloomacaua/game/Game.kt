@@ -12,6 +12,9 @@ class Game : Serializable {
     @JvmField
     var moveStarted: Boolean = false
 
+    @JvmField
+    var owedCards: Int = 0
+
     var gameId: Long = System.currentTimeMillis()
     var players: MutableList<Player> = mutableListOf()
     var playersTurn = 0

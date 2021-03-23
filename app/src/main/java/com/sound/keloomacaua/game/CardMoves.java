@@ -80,6 +80,20 @@ public class CardMoves implements Serializable {
             game.suiteOverride = "";
         }
 
+        //owed cards
+        String cardRank = getCardRank(card);
+        switch (cardRank) {
+            case "two":
+                game.owedCards += 2;
+                break;
+            case "three":
+                game.owedCards += 3;
+                break;
+            case "joker":
+                game.owedCards += 5;
+                break;
+        }
+
         game.moveStarted = true;
 
         game.getPlayedCards().add(card);
@@ -97,13 +111,14 @@ public class CardMoves implements Serializable {
         }
     }
 
-    public void pickCards(int numberOfCards) {
+    public void pickCards() {
         Player player = game.getPlayers().get(this.player);
-
+        int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
             ensureEnoughSpareCards();
             player.getCards().add(removeLast(game.getDeckRemainingCards()));
         }
+        game.owedCards = 0;
         changeTurn();
     }
 
@@ -140,6 +155,8 @@ public class CardMoves implements Serializable {
 
     public boolean canMakeAnyMove() {
         List<Integer> cards = game.getPlayers().get(player).getCards();
+        System.out.println("\n\n\n---topCard=" + getCardRank(getTopCard()) + " of " + getCardSuite(getTopCard()));
+        System.out.println("\n\n\n---pickSuite=" + game.playerPicksSuite);
         for (int card : cards) {
             if (isMovePossible(card)) {
                 return true;
@@ -156,6 +173,8 @@ public class CardMoves implements Serializable {
 
         int topCard = getTopCard();
 
+        boolean isChallengeCard = Arrays.asList("two", "three", "joker").contains(getCardRank(cardNumber));
+        boolean correctChallenge = game.owedCards == 0 || isChallengeCard;
         boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, cardNumber))
                 || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(cardNumber)));
         boolean correctRank = hasSameRank(topCard, cardNumber);
@@ -165,9 +184,17 @@ public class CardMoves implements Serializable {
             canMove = correctRank;
         } else if (shouldSkipTurn(topCard)) {
             canMove = false;
-        } else if (correctRank || correctSuite || isSpecial) {
+        } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
+        String card = "\n" + getCardRank(cardNumber) + " of " + getCardSuite(cardNumber);
+        System.out.println(card + " " + canMove);
+        System.out.println(card + " isChallenge=" + isChallengeCard);
+        System.out.println(card + " owedCards=" + game.owedCards);
+        System.out.println(card + " correctChallenge=" + isChallengeCard);
+        System.out.println(card + " correctSuite=" + correctSuite);
+        System.out.println(card + " correctRank=" + correctRank);
+        System.out.println(card + " isSpecial=" + isSpecial);
 
         return canMove;
     }

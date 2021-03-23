@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
         btnPickCards.setOnClickListener(view -> {
-            cardMoves.pickCards(1);
+            cardMoves.pickCards();
             mGameRef.setValue(cardMoves.getGame());
         });
 
@@ -154,9 +154,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // buttons
-        boolean enableButtons = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
-        btnPickCards.setEnabled(enableButtons);
-        btnDone.setEnabled(enableButtons);
+        boolean isCurrentPlayer = (currentPlayerIndex == game.getPlayersTurn() && cardMoves.getTopCard() != -1);
 
         boolean pickSuiteActive = game.playerPicksSuite == cardMoves.getPlayer();
         int pickSuiteVisibility = pickSuiteActive ? View.VISIBLE : View.INVISIBLE;
@@ -164,12 +162,14 @@ public class MainActivity extends AppCompatActivity {
         btnDiamonds.setVisibility(pickSuiteVisibility);
         btnHearts.setVisibility(pickSuiteVisibility);
         btnSpades.setVisibility(pickSuiteVisibility);
-        if (pickSuiteActive) {
-            btnDone.setEnabled(false);
-            btnPickCards.setEnabled(false);
-        }
-        if (game.moveStarted) {
-            btnPickCards.setEnabled(false);
+
+        btnPickCards.setEnabled(isCurrentPlayer && !pickSuiteActive && !game.moveStarted);
+        btnDone.setEnabled(isCurrentPlayer && game.moveStarted && !pickSuiteActive);
+
+        if (game.owedCards == 0) {
+            btnPickCards.setText(getString(R.string.pick_cards));
+        } else {
+            btnPickCards.setText(getString(R.string.pick_n_cards, game.owedCards));
         }
 
         if (game.suiteOverride.isEmpty()) {
