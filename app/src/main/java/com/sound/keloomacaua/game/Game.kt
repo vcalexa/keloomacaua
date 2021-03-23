@@ -21,6 +21,9 @@ class Game : Serializable {
     var deckRemainingCards: MutableList<Int> = mutableListOf()
     var playedCards: MutableList<Int> = mutableListOf()
 
+    var activeSkipTurns = 0
+    var playerToSkipTurn = -1
+
     var state: GameState = GameState.Waiting
 
     fun findPlayer(playerId: String): Int {

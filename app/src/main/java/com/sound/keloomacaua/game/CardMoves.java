@@ -12,6 +12,9 @@ import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
 import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 import static com.sound.keloomacaua.game.CardUtils.peekLast;
 import static com.sound.keloomacaua.game.CardUtils.removeLast;
+import static java.lang.String.format;
+
+import android.util.Log;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,11 +30,6 @@ public class CardMoves {
 
     private static CardMoves single_instance = null;
     private int localPlayerIndex;
-    private boolean skipTurnDone = true;
-
-    public void setSkipTurnDone(boolean skipTurnDone) {
-        this.skipTurnDone = skipTurnDone;
-    }
 
     private CardMoves() {
         game = new Game();
@@ -72,10 +70,20 @@ public class CardMoves {
         Player player = game.getPlayers().get(this.localPlayerIndex);
         int card = player.getCards().get(cardPosition);
 
-        if (cardHasRank(card, CARD_FOUR)) {
-            setSkipTurnDone(false);
-            System.out.println("Card 4 was played!!!");
-            endTurn();
+        int skipTurns = game.getActiveSkipTurns();
+        boolean isFourCard = cardHasRank(card, CARD_FOUR);
+        Log.i("DEBUG", format("Skips:%s", game.getActiveSkipTurns()));
+        Log.i("DEBUG", format("PlayerToSkip:%s", game.getPlayerToSkipTurn()));
+        Log.i("DEBUG", format("CardPlayed:%s", card));
+
+        if (isFourCard) {
+            game.setActiveSkipTurns(game.getActiveSkipTurns() + 1);
+            Log.i("DEBUG", "Card 4 was played!!!");
+            Log.i("DEBUG", format("Increase skip turn to:%s", game.getActiveSkipTurns()));
+        }
+        if ((skipTurns > 0) && !isFourCard && (game.getPlayerToSkipTurn() != getPlayerTurn())) {
+            game.setActiveSkipTurns(skipTurns - 1);
+            Log.i("DEBUG", format("Decrease skip turn to:%s", game.getActiveSkipTurns()));
         }
 
         //suite override
@@ -134,7 +142,7 @@ public class CardMoves {
         int currentPlayer = game.getPlayersTurn();
         int nextPlayer = (currentPlayer + 1) % numPlayers;
         game.setPlayersTurn(nextPlayer);
-        if (shouldSkipTurn(getTopCard())) setSkipTurnDone(true);
+        if (game.getActiveSkipTurns() > 0) game.setPlayerToSkipTurn(nextPlayer);
         game.moveStarted = false;
     }
 
@@ -182,7 +190,7 @@ public class CardMoves {
 
         if (game.moveStarted) {
             canMove = correctRank;
-        } else if (shouldSkipTurn(topCard)) {
+        } else if (shouldSkipTurn()) {
             //noinspection ConstantConditions
             canMove = false;
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
@@ -200,9 +208,9 @@ public class CardMoves {
         return canMove;
     }
 
-    private boolean shouldSkipTurn(int topCard) {
+    private boolean shouldSkipTurn() {
         boolean skip = false;
-        if (cardHasRank(topCard, CARD_FOUR) && !hasFourCard() && !skipTurnDone) {
+        if ((game.getActiveSkipTurns() > 0) && (game.getPlayerToSkipTurn() == getPlayer()) && !hasFourCard()) {
             skip = true;
         }
         return skip;
