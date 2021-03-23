@@ -6,31 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DatabaseReference;
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.CardUtils;
-import com.sound.keloomacaua.interfaces.ItemClickListener;
+import com.sound.keloomacaua.interfaces.CardTapListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder> {
     private final List<Integer> ownCards;
-    private final Context context;
-    private static ItemClickListener clickListener;
-    private final DatabaseReference gameReference;
+    private final CardTapListener clickListener;
 
-    public MyCardDisplayAdapter(Context context, DatabaseReference firebaseReference) {
+    public MyCardDisplayAdapter(CardTapListener cardTapListener) {
         super();
-        this.context = context;
         this.ownCards = new ArrayList<>();
-        this.gameReference = firebaseReference;
+        this.clickListener = cardTapListener;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -49,38 +43,23 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        CardMoves cardMoves = CardMoves.getInstance();
-        String imageTitle = CardUtils.getImageViewName(ownCards.get(i));
-
+    public void onBindViewHolder(ViewHolder viewHolder, int cardIndex) {
+        Context context = viewHolder.container.getContext();
+        String imageTitle = CardUtils.getImageViewName(ownCards.get(cardIndex));
         int imageId = context.getResources().getIdentifier(imageTitle,
                 "drawable", context.getPackageName());
         viewHolder.imgThumbnail.setImageResource(imageId);
-        viewHolder.setClickListener((view, position) -> {
-            String imageTitleFromHand = CardUtils.getImageViewName(ownCards.get(position));
-            if (cardMoves.hasMoved(position)) {
-                Toast.makeText(context, "Played:" + position + " - " + imageTitleFromHand,
-                        Toast.LENGTH_SHORT).show();
-                gameReference.setValue(cardMoves.getGame());
-            } else {
-                Toast.makeText(context, "Cannot play:" + position + " - " + imageTitleFromHand,
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            if (cardMoves.isGameOver()) {
-                Toast.makeText(context, "GAME OVER!!", Toast.LENGTH_LONG).show();
-            }
-
+        viewHolder.container.setOnClickListener(view -> {
+            clickListener.onCardTapped(cardIndex);
         });
     }
-
 
     @Override
     public int getItemCount() {
         return ownCards.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgThumbnail;
         View container;
 
@@ -88,17 +67,6 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
             container = itemView;
-            itemView.setOnClickListener(this);
         }
-
-        void setClickListener(ItemClickListener itemClickListener) {
-            clickListener = itemClickListener;
-        }
-
-        @Override
-        public void onClick(View view) {
-            clickListener.onClick(view, getLayoutPosition());
-        }
-
     }
 }

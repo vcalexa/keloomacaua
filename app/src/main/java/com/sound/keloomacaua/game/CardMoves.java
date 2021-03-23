@@ -27,7 +27,7 @@ public class CardMoves implements Serializable {
     private Game game;
 
     private static CardMoves single_instance = null;
-    private int player;
+    private int localPlayerIndex;
     private boolean skipTurnDone = true;
 
     public boolean isSkipTurnDone() {
@@ -56,7 +56,7 @@ public class CardMoves implements Serializable {
     public void deal() {
         game.getDeckRemainingCards().clear();
         game.getPlayedCards().clear();
-        game.setPlayersTurn(1);
+        game.setPlayersTurn(0);
 
         //Create list of all integers from 1 to 54 = number of all cards and randomize their order
         for (int i = 0; i < 54; i++) {
@@ -74,19 +74,18 @@ public class CardMoves implements Serializable {
     }
 
     public void playCard(int cardIndex) {
+        Player player = game.getPlayers().get(this.localPlayerIndex);
+        int card = player.getCards().get(cardIndex);
 
-        if (getCardRank(cardIndex).equals(FOUR_CARD)) {
+        if (cardHasRank(card, FOUR_CARD)) {
             setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
             changeTurn();
         }
 
-        Player player = game.getPlayers().get(this.player);
-        int card = player.getCards().get(cardIndex);
-
         //suite override
         if (getCardRank(card).equals(ACE_CARD)) {
-            game.playerPicksSuite = this.player;
+            game.playerPicksSuite = this.localPlayerIndex;
         }
         if (!game.suiteOverride.isEmpty()) {
             //reset override when card is played
@@ -119,13 +118,13 @@ public class CardMoves implements Serializable {
         } else {
             //announce game over
             removeLast(player.getCards());
-            game.setWhoWon(getPlayerTurn());
+            // System.out.println("gameOver detected winner index is " + game.getPlayersTurn());
             game.setState(GameState.Finished);
         }
     }
 
     public void pickCards() {
-        Player player = game.getPlayers().get(this.player);
+        Player player = game.getPlayers().get(this.localPlayerIndex);
         int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
             ensureEnoughSpareCards();
@@ -154,18 +153,8 @@ public class CardMoves implements Serializable {
     // CHECKS --------------
     // ---------------------
 
-
-    public boolean isGameOver() {
-        for (Player value : game.getPlayers()) {
-            if (value.getCards().size() == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean canMakeAnyMove() {
-        List<Integer> cards = game.getPlayers().get(player).getCards();
+        List<Integer> cards = game.getPlayers().get(localPlayerIndex).getCards();
         System.out.println("\n\n\n---topCard=" + getCardRank(getTopCard()) + " of " + getCardSuite(getTopCard()));
         System.out.println("\n\n\n---pickSuite=" + game.playerPicksSuite);
         for (int card : cards) {
@@ -176,33 +165,41 @@ public class CardMoves implements Serializable {
         return game.playerPicksSuite != -1;
     }
 
-    public boolean isMovePossible(int cardNumber) {
+    public boolean canPlayCardAt(int position) {
+        if (getPlayerTurn() != localPlayerIndex) {
+            return false;
+        } else {
+            return isMovePossible(localPlayerCards().get(position));
+        }
+    }
+
+    public boolean isMovePossible(int card) {
         boolean canMove = false;
 
         int topCard = getTopCard();
 
-        boolean isChallengeCard = challengeCards.contains(getCardRank(cardNumber));
+        boolean isChallengeCard = challengeCards.contains(getCardRank(card));
         boolean correctChallenge = game.owedCards == 0 || isChallengeCard;
-        boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, cardNumber))
-                || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(cardNumber)));
-        boolean correctRank = hasSameRank(topCard, cardNumber);
-        boolean isSpecial = specialCards.contains(getCardRank(cardNumber)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
+        boolean correctSuite = (game.suiteOverride.isEmpty() && hasSameSuite(topCard, card))
+                || (!game.suiteOverride.isEmpty() && game.suiteOverride.equals(getCardSuite(card)));
+        boolean correctRank = hasSameRank(topCard, card);
+        boolean isSpecial = specialCards.contains(getCardRank(card)) || (specialCards.contains(getCardRank(topCard)) && game.suiteOverride.isEmpty());
 
         if (game.moveStarted) {
             canMove = correctRank;
-        } else if (shouldSkipTurn(topCard)) {
-            canMove = false;
+//        } else if (shouldSkipTurn(topCard)) {
+//            canMove = false;
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
-        String card = "\n" + getCardRank(cardNumber) + " of " + getCardSuite(cardNumber);
-        System.out.println(card + " " + canMove);
-        System.out.println(card + " isChallenge=" + isChallengeCard);
-        System.out.println(card + " owedCards=" + game.owedCards);
-        System.out.println(card + " correctChallenge=" + isChallengeCard);
-        System.out.println(card + " correctSuite=" + correctSuite);
-        System.out.println(card + " correctRank=" + correctRank);
-        System.out.println(card + " isSpecial=" + isSpecial);
+//        String cardName = "\n" + getCardRank(card) + " of " + getCardSuite(card);
+//        System.out.println(cardName + " " + canMove);
+//        System.out.println(cardName + " isChallenge=" + isChallengeCard);
+//        System.out.println(cardName + " owedCards=" + game.owedCards);
+//        System.out.println(cardName + " correctChallenge=" + isChallengeCard);
+//        System.out.println(cardName + " correctSuite=" + correctSuite);
+//        System.out.println(cardName + " correctRank=" + correctRank);
+//        System.out.println(cardName + " isSpecial=" + isSpecial);
 
         return canMove;
     }
@@ -219,21 +216,12 @@ public class CardMoves implements Serializable {
         return localPlayerCards().stream().anyMatch(card -> cardHasRank(card, FOUR_CARD));
     }
 
-    public boolean hasMoved(int position) {
-        if (getPlayerTurn() == player && isMovePossible(localPlayerCards().get(position))) {
-            playCard(position);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // ---------------------
     // HELPERS -------------
     // ---------------------
 
     public List<Integer> localPlayerCards() {
-        Player player = game.getPlayers().get(this.player);
+        Player player = game.getPlayers().get(this.localPlayerIndex);
         return player.getCards();
     }
 
@@ -255,7 +243,7 @@ public class CardMoves implements Serializable {
         if (game.getPlayers().size() < 2) {
             return -1;
         }
-        int otherPlayerIndex = (game.getPlayers().size() - player - 1);
+        int otherPlayerIndex = (game.getPlayers().size() - localPlayerIndex - 1);
         return game.getPlayers().get(otherPlayerIndex).getCards().size();
     }
 
@@ -276,11 +264,11 @@ public class CardMoves implements Serializable {
         this.game = game;
     }
 
-    public void setPlayer(int player) {
-        this.player = player;
+    public void setPlayer(int localPlayerIndex) {
+        this.localPlayerIndex = localPlayerIndex;
     }
 
     public int getPlayer() {
-        return this.player;
+        return this.localPlayerIndex;
     }
 }

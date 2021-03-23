@@ -6,26 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".activities.ui.game.CreateOrJoinActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/gameList"
-        android:layout_width="match_parent"
-        android:layout_height="570dp"
-        tools:listitem="@layout/item_game"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createNewGame" />
-
     <Button
         android:id="@+id/createNewGame"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/create_new_game"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/gameList"
+        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createNewGame"
+        tools:listitem="@layout/item_game" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

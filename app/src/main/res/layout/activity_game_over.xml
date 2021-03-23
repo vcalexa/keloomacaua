@@ -65,7 +65,7 @@
         tools:text="Loser is Player2 with:" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/opponent_cards"
+        android:id="@+id/loser_cards"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/opponent_hand"

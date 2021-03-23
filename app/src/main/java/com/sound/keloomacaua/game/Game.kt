@@ -20,7 +20,6 @@ class Game : Serializable {
     var playersTurn = 0
     var deckRemainingCards: MutableList<Int> = mutableListOf()
     var playedCards: MutableList<Int> = mutableListOf()
-    var whoWon = -1
 
     var state: GameState = GameState.Waiting
 

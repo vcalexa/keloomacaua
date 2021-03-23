@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,7 +80,16 @@ public class MainActivity extends AppCompatActivity {
         mGameRef = FirebaseDatabase.getInstance().getReference().child("games").child(String.valueOf(game.getGameId()));
         mGameRef.setValue(game);
 
-        bottomCardsAdaptor = new MyCardDisplayAdapter(getApplicationContext(), mGameRef);
+        bottomCardsAdaptor = new MyCardDisplayAdapter((cardPosition) -> {
+            String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.localPlayerCards().get(cardPosition));
+            if (cardMoves.canPlayCardAt(cardPosition)) {
+                cardMoves.playCard(cardPosition);
+                mGameRef.setValue(cardMoves.getGame());
+            } else {
+                Toast.makeText(this, "Cannot play:" + cardPosition + " - " + imageTitleFromHand,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
         cardsInHand.setAdapter(bottomCardsAdaptor);
 
         cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
