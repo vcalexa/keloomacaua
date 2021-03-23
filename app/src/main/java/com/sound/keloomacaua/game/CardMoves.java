@@ -1,10 +1,10 @@
 package com.sound.keloomacaua.game;
 
-import static com.sound.keloomacaua.game.CardUtils.ACE_CARD;
-import static com.sound.keloomacaua.game.CardUtils.FOUR_CARD;
-import static com.sound.keloomacaua.game.CardUtils.JOKER_CARD;
-import static com.sound.keloomacaua.game.CardUtils.THREE_CARD;
-import static com.sound.keloomacaua.game.CardUtils.TWO_CARD;
+import static com.sound.keloomacaua.game.CardUtils.CARD_ACE;
+import static com.sound.keloomacaua.game.CardUtils.CARD_FOUR;
+import static com.sound.keloomacaua.game.CardUtils.CARD_JOKER;
+import static com.sound.keloomacaua.game.CardUtils.CARD_THREE;
+import static com.sound.keloomacaua.game.CardUtils.CARD_TWO;
 import static com.sound.keloomacaua.game.CardUtils.cardHasRank;
 import static com.sound.keloomacaua.game.CardUtils.getCardRank;
 import static com.sound.keloomacaua.game.CardUtils.getCardSuite;
@@ -20,18 +20,14 @@ import java.util.List;
 // FIXME: this assumes there are only 2 players
 public class CardMoves {
     private static final int CARDS_PER_PLAYER = 5;
-    private static final List<String> challengeCards = Arrays.asList(TWO_CARD, THREE_CARD, JOKER_CARD);
-    private static final List<String> specialCards = Arrays.asList(ACE_CARD, JOKER_CARD);
+    private static final List<String> challengeCards = Arrays.asList(CARD_TWO, CARD_THREE, CARD_JOKER);
+    private static final List<String> specialCards = Arrays.asList(CARD_ACE, CARD_JOKER);
 
     private Game game;
 
     private static CardMoves single_instance = null;
     private int localPlayerIndex;
     private boolean skipTurnDone = true;
-
-    public boolean isSkipTurnDone() {
-        return skipTurnDone;
-    }
 
     public void setSkipTurnDone(boolean skipTurnDone) {
         this.skipTurnDone = skipTurnDone;
@@ -76,14 +72,14 @@ public class CardMoves {
         Player player = game.getPlayers().get(this.localPlayerIndex);
         int card = player.getCards().get(cardPosition);
 
-        if (cardHasRank(card, FOUR_CARD)) {
+        if (cardHasRank(card, CARD_FOUR)) {
             setSkipTurnDone(false);
             System.out.println("Card 4 was played!!!");
             endTurn();
         }
 
         //suite override
-        if (getCardRank(card).equals(ACE_CARD)) {
+        if (getCardRank(card).equals(CARD_ACE)) {
             game.playerPicksSuite = this.localPlayerIndex;
         }
         if (!game.suiteOverride.isEmpty()) {
@@ -94,13 +90,13 @@ public class CardMoves {
         //owed cards
         String cardRank = getCardRank(card);
         switch (cardRank) {
-            case TWO_CARD:
+            case CARD_TWO:
                 game.owedCards += 2;
                 break;
-            case THREE_CARD:
+            case CARD_THREE:
                 game.owedCards += 3;
                 break;
-            case JOKER_CARD:
+            case CARD_JOKER:
                 game.owedCards += 5;
                 break;
         }
@@ -186,8 +182,9 @@ public class CardMoves {
 
         if (game.moveStarted) {
             canMove = correctRank;
-//        } else if (shouldSkipTurn(topCard)) {
-//            canMove = false;
+        } else if (shouldSkipTurn(topCard)) {
+            //noinspection ConstantConditions
+            canMove = false;
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
@@ -205,14 +202,14 @@ public class CardMoves {
 
     private boolean shouldSkipTurn(int topCard) {
         boolean skip = false;
-        if (cardHasRank(topCard, FOUR_CARD) && !hasFourCard() && !skipTurnDone) {
+        if (cardHasRank(topCard, CARD_FOUR) && !hasFourCard() && !skipTurnDone) {
             skip = true;
         }
         return skip;
     }
 
     private boolean hasFourCard() {
-        return localPlayerCards().stream().anyMatch(card -> cardHasRank(card, FOUR_CARD));
+        return localPlayerCards().stream().anyMatch(card -> cardHasRank(card, CARD_FOUR));
     }
 
     // ---------------------

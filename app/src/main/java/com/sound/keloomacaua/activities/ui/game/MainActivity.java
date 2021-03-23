@@ -1,5 +1,10 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import static com.sound.keloomacaua.game.CardUtils.SUITE_CLUBS;
+import static com.sound.keloomacaua.game.CardUtils.SUITE_DIAMONDS;
+import static com.sound.keloomacaua.game.CardUtils.SUITE_HEARTS;
+import static com.sound.keloomacaua.game.CardUtils.SUITE_SPADES;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -115,13 +120,13 @@ public class MainActivity extends AppCompatActivity {
             String suite;
             int id = view.getId();
             if (id == R.id.switch_to_clubs) {
-                suite = "clubs";
+                suite = SUITE_CLUBS;
             } else if (id == R.id.switch_to_diamonds) {
-                suite = "diamonds";
+                suite = SUITE_DIAMONDS;
             } else if (id == R.id.switch_to_hearts) {
-                suite = "hearts";
+                suite = SUITE_HEARTS;
             } else if (id == R.id.switch_to_spades) {
-                suite = "spades";
+                suite = SUITE_SPADES;
             } else {
                 return;
             }
