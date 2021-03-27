@@ -1,5 +1,7 @@
 package com.sound.keloomacaua.adaptors;
 
+import static com.sound.keloomacaua.Constants.INTENT_EXTRA_GAME;
+
 import android.content.Intent;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -75,11 +77,11 @@ public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.Vi
             //only join games that allow this user
             if (game.getState() != GameState.Finished && game.findPlayer(userId) != -1) {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
-                intent.putExtra("game", game);
+                intent.putExtra(INTENT_EXTRA_GAME, game);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 view.getContext().startActivity(intent);
             } else {
-                Toast.makeText(view.getContext(), "You're not allowed to join this game", Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), R.string.game_already_started_by_others, Toast.LENGTH_SHORT).show();
             }
         });
     }

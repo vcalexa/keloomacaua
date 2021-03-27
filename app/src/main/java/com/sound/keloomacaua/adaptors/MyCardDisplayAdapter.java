@@ -1,5 +1,7 @@
 package com.sound.keloomacaua.adaptors;
 
+import static com.sound.keloomacaua.game.CardUtils.cardToImageId;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,10 +48,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int cardIndex) {
         Context context = viewHolder.container.getContext();
-        String imageTitle = CardUtils.getImageViewName(ownCards.get(cardIndex));
-        int imageId = context.getResources().getIdentifier(imageTitle,
-                "drawable", context.getPackageName());
-        viewHolder.imgThumbnail.setImageResource(imageId);
+        viewHolder.imgThumbnail.setImageResource(cardToImageId(ownCards.get(cardIndex), context));
         viewHolder.container.setOnClickListener(view -> {
             clickListener.onCardTapped(cardIndex);
         });

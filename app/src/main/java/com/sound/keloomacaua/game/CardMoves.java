@@ -12,9 +12,6 @@ import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
 import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 import static com.sound.keloomacaua.game.CardUtils.peekLast;
 import static com.sound.keloomacaua.game.CardUtils.removeLast;
-import static java.lang.String.format;
-
-import android.util.Log;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +49,7 @@ public class CardMoves {
         game.getPlayedCards().clear();
         game.setPlayersTurn(0);
 
-        //Create list of all integers from 1 to 54 = number of all cards and randomize their order
+        // Create list of all integers from 1 to 54 = number of all cards and randomize their order
         for (int i = 0; i < 54; i++) {
             game.getDeckRemainingCards().add(i);
         }
@@ -63,7 +60,7 @@ public class CardMoves {
             players.forEach(player -> player.getCards().add(removeLast(game.getDeckRemainingCards())));
         }
 
-        //Play first card and remove from deck
+        // Play first card and remove from deck
         game.getPlayedCards().add(removeLast(game.getDeckRemainingCards()));
     }
 
@@ -72,14 +69,9 @@ public class CardMoves {
         int card = player.getCards().get(cardPosition);
 
         boolean isFourCard = cardHasRank(card, CARD_FOUR);
-        Log.i("DEBUG", format("Skips:%s", game.getActiveSkipTurns()));
-        Log.i("DEBUG", format("PlayerToSkip:%s", game.getPlayerToSkipTurn()));
-        Log.i("DEBUG", format("CardPlayed:%s", card));
 
         if (isFourCard) {
             game.setActiveSkipTurns(game.getActiveSkipTurns() + 1);
-            Log.i("DEBUG", "Card 4 was played!!!");
-            Log.i("DEBUG", format("Increase skip turn to:%s", game.getActiveSkipTurns()));
             // challenge next player to skip turns
             this.challengedPlayer = getPlayerAfter(localPlayerIndex);
         }
@@ -89,11 +81,11 @@ public class CardMoves {
             game.playerPicksSuite = this.localPlayerIndex;
         }
         if (!game.suiteOverride.isEmpty()) {
-            //reset override when card is played
+            // reset override when card is played
             game.suiteOverride = "";
         }
 
-        //owed cards don't accrue when skipping
+        // owed cards don't accrue when skipping
         if (game.getActiveSkipTurns() == 0) {
             String cardRank = getCardRank(card);
             switch (cardRank) {
@@ -121,7 +113,6 @@ public class CardMoves {
         } else {
             //announce game over
             removeLast(player.getCards());
-            // System.out.println("gameOver detected winner index is " + game.getPlayersTurn());
             game.setState(GameState.Finished);
         }
     }
@@ -152,7 +143,6 @@ public class CardMoves {
                 // already skipping
                 game.setActiveSkipTurns(game.getActiveSkipTurns() - 1);
                 nextPlayer = getPlayerAfter(nextPlayer);
-                Log.i("DEBUG", format("Decrease skip turn to:%s", game.getActiveSkipTurns()));
             }
         } else {
             game.setPlayerToSkipTurn(-1);
@@ -233,14 +223,6 @@ public class CardMoves {
         } else if (correctChallenge && (correctRank || correctSuite || isSpecial)) {
             canMove = true;
         }
-//        String cardName = "\n" + getCardRank(card) + " of " + getCardSuite(card);
-//        System.out.println(cardName + " " + canMove);
-//        System.out.println(cardName + " isChallenge=" + isChallengeCard);
-//        System.out.println(cardName + " owedCards=" + game.owedCards);
-//        System.out.println(cardName + " correctChallenge=" + isChallengeCard);
-//        System.out.println(cardName + " correctSuite=" + correctSuite);
-//        System.out.println(cardName + " correctRank=" + correctRank);
-//        System.out.println(cardName + " isSpecial=" + isSpecial);
 
         return canMove;
     }

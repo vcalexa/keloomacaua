@@ -1,5 +1,9 @@
 package com.sound.keloomacaua.game;
 
+import android.content.Context;
+
+import androidx.annotation.DrawableRes;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,8 +72,15 @@ public class CardUtils implements Serializable {
         return getCardRank(card).equals(rank);
     }
 
-    public static boolean cardHasSuite(int card, String suite) {
-        return getCardSuite(card).equals(suite);
+    public static @DrawableRes
+    int cardToImageId(int card, Context context) {
+        String imageTitleFromCard = CardUtils.getImageViewName(card);
+        return context.getResources().getIdentifier(imageTitleFromCard, "drawable", context.getPackageName());
+    }
+
+    public static @DrawableRes
+    int suiteToImageId(String suite, Context context) {
+        return context.getResources().getIdentifier(suite, "drawable", context.getPackageName());
     }
 
     private static List<String> listOf(String rank, String suite) {

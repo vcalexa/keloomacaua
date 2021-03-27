@@ -4,7 +4,7 @@
     <string name="prompt_username">Pick a name</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="welcome">"Welcome, %s!"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
@@ -13,15 +13,16 @@
     <string name="create_new_game">Create New Game</string>
     <string name="my_hand">my hand</string>
     <string name="top_card">top card</string>
-    <string name="oponent_deck">oponent deck</string>
-    <string name="waiting_for_player">waiting...</string>
-    <string name="waiting_for_other_player">Asteapta alt jucator</string>
-    <string name="opponent_cards_count">Mai are %d carti.</string>
+    <string name="waiting_for_player">waiting…</string>
+    <string name="waiting_for_other_player">Waiting for opponent to join</string>
+    <string name="opponent_cards_count">Has %d cards left.</string>
     <string name="opponent_hand">Opponent hand</string>
     <string name="game_over">Game over</string>
-    <string name="txt_winner">Winner is %s with:</string>
-    <string name="txt_loser">Loser is %s with:</string>
-    <string name="ok">OK</string>
-    <string name="take_n_cards">Take %d cards</string>
-    <string name="take_card">Take 1 card</string>
+    <string name="txt_winner">%s\nwon using:</string>
+    <string name="txt_loser">%s lost holding this:</string>
+    <string name="ok">Back to lobby</string>
+    <string name="draw_n_cards">Draw %d cards</string>
+    <string name="draw_card">Draw 1 card</string>
+    <string name="game_already_started_by_others">You\'re not allowed to join this game</string>
+    <string name="cannot_play_card">Can\'t play %s</string>
 </resources>
