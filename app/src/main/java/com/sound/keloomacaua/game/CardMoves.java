@@ -200,7 +200,11 @@ public class CardMoves {
         if (getPlayerTurn() != localPlayerIndex) {
             return false;
         } else {
-            return canPlayCard(localPlayerCards().get(cardPositionInHand));
+            if (localPlayerCards().size() > 0) {
+                return canPlayCard(localPlayerCards().get(cardPositionInHand));
+            } else {
+                return false;
+            }
         }
     }
 
