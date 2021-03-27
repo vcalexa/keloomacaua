@@ -1,5 +1,6 @@
 package com.sound.keloomacaua.activities.ui.game
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -41,12 +42,10 @@ class GameOverActivity : AppCompatActivity() {
 
         val btnDone: View = findViewById(R.id.btn_ok)
         btnDone.setOnClickListener {
+            val intent = Intent(this, LobbyActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
             finish()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // TODO: this player can no longer look at the game. mark it as "deleted" and when all players mark it, then remove the game from DB
     }
 }

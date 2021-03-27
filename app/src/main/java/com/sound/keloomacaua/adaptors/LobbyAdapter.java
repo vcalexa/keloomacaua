@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MyJoinGameAdapter extends RecyclerView.Adapter<MyJoinGameAdapter.ViewHolder> {
+public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder> {
     private final List<Game> createdGames;
     private final String userId;
     private final String localUsername;
 
-    public MyJoinGameAdapter(String localUserId, String localUsername) {
+    public LobbyAdapter(String localUserId, String localUsername) {
         super();
         this.createdGames = new ArrayList<>();
         this.userId = localUserId != null ? localUserId : "unknown";
