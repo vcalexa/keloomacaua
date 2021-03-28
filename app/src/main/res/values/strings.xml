@@ -25,4 +25,7 @@
     <string name="draw_card">Draw 1 card</string>
     <string name="game_already_started_by_others">You\'re not allowed to join this game</string>
     <string name="cannot_play_card">Can\'t play %s</string>
+    <string name="skip_n_turns">Skip %d turns</string>
+    <string name="skip_1_turn">Skip 1 turn</string>
+    <string name="end_turn">End turn</string>
 </resources>
