@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
         btnTakeCards.setOnClickListener(view -> {
-            cardMoves.takeOwedCards();
+            cardMoves.drawCards();
             cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
             mGameRef.setValue(cardMoves.getGame());
         });

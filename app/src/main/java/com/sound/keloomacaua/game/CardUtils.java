@@ -41,8 +41,8 @@ public class CardUtils implements Serializable {
     public static HashMap<Integer, List<String>> cardMap() {
         int i = 0;
         HashMap<Integer, List<String>> cardMap = new HashMap<>();
-        for (String suite : SUITS) {
-            for (String rank : ranks) {
+        for (String rank : ranks) {
+            for (String suite : SUITS) {
                 cardMap.put(i++, listOf(rank, suite));
             }
         }
