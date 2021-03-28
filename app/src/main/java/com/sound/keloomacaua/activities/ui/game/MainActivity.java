@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     TextView btnTakeCards;
     View btnDone;
     TextView txtOpponentCardsCount;
-    View btnUndo;
     View btnClubs;
     View btnDiamonds;
     View btnHearts;
@@ -60,13 +59,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnUndo = findViewById(R.id.btn_undo);
         btnClubs = findViewById(R.id.switch_to_clubs);
         btnDiamonds = findViewById(R.id.switch_to_diamonds);
         btnHearts = findViewById(R.id.switch_to_hearts);
         btnSpades = findViewById(R.id.switch_to_spades);
         imgSuiteOverride = findViewById(R.id.suite_override);
-        btnDone = findViewById(R.id.btn_done);
+        btnDone = findViewById(R.id.btn_turn);
         imgTopCard = findViewById(R.id.img_top_card);
         cardsInHand = findViewById(R.id.cards_in_hand);
         btnTakeCards = findViewById(R.id.btn_take_cards);

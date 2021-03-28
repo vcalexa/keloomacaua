@@ -7,40 +7,37 @@
     android:clipChildren="false"
     tools:context=".activities.ui.game.MainActivity">
 
-    <androidx.cardview.widget.CardView
+    <ImageView
         android:id="@+id/img_opponent_cards"
         android:layout_width="@dimen/smallCardWidth"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp"
+        android:background="@drawable/card_shape"
+        android:contentDescription="@string/opponent_hand"
+        android:elevation="4dp"
+        android:scaleType="fitXY"
         app:layout_constraintDimensionRatio="@string/cardRatio"
-        app:layout_constraintEnd_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/opponent_hand"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/card_back" />
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintEnd_toEndOf="@+id/img_top_card"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/card_back" />
 
     <TextView
         android:id="@+id/txt_opponent_cards"
         style="@style/TextAppearance.MaterialComponents.Headline6"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAlignment="textEnd"
         app:layout_constraintBottom_toBottomOf="@+id/img_opponent_cards"
         app:layout_constraintEnd_toStartOf="@+id/img_opponent_cards"
         app:layout_constraintHorizontal_bias="0.88"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/img_opponent_cards"
-        app:layout_constraintVertical_bias="0.01999998"
-        tools:text="Mai are 6 carti" />
+        app:layout_constraintVertical_bias="0.13"
+        tools:text="@string/opponent_cards_count" />
 
     <Button
         android:id="@+id/btn_macaua"
@@ -48,6 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:enabled="false"
+        android:minWidth="150dp"
         android:text="Macaua!"
         app:layout_constraintBottom_toTopOf="@+id/btn_take_cards"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,175 +57,113 @@
         android:id="@+id/btn_take_cards"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Ia carti"
-        app:layout_constraintBottom_toTopOf="@+id/btn_done"
+        app:layout_constraintBottom_toTopOf="@+id/btn_turn"
         app:layout_constraintEnd_toEndOf="@+id/btn_macaua"
         app:layout_constraintStart_toStartOf="@+id/btn_macaua"
-        app:layout_constraintTop_toBottomOf="@+id/btn_macaua" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_macaua"
+        tools:text="@string/draw_card" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+    <Button
+        android:id="@+id/btn_turn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/switch_to_clubs"
+        app:layout_constraintEnd_toEndOf="@+id/btn_macaua"
+        app:layout_constraintStart_toStartOf="@+id/btn_macaua"
+        app:layout_constraintTop_toBottomOf="@+id/btn_take_cards"
+        tools:text="End turn" />
+
+
+    <ImageView
+        android:id="@+id/switch_to_clubs"
+        android:layout_width="@dimen/actionButtonWidth"
+        android:layout_height="@dimen/actionButtonWidth"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/card_shape"
+        android:elevation="4dp"
+        android:scaleType="fitXY"
+        android:translationZ="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/switch_to_hearts"
+        app:layout_constraintEnd_toStartOf="@+id/switch_to_diamonds"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/btn_macaua"
+        app:layout_constraintTop_toBottomOf="@+id/btn_turn"
+        app:srcCompat="@drawable/clubs" />
+
+    <ImageView
+        android:id="@+id/switch_to_diamonds"
+        android:layout_width="@dimen/actionButtonWidth"
+        android:layout_height="@dimen/actionButtonWidth"
+        android:background="@drawable/card_shape"
+        android:elevation="4dp"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="@+id/btn_macaua"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/switch_to_clubs"
+        app:layout_constraintTop_toTopOf="@+id/switch_to_clubs"
+        app:srcCompat="@drawable/diamonds" />
+
+    <ImageView
+        android:id="@+id/switch_to_hearts"
+        android:layout_width="@dimen/actionButtonWidth"
+        android:layout_height="@dimen/actionButtonWidth"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/card_shape"
+        android:elevation="4dp"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/cards_in_hand"
+        app:layout_constraintEnd_toStartOf="@+id/switch_to_spades"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/btn_macaua"
+        app:layout_constraintTop_toBottomOf="@+id/switch_to_clubs"
+        app:srcCompat="@drawable/hearts" />
+
+    <ImageView
+        android:id="@+id/switch_to_spades"
+        android:layout_width="@dimen/actionButtonWidth"
+        android:layout_height="@dimen/actionButtonWidth"
+        android:background="@drawable/card_shape"
+        android:elevation="4dp"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="@+id/btn_macaua"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/switch_to_hearts"
+        app:layout_constraintTop_toTopOf="@+id/switch_to_hearts"
+        app:srcCompat="@drawable/spades" />
+
+    <ImageView
+        android:id="@+id/img_top_card"
         android:layout_width="@dimen/cardWidth"
         android:layout_height="0dp"
-        android:padding="8dp"
-        app:cardCornerRadius="3dp"
-        app:cardElevation="16dp"
+        android:background="@drawable/card_shape"
+        android:contentDescription="@string/top_card"
+        android:elevation="4dp"
+        android:padding="1px"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/cards_in_hand"
         app:layout_constraintDimensionRatio="@string/cardRatio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_take_cards"
-        app:layout_constraintTop_toBottomOf="@+id/img_opponent_cards">
+        app:layout_constraintTop_toBottomOf="@+id/img_opponent_cards"
+        tools:srcCompat="@drawable/four_of_clubs" />
 
-        <ImageView
-            android:id="@+id/img_top_card"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/top_card"
-            android:scaleType="fitXY"
-            tools:srcCompat="@drawable/four_of_clubs" />
-    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/suite_override"
         android:layout_width="@dimen/smallCardWidth"
         android:layout_height="@dimen/smallCardWidth"
-        android:elevation="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView"
-        app:layout_constraintEnd_toEndOf="@+id/cardView"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="@+id/cardView"
+        android:elevation="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_top_card"
+        app:layout_constraintEnd_toEndOf="@+id/img_top_card"
+        app:layout_constraintStart_toEndOf="@+id/img_top_card"
+        app:layout_constraintTop_toTopOf="@+id/img_top_card"
         tools:srcCompat="@drawable/hearts" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/btn_done"
-        android:layout_width="@dimen/actionButtonWidth"
-        android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginTop="4dp"
-        android:padding="18dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/switch_to_clubs"
-        app:layout_constraintStart_toStartOf="@+id/switch_to_diamonds"
-        app:layout_constraintTop_toBottomOf="@+id/btn_take_cards">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_color"
-            android:duplicateParentState="true"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/done" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/btn_undo"
-        android:layout_width="@dimen/actionButtonWidth"
-        android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginStart="4dp"
-        android:padding="8dp"
-        android:visibility="invisible"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/btn_take_cards"
-        app:layout_constraintStart_toEndOf="@id/btn_done"
-        app:layout_constraintTop_toTopOf="@+id/btn_done"
-        tools:visibility="visible">
-
-        <ImageView
-            android:layout_width="51dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_color"
-            android:duplicateParentState="true"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/undo" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/switch_to_clubs"
-        android:layout_width="@dimen/actionButtonWidth"
-        android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginTop="4dp"
-        android:padding="4dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/switch_to_diamonds"
-        app:layout_constraintEnd_toStartOf="@+id/switch_to_spades"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/btn_take_cards"
-        app:layout_constraintTop_toBottomOf="@+id/btn_done">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_color"
-            android:duplicateParentState="true"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/clubs" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/switch_to_spades"
-        android:layout_width="@dimen/actionButtonWidth"
-        android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginStart="4dp"
-        android:padding="4dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switch_to_clubs"
-        app:layout_constraintEnd_toEndOf="@+id/btn_take_cards"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/switch_to_clubs">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_color"
-            android:duplicateParentState="true"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/spades" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/switch_to_diamonds"
-        android:layout_width="@dimen/actionButtonWidth"
-        android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginTop="4dp"
-        android:padding="4dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/cards_in_hand"
-        app:layout_constraintStart_toStartOf="@+id/switch_to_clubs"
-        app:layout_constraintTop_toBottomOf="@+id/switch_to_clubs">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_color"
-            android:duplicateParentState="true"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/diamonds" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/switch_to_hearts"
-        android:layout_width="@dimen/actionButtonWidth"
-        android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginStart="4dp"
-        android:padding="4dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="@+id/btn_take_cards"
-        app:layout_constraintStart_toEndOf="@id/switch_to_diamonds"
-        app:layout_constraintTop_toTopOf="@+id/switch_to_diamonds">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_color"
-            android:duplicateParentState="true"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/hearts" />
-    </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cards_in_hand"

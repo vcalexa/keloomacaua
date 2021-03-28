@@ -70,7 +70,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
         ViewHolder(View itemView) {
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
-            container = itemView.findViewById(R.id.cardView);
+            container = imgThumbnail;
         }
     }
 }
