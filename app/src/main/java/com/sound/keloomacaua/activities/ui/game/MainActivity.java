@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
+import com.sound.keloomacaua.adaptors.OpponentCardsAdapter;
 import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.game.Game;
@@ -42,8 +43,10 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseUser user;
 
     MyCardDisplayAdapter bottomCardsAdaptor;
+    OpponentCardsAdapter opponentCardsAdapter;
 
     RecyclerView cardsInHand;
+    RecyclerView opponentCards;
     ImageView imgTopCard;
     TextView btnTakeCards;
     Button btnDone;
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         btnDone = findViewById(R.id.btn_turn);
         imgTopCard = findViewById(R.id.img_top_card);
         cardsInHand = findViewById(R.id.cards_in_hand);
+        opponentCards = findViewById(R.id.img_opponent_cards);
         btnTakeCards = findViewById(R.id.btn_take_cards);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -97,8 +101,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         cardsInHand.setAdapter(bottomCardsAdaptor);
-
         cardsInHand.scrollToPosition(cardMoves.localPlayerCards().size() - 1);
+
+        opponentCardsAdapter = new OpponentCardsAdapter();
+        opponentCards.setAdapter(opponentCardsAdapter);
 
         txtOpponentCardsCount = findViewById(R.id.txt_opponent_cards);
 
@@ -182,10 +188,10 @@ public class MainActivity extends AppCompatActivity {
         btnTakeCards.setEnabled(cardMoves.canTakeCards());
         btnDone.setEnabled(cardMoves.canEndTurn());
 
-        if (game.owedCards == 0) {
-            btnTakeCards.setText(getString(R.string.draw_card));
-        } else {
+        if (game.owedCards > 0 && game.getPlayersTurn() == localPlayerIndex) {
             btnTakeCards.setText(getString(R.string.draw_n_cards, game.owedCards));
+        } else {
+            btnTakeCards.setText(getString(R.string.draw_card));
         }
 
         if (game.getActiveSkipTurns() > 0 && game.getPlayerToSkipTurn() == localPlayerIndex) {
@@ -199,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (game.suiteOverride.isEmpty()) {
-            imgSuiteOverride.setVisibility(View.INVISIBLE);
+            imgSuiteOverride.setVisibility(View.GONE);
         } else {
             imgSuiteOverride.setVisibility(View.VISIBLE);
             imgSuiteOverride.setImageResource(CardUtils.suiteToImageId(game.suiteOverride, this));
@@ -213,8 +219,10 @@ public class MainActivity extends AppCompatActivity {
         bottomCardsAdaptor.setOwnCards(cards);
 
         int opponentCardsCount = cardMoves.getOpponentCardsCount();
+
         if (opponentCardsCount >= 0) {
             txtOpponentCardsCount.setText(getString(R.string.opponent_cards_count, opponentCardsCount));
+            opponentCardsAdapter.setCards(opponentCardsCount);
         } else {
             txtOpponentCardsCount.setText(R.string.waiting_for_other_player);
         }
