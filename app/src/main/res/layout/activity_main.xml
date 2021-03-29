@@ -12,7 +12,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:clipChildren="false"
         android:contentDescription="@string/my_hand"
@@ -20,7 +19,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
         app:layout_constraintWidth_min="@dimen/cardWidth"
         tools:itemCount="2"
         tools:listitem="@layout/item_card_front" />
@@ -30,21 +29,21 @@
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:background="@drawable/card_shape_bordered"
-        android:backgroundTint="@color/purple_700"
+        android:backgroundTint="@color/card_count_color"
+        android:backgroundTintMode="screen"
         android:drawablePadding="4dp"
         android:elevation="16dp"
         android:gravity="center_vertical"
         android:padding="8dp"
         android:textAlignment="gravity"
-        android:textColor="@color/design_default_color_on_primary"
+        android:textColor="@color/card_count_text_color"
         app:drawableStartCompat="@drawable/cards_playing_outline"
         app:layout_constraintBottom_toBottomOf="@+id/img_opponent_cards"
         app:layout_constraintEnd_toStartOf="@+id/verticalSplit"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/img_opponent_cards"
-        app:layout_constraintTop_toTopOf="@+id/img_opponent_cards"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
         app:layout_constraintVertical_bias="1.0"
         tools:text="@string/opponent_cards_count" />
 
@@ -199,5 +198,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.44" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="787dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

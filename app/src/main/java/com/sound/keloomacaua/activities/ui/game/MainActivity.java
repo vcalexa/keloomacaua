@@ -226,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             txtOpponentCardsCount.setText(R.string.waiting_for_other_player);
         }
+
+        txtOpponentCardsCount.setEnabled(game.getPlayersTurn() != localPlayerIndex);
+
     }
 
     private void startGameOverScreen() {
