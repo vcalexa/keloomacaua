@@ -15,12 +15,9 @@ public class ExampleUnitTest {
     private CardMoves cardMoves = CardMoves.getInstance();
 
 
-
-
-
     @Test
     public void addition_isCorrect() {
         cardMoves.deal();
-        card.hasSameRank(1,6);
+        card.hasSameRank(1, 6);
     }
 }
