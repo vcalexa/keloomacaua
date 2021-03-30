@@ -19,8 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.adaptors.MyJoinGameAdapter;
+import com.sound.keloomacaua.adaptors.LobbyAdapter;
 import com.sound.keloomacaua.game.Game;
+import com.sound.keloomacaua.game.GameState;
 import com.sound.keloomacaua.game.Player;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class LobbyActivity extends AppCompatActivity {
     RecyclerView recyclerView;
-    MyJoinGameAdapter myJoinGameAdapter;
+    LobbyAdapter lobbyAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +53,8 @@ public class LobbyActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.gameList);
 
-        myJoinGameAdapter = new MyJoinGameAdapter(userId, username);
-        recyclerView.setAdapter(myJoinGameAdapter);
+        lobbyAdapter = new LobbyAdapter(userId, username);
+        recyclerView.setAdapter(lobbyAdapter);
 
         dataRef.child(DB_COLLECTION_GAMES).addValueEventListener(new ValueEventListener() {
             @Override
@@ -61,9 +62,13 @@ public class LobbyActivity extends AppCompatActivity {
                 List<Game> gameList = new ArrayList<>();
                 for (DataSnapshot gameSnapshot : snapshot.getChildren()) {
                     Game game = gameSnapshot.getValue(Game.class);
-                    gameList.add(game);
+                    if (game.getState() == GameState.Finished) {
+                        gameSnapshot.getRef().removeValue();
+                    } else {
+                        gameList.add(game);
+                    }
                 }
-                myJoinGameAdapter.setCreatedGames(gameList);
+                lobbyAdapter.setCreatedGames(gameList);
             }
 
             @Override

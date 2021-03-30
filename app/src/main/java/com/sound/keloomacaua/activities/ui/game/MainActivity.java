@@ -151,7 +151,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             Game game = snapshot.getValue(Game.class);
-            updateStateFromGame(game);
+            if (game != null) {
+                updateStateFromGame(game);
+            }
         }
 
         @Override
@@ -210,9 +212,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGameOverScreen() {
+        mGameRef.removeValue();
         Intent intent = new Intent(this, GameOverActivity.class);
         intent.putExtra(INTENT_EXTRA_GAME, CardMoves.getInstance().getGame());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
