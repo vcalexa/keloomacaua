@@ -59,7 +59,7 @@ public class CardMoves {
             List<Player> players = game.getPlayers();
             players.forEach(player -> player.getCards().add(removeLast(game.getDeckRemainingCards())));
         }
-        for(Player player: game.getPlayers()) {
+        for (Player player : game.getPlayers()) {
             Collections.sort(player.getCards());
         }
 

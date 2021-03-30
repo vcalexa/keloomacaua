@@ -40,7 +40,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.item_image, viewGroup, false);
+                .inflate(R.layout.item_card_front, viewGroup, false);
         return new ViewHolder(v);
     }
 

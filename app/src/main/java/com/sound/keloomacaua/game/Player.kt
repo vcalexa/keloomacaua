@@ -9,7 +9,11 @@ class Player : Serializable {
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
     @JvmOverloads
-    constructor(id: String = "unknown", name: String = "waiting...", cards: MutableList<Int> = mutableListOf()) {
+    constructor(
+        id: String = "unknown",
+        name: String = "waiting...",
+        cards: MutableList<Int> = mutableListOf()
+    ) {
         this.id = id
         this.name = name
         this.cards = cards

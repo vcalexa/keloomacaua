@@ -7,51 +7,58 @@
     android:clipChildren="false"
     tools:context=".activities.ui.game.MainActivity">
 
-    <ImageView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/img_opponent_cards"
-        android:layout_width="@dimen/smallCardWidth"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/card_shape"
-        android:contentDescription="@string/opponent_hand"
-        android:elevation="4dp"
-        android:scaleType="fitXY"
-        app:layout_constraintDimensionRatio="@string/cardRatio"
-        app:layout_constraintEnd_toEndOf="@+id/img_top_card"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/card_back" />
+        android:clipChildren="false"
+        android:contentDescription="@string/my_hand"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        app:layout_constraintWidth_min="@dimen/cardWidth"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_card_front" />
 
     <TextView
         android:id="@+id/txt_opponent_cards"
         style="@style/TextAppearance.MaterialComponents.Headline6"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAlignment="textEnd"
+        android:background="@drawable/card_shape_bordered"
+        android:backgroundTint="@color/card_count_color"
+        android:backgroundTintMode="screen"
+        android:drawablePadding="4dp"
+        android:elevation="16dp"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:textAlignment="gravity"
+        android:textColor="@color/card_count_text_color"
+        app:drawableStartCompat="@drawable/cards_playing_outline"
         app:layout_constraintBottom_toBottomOf="@+id/img_opponent_cards"
-        app:layout_constraintEnd_toStartOf="@+id/img_opponent_cards"
-        app:layout_constraintHorizontal_bias="0.88"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/img_opponent_cards"
-        app:layout_constraintVertical_bias="0.13"
+        app:layout_constraintEnd_toStartOf="@+id/verticalSplit"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/img_opponent_cards"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="@string/opponent_cards_count" />
 
     <Button
         android:id="@+id/btn_macaua"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:enabled="false"
-        android:minWidth="150dp"
         android:text="Macaua!"
         app:layout_constraintBottom_toTopOf="@+id/btn_take_cards"
+        app:layout_constraintEnd_toStartOf="@+id/verticalSplit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_opponent_cards"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_min="@dimen/cardWidth" />
+        app:layout_constraintTop_toBottomOf="@+id/img_opponent_cards"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <Button
         android:id="@+id/btn_take_cards"
@@ -78,7 +85,7 @@
         android:id="@+id/switch_to_clubs"
         android:layout_width="@dimen/actionButtonWidth"
         android:layout_height="@dimen/actionButtonWidth"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/card_shape"
         android:elevation="4dp"
@@ -141,17 +148,18 @@
         android:id="@+id/img_top_card"
         android:layout_width="@dimen/cardWidth"
         android:layout_height="0dp"
-        android:background="@drawable/card_shape"
+        android:background="@drawable/card_shape_bordered"
         android:contentDescription="@string/top_card"
         android:elevation="4dp"
-        android:padding="1px"
+        android:padding="4dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/cards_in_hand"
         app:layout_constraintDimensionRatio="@string/cardRatio"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.27"
         app:layout_constraintStart_toEndOf="@+id/btn_take_cards"
         app:layout_constraintTop_toBottomOf="@+id/img_opponent_cards"
-        tools:srcCompat="@drawable/four_of_clubs" />
+        app:srcCompat="@drawable/card_back" />
 
 
     <ImageView
@@ -163,7 +171,7 @@
         app:layout_constraintEnd_toEndOf="@+id/img_top_card"
         app:layout_constraintStart_toEndOf="@+id/img_top_card"
         app:layout_constraintTop_toTopOf="@+id/img_top_card"
-        tools:srcCompat="@drawable/hearts" />
+        tools:srcCompat="@drawable/clubs" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cards_in_hand"
@@ -182,6 +190,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:spanCount="1"
         tools:itemCount="5"
-        tools:listitem="@layout/item_image" />
+        tools:listitem="@layout/item_card_front" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalSplit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.44" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

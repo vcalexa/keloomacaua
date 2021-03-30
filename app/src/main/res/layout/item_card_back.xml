@@ -1,23 +1,24 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:clipChildren="false"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    tools:rotationY="16">
 
     <ImageView
         android:id="@+id/imgThumbnail"
         android:layout_width="@dimen/smallCardWidth"
         android:layout_height="0dp"
         android:layout_margin="4dp"
-        android:background="@drawable/card_shape"
-        android:padding="1px"
+        android:background="@drawable/card_shape_bordered"
+        android:padding="4dp"
         android:scaleType="fitXY"
+        tools:elevation="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="@string/smallCardRatio"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/four_of_clubs" />
+        app:srcCompat="@drawable/card_back" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@
     <string name="top_card">top card</string>
     <string name="waiting_for_player">waiting…</string>
     <string name="waiting_for_other_player">Waiting for opponent to join</string>
-    <string name="opponent_cards_count">Has %d cards left.</string>
+    <string name="opponent_cards_count">%d</string>
     <string name="opponent_hand">Opponent hand</string>
     <string name="game_over">Game over</string>
     <string name="txt_winner">%s\nwon using:</string>
