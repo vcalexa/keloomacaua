@@ -103,6 +103,8 @@ public class CardMoves {
                     break;
             }
         }
+        int remainingCards = (game.getPlayedCards().size() - 1 + game.getDeckRemainingCards().size());
+        game.owedCards = Math.min(game.owedCards, remainingCards);
 
         game.moveStarted = true;
 
@@ -125,7 +127,9 @@ public class CardMoves {
         int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
             ensureEnoughSpareCards();
-            player.getCards().add(removeLast(game.getDeckRemainingCards()));
+            if (game.getDeckRemainingCards().size() > 0) {
+                player.getCards().add(removeLast(game.getDeckRemainingCards()));
+            }
         }
         Collections.sort(player.getCards());
         game.owedCards = 0;
