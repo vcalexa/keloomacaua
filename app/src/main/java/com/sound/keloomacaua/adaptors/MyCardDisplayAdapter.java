@@ -9,12 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.game.CardUtils;
+import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.interfaces.CardTapListener;
 
 import java.util.ArrayList;
@@ -49,9 +48,14 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
     public void onBindViewHolder(ViewHolder viewHolder, int cardIndex) {
         Context context = viewHolder.container.getContext();
         viewHolder.imgThumbnail.setImageResource(cardToImageId(ownCards.get(cardIndex), context));
-        viewHolder.container.setOnClickListener(view -> {
-            clickListener.onCardTapped(cardIndex);
-        });
+        if (CardMoves.getInstance().canPlayCardAt(cardIndex)) {
+            viewHolder.container.setElevation(50);
+            viewHolder.container.animate().translationY(-16).start();
+        } else {
+            viewHolder.container.animate().translationY(32).start();
+            viewHolder.container.setElevation(0);
+        }
+        viewHolder.container.setOnClickListener(view -> clickListener.onCardTapped(cardIndex));
     }
 
     @Override
@@ -66,7 +70,7 @@ public class MyCardDisplayAdapter extends RecyclerView.Adapter<MyCardDisplayAdap
         ViewHolder(View itemView) {
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
-            container = itemView;
+            container = itemView.findViewById(R.id.cardView);
         }
     }
 }

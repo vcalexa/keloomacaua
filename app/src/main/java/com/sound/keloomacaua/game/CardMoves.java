@@ -59,6 +59,9 @@ public class CardMoves {
             List<Player> players = game.getPlayers();
             players.forEach(player -> player.getCards().add(removeLast(game.getDeckRemainingCards())));
         }
+        for(Player player: game.getPlayers()) {
+            Collections.sort(player.getCards());
+        }
 
         // Play first card and remove from deck
         game.getPlayedCards().add(removeLast(game.getDeckRemainingCards()));
@@ -117,13 +120,14 @@ public class CardMoves {
         }
     }
 
-    public void takeOwedCards() {
+    public void drawCards() {
         Player player = game.getPlayers().get(this.localPlayerIndex);
         int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
             ensureEnoughSpareCards();
             player.getCards().add(removeLast(game.getDeckRemainingCards()));
         }
+        Collections.sort(player.getCards());
         game.owedCards = 0;
         endTurn();
     }
@@ -200,7 +204,11 @@ public class CardMoves {
         if (getPlayerTurn() != localPlayerIndex) {
             return false;
         } else {
-            return canPlayCard(localPlayerCards().get(cardPositionInHand));
+            if (localPlayerCards().size() > 0) {
+                return canPlayCard(localPlayerCards().get(cardPositionInHand));
+            } else {
+                return false;
+            }
         }
     }
 
@@ -238,7 +246,7 @@ public class CardMoves {
 
     private void ensureEnoughSpareCards() {
         if (game.getDeckRemainingCards().isEmpty()) {
-            //noinspection ConstantConditions
+            // noinspection ConstantConditions
             int lastCard = removeLast(game.getPlayedCards());
 
             game.getDeckRemainingCards().addAll(game.getPlayedCards());
