@@ -3,8 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="cardWidth">96dp</dimen>
-    <string name="cardRatio">H,2:3</string>
+    <string name="cardRatio">H,500:726</string>
     <dimen name="smallCardWidth">64dp</dimen>
     <dimen name="actionButtonWidth">48dp</dimen>
-    <string name="smallCardRatio">H,3:5</string>
+    <string name="smallCardRatio">H,500:726</string>
 </resources>

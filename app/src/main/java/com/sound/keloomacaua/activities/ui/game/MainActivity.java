@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,9 +46,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView cardsInHand;
     ImageView imgTopCard;
     TextView btnTakeCards;
-    View btnDone;
+    Button btnDone;
     TextView txtOpponentCardsCount;
-    View btnUndo;
     View btnClubs;
     View btnDiamonds;
     View btnHearts;
@@ -60,13 +60,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnUndo = findViewById(R.id.btn_undo);
         btnClubs = findViewById(R.id.switch_to_clubs);
         btnDiamonds = findViewById(R.id.switch_to_diamonds);
         btnHearts = findViewById(R.id.switch_to_hearts);
         btnSpades = findViewById(R.id.switch_to_spades);
         imgSuiteOverride = findViewById(R.id.suite_override);
-        btnDone = findViewById(R.id.btn_done);
+        btnDone = findViewById(R.id.btn_turn);
         imgTopCard = findViewById(R.id.img_top_card);
         cardsInHand = findViewById(R.id.cards_in_hand);
         btnTakeCards = findViewById(R.id.btn_take_cards);
@@ -187,6 +186,16 @@ public class MainActivity extends AppCompatActivity {
             btnTakeCards.setText(getString(R.string.draw_card));
         } else {
             btnTakeCards.setText(getString(R.string.draw_n_cards, game.owedCards));
+        }
+
+        if (game.getActiveSkipTurns() > 0 && game.getPlayerToSkipTurn() == localPlayerIndex) {
+            btnDone.setText(
+                    game.getActiveSkipTurns() > 1 ?
+                            getString(R.string.skip_n_turns, game.getActiveSkipTurns()) :
+                            getString(R.string.skip_1_turn)
+            );
+        } else {
+            btnDone.setText(R.string.end_turn);
         }
 
         if (game.suiteOverride.isEmpty()) {
