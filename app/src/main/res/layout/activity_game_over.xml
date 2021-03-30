@@ -20,14 +20,17 @@
     <TextView
         android:id="@+id/txt_winner"
         style="@style/TextAppearance.MaterialComponents.Headline6"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAlignment="textEnd"
         app:layout_constraintBottom_toBottomOf="@+id/img_winner_card"
+        app:layout_constraintEnd_toStartOf="@+id/img_winner_card"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/img_winner_card"
-        tools:text="Winner is Player1" />
+        tools:text="@string/txt_winner" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/img_winner_card"
@@ -39,15 +42,13 @@
         app:cardElevation="8dp"
         app:layout_constraintDimensionRatio="@string/cardRatio"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/txt_winner"
         app:layout_constraintTop_toBottomOf="@+id/txt_game_over">
 
         <ImageView
             android:id="@+id/img_top_card"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/oponent_deck"
+            android:contentDescription="@string/opponent_hand"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/card_back" />
     </androidx.cardview.widget.CardView>
@@ -59,10 +60,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
+        android:textAlignment="center"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_winner_card"
-        tools:text="Loser is Player2 with:" />
+        tools:text="@string/txt_loser" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/loser_cards"

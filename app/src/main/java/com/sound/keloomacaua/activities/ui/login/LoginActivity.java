@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.activities.ui.game.CreateOrJoinActivity;
+import com.sound.keloomacaua.activities.ui.game.LobbyActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startGameListActivity() {
-        Intent intent = new Intent(getApplicationContext(), CreateOrJoinActivity.class);
+        Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
         startActivity(intent);
         registerButton.setEnabled(true);
     }

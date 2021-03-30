@@ -1,9 +1,12 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import static com.sound.keloomacaua.Constants.DB_COLLECTION_GAMES;
+import static com.sound.keloomacaua.Constants.INTENT_EXTRA_GAME;
 import static com.sound.keloomacaua.game.CardUtils.SUITE_CLUBS;
 import static com.sound.keloomacaua.game.CardUtils.SUITE_DIAMONDS;
 import static com.sound.keloomacaua.game.CardUtils.SUITE_HEARTS;
 import static com.sound.keloomacaua.game.CardUtils.SUITE_SPADES;
+import static com.sound.keloomacaua.game.CardUtils.cardToImageId;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         // To retrieve object in second Activity
-        Game game = (Game) getIntent().getSerializableExtra("game");
+        Game game = (Game) getIntent().getSerializableExtra(INTENT_EXTRA_GAME);
         localPlayerIndex = game.findPlayer(user.getUid());
 
         CardMoves cardMoves = CardMoves.getInstance();
@@ -82,17 +85,16 @@ public class MainActivity extends AppCompatActivity {
             cardMoves.deal();
         }
 
-        mGameRef = FirebaseDatabase.getInstance().getReference().child("games").child(String.valueOf(game.getGameId()));
+        mGameRef = FirebaseDatabase.getInstance().getReference().child(DB_COLLECTION_GAMES).child(String.valueOf(game.getGameId()));
         mGameRef.setValue(game);
 
         bottomCardsAdaptor = new MyCardDisplayAdapter((cardPosition) -> {
-            String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.localPlayerCards().get(cardPosition));
+            String cardTitle = CardUtils.getImageViewName(cardMoves.localPlayerCards().get(cardPosition));
             if (cardMoves.canPlayCardAt(cardPosition)) {
                 cardMoves.playCardAt(cardPosition);
                 mGameRef.setValue(cardMoves.getGame());
             } else {
-                Toast.makeText(this, "Cannot play:" + cardPosition + " - " + imageTitleFromHand,
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cannot_play_card, cardTitle), Toast.LENGTH_SHORT).show();
             }
         });
         cardsInHand.setAdapter(bottomCardsAdaptor);
@@ -180,23 +182,20 @@ public class MainActivity extends AppCompatActivity {
         btnDone.setEnabled(cardMoves.canEndTurn());
 
         if (game.owedCards == 0) {
-            btnTakeCards.setText(getString(R.string.take_card));
+            btnTakeCards.setText(getString(R.string.draw_card));
         } else {
-            btnTakeCards.setText(getString(R.string.take_n_cards, game.owedCards));
+            btnTakeCards.setText(getString(R.string.draw_n_cards, game.owedCards));
         }
 
         if (game.suiteOverride.isEmpty()) {
             imgSuiteOverride.setVisibility(View.INVISIBLE);
         } else {
             imgSuiteOverride.setVisibility(View.VISIBLE);
-            int suiteImageId = getResources().getIdentifier(game.suiteOverride, "drawable", getPackageName());
-            imgSuiteOverride.setImageResource(suiteImageId);
+            imgSuiteOverride.setImageResource(CardUtils.suiteToImageId(game.suiteOverride, this));
         }
 
         // top of pile
-        String imageTitleFromHand = CardUtils.getImageViewName(cardMoves.getTopCard());
-        int clickedImageId = getResources().getIdentifier(imageTitleFromHand, "drawable", getPackageName());
-        imgTopCard.setImageResource(clickedImageId);
+        imgTopCard.setImageResource(cardToImageId(cardMoves.getTopCard(), this));
 
         // cards in hand
         List<Integer> cards = cardMoves.localPlayerCards();
@@ -212,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startGameOverScreen() {
         Intent intent = new Intent(this, GameOverActivity.class);
-        intent.putExtra("game", CardMoves.getInstance().getGame());
+        intent.putExtra(INTENT_EXTRA_GAME, CardMoves.getInstance().getGame());
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();

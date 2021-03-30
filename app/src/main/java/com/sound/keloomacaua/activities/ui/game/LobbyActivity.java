@@ -1,5 +1,8 @@
 package com.sound.keloomacaua.activities.ui.game;
 
+import static com.sound.keloomacaua.Constants.DB_COLLECTION_GAMES;
+import static com.sound.keloomacaua.Constants.INTENT_EXTRA_GAME;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -23,7 +26,7 @@ import com.sound.keloomacaua.game.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateOrJoinActivity extends AppCompatActivity {
+public class LobbyActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     MyJoinGameAdapter myJoinGameAdapter;
 
@@ -44,7 +47,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
             return;
         } else {
             userId = user.getUid();
-            username = user.getDisplayName() != null ? user.getDisplayName() : "waiting ...";
+            username = user.getDisplayName() != null ? user.getDisplayName() : getString(R.string.waiting_for_player);
         }
 
         recyclerView = findViewById(R.id.gameList);
@@ -52,7 +55,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
         myJoinGameAdapter = new MyJoinGameAdapter(userId, username);
         recyclerView.setAdapter(myJoinGameAdapter);
 
-        dataRef.child("games").addValueEventListener(new ValueEventListener() {
+        dataRef.child(DB_COLLECTION_GAMES).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Game> gameList = new ArrayList<>();
@@ -76,7 +79,7 @@ public class CreateOrJoinActivity extends AppCompatActivity {
             game.getPlayers().add(player);
 
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.putExtra("game", game);
+            intent.putExtra(INTENT_EXTRA_GAME, game);
             startActivity(intent);
         });
 

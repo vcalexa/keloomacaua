@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.sound.keloomacaua.Constants
 import com.sound.keloomacaua.R
 import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter
 import com.sound.keloomacaua.game.CardUtils
@@ -17,9 +18,7 @@ class GameOverActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_over)
 
-        val game = intent.getSerializableExtra("game") as Game
-
-        println("gameOver screen winner index is ${game.playersTurn}")
+        val game = intent.getSerializableExtra(Constants.INTENT_EXTRA_GAME) as Game
 
         val winner: Player = game.players[game.playersTurn]
         // FIXME: this assumes only 2 players
@@ -27,15 +26,10 @@ class GameOverActivity : AppCompatActivity() {
 
         //winner
         val winnerText = findViewById<TextView>(R.id.txt_winner)
-        winnerText.text = getString(R.string.txt_winner, winner.name);
+        winnerText.text = getString(R.string.txt_winner, winner.name)
 
-        val winnerCard = findViewById<ImageView>(R.id.img_top_card);
-        val imageTitleFromHand = CardUtils.getImageViewName(game.playedCards.last())
-        val clickedImageId = resources.getIdentifier(
-            imageTitleFromHand, "drawable",
-            packageName
-        )
-        winnerCard.setImageResource(clickedImageId)
+        val winnerCard = findViewById<ImageView>(R.id.img_top_card)
+        winnerCard.setImageResource(CardUtils.cardToImageId(game.playedCards.last(), this))
 
         val loserCardsAdapter = MyCardDisplayAdapter() { /* do nothing on card tap */ }
         val loserCards = findViewById<RecyclerView>(R.id.loser_cards)

@@ -21,7 +21,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/oponent_deck"
+            android:contentDescription="@string/opponent_hand"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/card_back" />
     </androidx.cardview.widget.CardView>
