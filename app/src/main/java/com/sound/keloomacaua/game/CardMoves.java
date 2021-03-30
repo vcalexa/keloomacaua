@@ -266,6 +266,15 @@ public class CardMoves {
         return game.getPlayers().get(otherPlayerIndex).getCards().size();
     }
 
+    // FIXME: assumes there are only 2 players
+    public String getOpponentName() {
+        if (game.getPlayers().size() < 2) {
+            return "waiting for other player...";
+        }
+        int otherPlayerIndex = (game.getPlayers().size() - localPlayerIndex - 1);
+        return game.getPlayers().get(otherPlayerIndex).getName();
+    }
+
     public int getTopCard() {
         Integer lastCard = peekLast(game.getPlayedCards());
         return lastCard != null ? lastCard : -1;

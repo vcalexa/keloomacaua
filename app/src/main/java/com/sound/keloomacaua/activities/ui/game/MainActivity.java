@@ -219,9 +219,10 @@ public class MainActivity extends AppCompatActivity {
         bottomCardsAdaptor.setOwnCards(cards);
 
         int opponentCardsCount = cardMoves.getOpponentCardsCount();
+        String opponentName = cardMoves.getOpponentName();
 
         if (opponentCardsCount >= 0) {
-            txtOpponentCardsCount.setText(getString(R.string.opponent_cards_count, opponentCardsCount));
+            txtOpponentCardsCount.setText(getString(R.string.opponent_cards_count, opponentName, opponentCardsCount));
             opponentCardsAdapter.setCards(opponentCardsCount);
         } else {
             txtOpponentCardsCount.setText(R.string.waiting_for_other_player);
