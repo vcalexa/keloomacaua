@@ -103,6 +103,8 @@ public class CardMoves {
                     break;
             }
         }
+        int remainingCards = (game.getPlayedCards().size() - 1 + game.getDeckRemainingCards().size());
+        game.owedCards = Math.min(game.owedCards, remainingCards);
 
         game.moveStarted = true;
 
@@ -125,7 +127,9 @@ public class CardMoves {
         int numberOfCards = game.owedCards != 0 ? game.owedCards : 1;
         for (int i = 0; i < numberOfCards; i++) {
             ensureEnoughSpareCards();
-            player.getCards().add(removeLast(game.getDeckRemainingCards()));
+            if (game.getDeckRemainingCards().size() > 0) {
+                player.getCards().add(removeLast(game.getDeckRemainingCards()));
+            }
         }
         Collections.sort(player.getCards());
         game.owedCards = 0;
@@ -264,6 +268,15 @@ public class CardMoves {
         }
         int otherPlayerIndex = (game.getPlayers().size() - localPlayerIndex - 1);
         return game.getPlayers().get(otherPlayerIndex).getCards().size();
+    }
+
+    // FIXME: assumes there are only 2 players
+    public String getOpponentName() {
+        if (game.getPlayers().size() < 2) {
+            return "waiting for other player...";
+        }
+        int otherPlayerIndex = (game.getPlayers().size() - localPlayerIndex - 1);
+        return game.getPlayers().get(otherPlayerIndex).getName();
     }
 
     public int getTopCard() {

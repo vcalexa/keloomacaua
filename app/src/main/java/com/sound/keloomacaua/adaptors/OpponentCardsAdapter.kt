@@ -38,15 +38,20 @@ class OpponentCardsAdapter : RecyclerView.Adapter<OpponentCardsAdapter.ViewHolde
         val context = holder.cardContainer.context
 
         // overwrite width to allow cards to stack
-        val smallCardWidth: Int =
-            context.resources.getDimension(R.dimen.smallCardWidth).roundToInt()
-        val width = (parentWidth - smallCardWidth - 8.dp) / itemCount
+        val smallCardWidth =
+            context.resources.getDimension(R.dimen.smallCardWidth)
+        val width = (parentWidth - 2 * smallCardWidth) / itemCount
         val params = holder.cardContainer.layoutParams
-        params.width = width
+        params.width = width.roundToInt()
         holder.cardContainer.layoutParams = params
 
-        // rotate cards when there are many
-        holder.cardContainer.rotationY = itemCount.toFloat()
+        // rotate cards for fan effect
+        holder.cardContainer.rotation = -(itemCount / 2f - cardIndex.toFloat()) * 2f
+        // push cards toward the center to create more of a fan effect
+        holder.cardContainer.translationX =
+            1.1f * smallCardWidth * (1 - cardIndex.toFloat() / itemCount)
+        holder.cardContainer.pivotX = smallCardWidth * 0.5f
+        holder.cardContainer.pivotY = smallCardWidth
 
         // elevate opponent cards when it's their turn
         if (CardMoves.getInstance().isCurrentPlayer) {
