@@ -62,7 +62,6 @@ jobs:
           distribution: 'adopt'
           java-version: 11
 
-      ## warning! this will effectively share cache between macos and ubuntu which might cause issues
       - uses: actions/cache@v2
         with:
           path: |
@@ -79,14 +78,14 @@ jobs:
             /Users/runner/Library/Android/sdk/build-tools/30.0.3
             /Users/runner/Library/Android/sdk/emulator
             /Users/runner/Library/Android/sdk/tools
-          key: darwin-build-tools-android-sdk-${{ matrix.api-level }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/.github/workflows/*android.*.yml') }}
+          key: darwin-build-tools-android-sdk-${{ matrix.api-level }}-${{ hashFiles('**/.github/workflows/*android.*.yml') }}
 
       - uses: actions/cache@v2
         with:
           path: |
             /usr/local/lib/android/sdk/system-images
             /Users/runner/Library/Android/sdk/system-images
-          key: darwin-system-images-android-sdk-${{ matrix.api-level }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/.github/workflows/*android.*.yml') }}
+          key: darwin-system-images-android-sdk-${{ matrix.api-level }}
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
