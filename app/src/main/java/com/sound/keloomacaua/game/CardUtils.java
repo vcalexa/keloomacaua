@@ -5,9 +5,11 @@ import android.content.Context;
 import androidx.annotation.DrawableRes;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import kotlin.Pair;
 
 public class CardUtils implements Serializable {
 
@@ -27,37 +29,45 @@ public class CardUtils implements Serializable {
 
     private static final String[] SUITS = {SUITE_CLUBS, SUITE_DIAMONDS, SUITE_HEARTS, SUITE_SPADES};
     private static final String[] JOKER_SUITS = {SUITE_BLACK, SUITE_RED};
-    private static final String[] ranks = {CARD_ACE, CARD_TWO, CARD_THREE, CARD_FOUR, "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
+    private static final String[] RANKS = {CARD_ACE, CARD_TWO, CARD_THREE, CARD_FOUR, "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
+    private static final int CARDS_PER_DECK = JOKER_SUITS.length + SUITS.length * RANKS.length;
 
+    public static Map<String, Integer> nameToCard;
+    public static Map<Integer, Pair<String, String>> cardToPair;
+
+    static {
+        int i = 0;
+        cardToPair = new HashMap<>(CARDS_PER_DECK);
+        nameToCard = new HashMap<>(CARDS_PER_DECK);
+        for (String rank : RANKS) {
+            for (String suite : SUITS) {
+                cardToPair.put(i, new Pair<>(rank, suite));
+                nameToCard.put(rank + "_of_" + suite, i);
+                i++;
+            }
+        }
+        for (String suite : JOKER_SUITS) {
+            cardToPair.put(i, new Pair<>(CARD_JOKER, suite));
+            nameToCard.put(CARD_JOKER + "_of_" + suite, i);
+            i++;
+        }
+    }
 
     public static String getImageViewName(int n) {
         if (n < 0) {
             return "card_back";
         } else {
-            return String.format("%s_of_%s", getCardRank(n), getCardSuite(n));
+            Pair<String, String> card = cardToPair.get(n);
+            return String.format("%s_of_%s", card.getFirst(), card.getSecond());
         }
-    }
-
-    public static HashMap<Integer, List<String>> cardMap() {
-        int i = 0;
-        HashMap<Integer, List<String>> cardMap = new HashMap<>();
-        for (String rank : ranks) {
-            for (String suite : SUITS) {
-                cardMap.put(i++, listOf(rank, suite));
-            }
-        }
-        for (String suite : JOKER_SUITS) {
-            cardMap.put(i++, listOf(CARD_JOKER, suite));
-        }
-        return cardMap;
     }
 
     public static String getCardRank(int cardNumber) {
-        return cardMap().get(cardNumber).get(0);
+        return cardToPair.get(cardNumber).getFirst();
     }
 
     public static String getCardSuite(int cardNumber) {
-        return cardMap().get(cardNumber).get(1);
+        return cardToPair.get(cardNumber).getSecond();
     }
 
     public static boolean hasSameSuite(int card1, int card2) {
@@ -81,13 +91,6 @@ public class CardUtils implements Serializable {
     public static @DrawableRes
     int suiteToImageId(String suite, Context context) {
         return context.getResources().getIdentifier(suite, "drawable", context.getPackageName());
-    }
-
-    private static List<String> listOf(String rank, String suite) {
-        List<String> cardList = new ArrayList<>();
-        cardList.add(rank);
-        cardList.add(suite);
-        return cardList;
     }
 
     public static <T> T peekLast(List<T> list) {

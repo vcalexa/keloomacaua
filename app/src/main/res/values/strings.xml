@@ -17,7 +17,8 @@
     <string name="waiting_for_other_player">Waiting for opponent to join</string>
     <string name="opponent_cards_count">%s: %d</string>
     <string name="opponent_hand">Opponent hand</string>
-    <string name="game_over">Game over</string>
+    <string name="game_over_loser">Game over, loser\n%s</string>
+    <string name="game_over_winner">Congratulations!\n%s</string>
     <string name="txt_winner">%s\nwon using:</string>
     <string name="txt_loser">%s lost holding this:</string>
     <string name="ok">Back to lobby</string>
@@ -28,4 +29,6 @@
     <string name="skip_n_turns">Skip %d turns</string>
     <string name="skip_1_turn">Skip 1 turn</string>
     <string name="end_turn">End turn</string>
+    <string name="local_player_pronoun">You</string>
+    <string name="winner_card">winner card</string>
 </resources>

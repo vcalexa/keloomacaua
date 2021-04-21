@@ -14,11 +14,11 @@
         android:background="@drawable/card_shape_bordered"
         android:padding="4dp"
         android:scaleType="fitXY"
-        tools:elevation="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="@string/smallCardRatio"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/card_back" />
+        app:srcCompat="@drawable/card_back"
+        tools:elevation="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
