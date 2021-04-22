@@ -11,7 +11,7 @@
         android:theme="@style/Theme.keloomacaua">
         <activity
             android:name=".activities.ui.game.GameOverActivity"
-            android:exported="true" />
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
             android:name=".activities.ui.game.LobbyActivity"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />

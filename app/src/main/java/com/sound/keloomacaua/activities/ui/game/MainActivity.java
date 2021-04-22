@@ -1,6 +1,7 @@
 package com.sound.keloomacaua.activities.ui.game;
 
 import static com.sound.keloomacaua.Constants.DB_COLLECTION_GAMES;
+import static com.sound.keloomacaua.Constants.INTENT_EXTRA_CURRENT_PLAYER;
 import static com.sound.keloomacaua.Constants.INTENT_EXTRA_GAME;
 import static com.sound.keloomacaua.game.CardUtils.SUITE_CLUBS;
 import static com.sound.keloomacaua.game.CardUtils.SUITE_DIAMONDS;
@@ -236,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         mGameRef.removeValue();
         Intent intent = new Intent(this, GameOverActivity.class);
         intent.putExtra(INTENT_EXTRA_GAME, CardMoves.getInstance().getGame());
+        intent.putExtra(INTENT_EXTRA_CURRENT_PLAYER, localPlayerIndex);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();

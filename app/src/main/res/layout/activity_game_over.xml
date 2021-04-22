@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clipChildren="false"
     android:layout_height="match_parent"
+    android:clipChildren="false"
     tools:context=".activities.ui.game.GameOverActivity">
 
     <TextView
@@ -13,10 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="@string/game_over"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/game_over_loser" />
 
     <TextView
         android:id="@+id/txt_winner"
@@ -33,26 +34,23 @@
         app:layout_constraintTop_toTopOf="@+id/img_winner_card"
         tools:text="@string/txt_winner" />
 
-    <androidx.cardview.widget.CardView
+
+    <ImageView
         android:id="@+id/img_winner_card"
-        android:layout_width="@dimen/smallCardWidth"
+        android:layout_width="@dimen/cardWidth"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        app:cardCornerRadius="3dp"
-        app:cardElevation="8dp"
+        android:background="@drawable/card_shape_bordered"
+        android:contentDescription="@string/winner_card"
+        android:elevation="4dp"
+        android:padding="4dp"
+        android:scaleType="fitXY"
         app:layout_constraintDimensionRatio="@string/cardRatio"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_game_over">
-
-        <ImageView
-            android:id="@+id/img_top_card"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/opponent_hand"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/king_of_diamonds" />
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintHorizontal_bias="0.27"
+        app:layout_constraintTop_toBottomOf="@+id/txt_game_over"
+        tools:srcCompat="@drawable/king_of_diamonds" />
 
     <TextView
         android:id="@+id/txt_loser"

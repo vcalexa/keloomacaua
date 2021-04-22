@@ -22,10 +22,8 @@ public class CardMoves {
     private static final int CARDS_PER_PLAYER = 5;
     private static final List<String> challengeCards = Arrays.asList(CARD_TWO, CARD_THREE, CARD_JOKER);
     private static final List<String> specialCards = Arrays.asList(CARD_ACE, CARD_JOKER);
-
-    private Game game;
-
     private static CardMoves single_instance = null;
+    private Game game;
     private int localPlayerIndex;
     private int challengedPlayer = -1;
 
@@ -296,11 +294,11 @@ public class CardMoves {
         this.game = game;
     }
 
-    public void setPlayer(int localPlayerIndex) {
-        this.localPlayerIndex = localPlayerIndex;
-    }
-
     public int getPlayer() {
         return this.localPlayerIndex;
+    }
+
+    public void setPlayer(int localPlayerIndex) {
+        this.localPlayerIndex = localPlayerIndex;
     }
 }
