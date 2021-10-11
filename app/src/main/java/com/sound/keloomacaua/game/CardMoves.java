@@ -5,13 +5,14 @@ import static com.sound.keloomacaua.game.CardUtils.CARD_FOUR;
 import static com.sound.keloomacaua.game.CardUtils.CARD_JOKER;
 import static com.sound.keloomacaua.game.CardUtils.CARD_THREE;
 import static com.sound.keloomacaua.game.CardUtils.CARD_TWO;
-import static com.sound.keloomacaua.game.CardUtils.cardHasRank;
-import static com.sound.keloomacaua.game.CardUtils.getCardRank;
+import static com.sound.keloomacaua.game.CardUtils.Companion.*;
+import static com.sound.keloomacaua.game.CardUtils.Companion;
 import static com.sound.keloomacaua.game.CardUtils.getCardSuite;
 import static com.sound.keloomacaua.game.CardUtils.hasSameRank;
 import static com.sound.keloomacaua.game.CardUtils.hasSameSuite;
 import static com.sound.keloomacaua.game.CardUtils.peekLast;
 import static com.sound.keloomacaua.game.CardUtils.removeLast;
+import static com.sound.keloomacaua.game.CardUtils
 
 import java.util.Arrays;
 import java.util.Collections;

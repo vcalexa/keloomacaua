@@ -11,7 +11,7 @@ import java.util.Map;
 
 import kotlin.Pair;
 
-public class CardUtils implements Serializable {
+public class CardUtilsJava implements Serializable {
 
     public static final String CARD_TWO = "two";
     public static final String CARD_THREE = "three";

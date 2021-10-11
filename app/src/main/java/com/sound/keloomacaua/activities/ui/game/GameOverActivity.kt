@@ -74,7 +74,9 @@ val winnerFaces = arrayOf(
     ":-D",
     "^_^",
     "٩(^‿^)۶",
-    "\uD83D\uDE0A",
+        "¯\\_(ツ)_/¯\n" +
+                "\n",
+"\uD83D\uDE0A",
     "\uD83D\uDE04",
     "\uD83D\uDE01",
     "\uD83D\uDE06",
