@@ -18,6 +18,9 @@ class Game : Serializable {
     var gameId: Long = System.currentTimeMillis()
     var players: MutableList<Player> = mutableListOf()
     var playersTurn = 0
+         get() {
+            return field
+        }
     var deckRemainingCards: MutableList<Int> = mutableListOf()
     var playedCards: MutableList<Int> = mutableListOf()
 

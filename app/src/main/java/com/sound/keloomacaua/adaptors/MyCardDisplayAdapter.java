@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sound.keloomacaua.R;
-import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.interfaces.CardTapListener;
 
 import java.util.ArrayList;

@@ -1,6 +1,5 @@
 package com.sound.keloomacaua;
 
-import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.CardUtils;
 
 import org.junit.Test;

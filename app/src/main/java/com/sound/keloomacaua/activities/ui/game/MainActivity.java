@@ -32,7 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.sound.keloomacaua.R;
 import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter;
 import com.sound.keloomacaua.adaptors.OpponentCardsAdapter;
-import com.sound.keloomacaua.game.CardMoves;
 import com.sound.keloomacaua.game.CardUtils;
 import com.sound.keloomacaua.game.Game;
 import com.sound.keloomacaua.game.GameState;
