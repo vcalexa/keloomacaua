@@ -1,8 +1,4 @@
 package com.sound.keloomacaua.game
-
-import com.sound.keloomacaua.game.CardMoves.Companion.CARDS_PER_PLAYER
-import com.sound.keloomacaua.game.CardMoves.Companion.challengeCards
-import com.sound.keloomacaua.game.CardMoves.Companion.specialCards
 import com.sound.keloomacaua.game.CardUtils.Companion.cardHasRank
 import com.sound.keloomacaua.game.CardUtils.Companion.getCardRank
 import com.sound.keloomacaua.game.CardUtils.Companion.getCardSuite
@@ -15,7 +11,7 @@ import java.util.function.Consumer
 
 // FIXME: this assumes there are only 2 players
 object CardMoves {
-    var game: Game
+    var game: Game = Game()
     var player = 0
     private var challengedPlayer = -1
 
@@ -211,7 +207,7 @@ object CardMoves {
             // noinspection ConstantConditions
             val lastCard: Int = removeLast(game.playedCards)!!
             game.deckRemainingCards.addAll(game.playedCards)
-            Collections.shuffle(game.deckRemainingCards)
+            game.deckRemainingCards.shuffle()
             game.playedCards.clear()
             game.playedCards.add(lastCard)
         }
@@ -239,8 +235,7 @@ object CardMoves {
 
     val topCard: Int
         get() {
-            val lastCard: Int = peekLast(game.playedCards)!!
-            return lastCard ?: -1
+            return peekLast(game.playedCards)!!
         }
 
 
@@ -254,7 +249,4 @@ object CardMoves {
     private val specialCards = listOf(CardUtils.CARD_ACE, CardUtils.CARD_JOKER)
 
 
-    init {
-        game = Game()
-    }
 }

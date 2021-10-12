@@ -54,7 +54,7 @@ class OpponentCardsAdapter : RecyclerView.Adapter<OpponentCardsAdapter.ViewHolde
         holder.cardContainer.pivotY = smallCardWidth
 
         // elevate opponent cards when it's their turn
-        if (CardMoves.getInstance().isCurrentPlayer) {
+        if (CardMoves.isCurrentPlayer) {
             holder.imgThumbnail.elevation = 1f
         } else {
             holder.imgThumbnail.elevation = 32.dp.toFloat()
