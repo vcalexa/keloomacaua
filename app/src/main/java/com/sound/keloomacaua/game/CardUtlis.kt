@@ -35,23 +35,23 @@ class CardUtils : Serializable {
             "king"
         )
         private val CARDS_PER_DECK = JOKER_SUITS.size + SUITS.size * RANKS.size
-        var nameToCard: MutableMap<String, Int>? = null
-        var cardToPair: MutableMap<Int, Pair<String, String>>? = null
+        val nameToCard = mutableMapOf<String, Int>()
+        val cardToPair = mutableMapOf<Int, Pair<String, String>>()
         fun getImageViewName(n: Int): String {
             return if (n < 0) {
                 "card_back"
             } else {
-                val (first, second) = cardToPair!![n]!!
+                val (first, second) = cardToPair[n] ?: ("unknown" to "unknown")
                 String.format("%s_of_%s", first, second)
             }
         }
 
         fun getCardRank(cardNumber: Int): String {
-            return cardToPair!![cardNumber]!!.first
+            return cardToPair[cardNumber]?.first ?: "unknown"
         }
 
         fun getCardSuite(cardNumber: Int): String {
-            return cardToPair!![cardNumber]!!.second
+            return cardToPair[cardNumber]?.second ?: "unknown"
         }
 
         fun hasSameSuite(card1: Int, card2: Int): Boolean {
@@ -95,15 +95,15 @@ class CardUtils : Serializable {
             var i = 0
             for (rank in RANKS) {
                 for (suite in SUITS) {
-                    cardToPair?.set(i, Pair(rank, suite))
-                    nameToCard?.set(rank + "_of_" + suite, i)
+                    cardToPair[i] = Pair(rank, suite)
+                    nameToCard[rank + "_of_" + suite] = i
                     i++
                 }
             }
             i = 0
             for (suite in JOKER_SUITS) {
-                cardToPair?.set(i, Pair<String, String>(CARD_JOKER, suite))
-                nameToCard?.set(CARD_JOKER + "_of_" + suite, i)
+                cardToPair[i] = Pair<String, String>(CARD_JOKER, suite)
+                nameToCard[CARD_JOKER + "_of_" + suite] = i
                 i++
             }
         }

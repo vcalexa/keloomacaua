@@ -12,12 +12,12 @@ import com.sound.keloomacaua.game.CardUtils.Companion.cardToImageId
 import com.sound.keloomacaua.interfaces.CardTapListener
 
 class MyCardDisplayAdapter() : RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder>() {
-    private var ownCards: MutableList<Int> = ArrayList()
+    private val ownCards: MutableList<Int> = ArrayList()
     private lateinit var clickListener: CardTapListener
     @SuppressLint("NotifyDataSetChanged")
-    fun setOwnCards(ownCards: List<Int>?) {
+    fun setOwnCards(ownCards: List<Int>) {
         this.ownCards.clear()
-        this.ownCards.addAll(ownCards!!)
+        this.ownCards.addAll(ownCards)
         notifyDataSetChanged()
     }
 
@@ -50,9 +50,6 @@ class MyCardDisplayAdapter() : RecyclerView.Adapter<MyCardDisplayAdapter.ViewHol
 
     }
 
-    init {
-
-    }
     constructor(cardTapListener:CardTapListener) : this() {
         this.clickListener = cardTapListener
     }

@@ -121,8 +121,8 @@ object CardMoves {
         game.playersTurn = nextPlayer
     }
 
-    fun changeSuite(suite: String?) {
-        game.suiteOverride = suite!!
+    fun changeSuite(suite: String) {
+        game.suiteOverride = suite
         game.playerPicksSuite = -1
         endTurn()
     }
@@ -204,8 +204,7 @@ object CardMoves {
 
     private fun ensureEnoughSpareCards() {
         if (game.deckRemainingCards.isEmpty()) {
-            // noinspection ConstantConditions
-            val lastCard: Int = removeLast(game.playedCards)!!
+            val lastCard: Int = removeLast(game.playedCards) ?: -1
             game.deckRemainingCards.addAll(game.playedCards)
             game.deckRemainingCards.shuffle()
             game.playedCards.clear()
@@ -235,7 +234,7 @@ object CardMoves {
 
     val topCard: Int
         get() {
-            return peekLast(game.playedCards)!!
+            return peekLast(game.playedCards) ?: -1
         }
 
 
