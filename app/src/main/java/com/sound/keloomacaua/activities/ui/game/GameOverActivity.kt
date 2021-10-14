@@ -13,7 +13,6 @@ import com.sound.keloomacaua.adaptors.MyCardDisplayAdapter
 import com.sound.keloomacaua.game.CardUtils
 import com.sound.keloomacaua.game.Game
 import com.sound.keloomacaua.game.Player
-import com.sound.keloomacaua.interfaces.CardTapListener
 import kotlin.random.Random
 
 class GameOverActivity : AppCompatActivity() {
@@ -44,7 +43,7 @@ class GameOverActivity : AppCompatActivity() {
         val winnerCard = findViewById<ImageView>(R.id.img_winner_card)
         winnerCard.setImageResource(CardUtils.cardToImageId(game.playedCards.last(), this))
 
-        val loserCardsAdapter = MyCardDisplayAdapter() 
+        val loserCardsAdapter = MyCardDisplayAdapter()
         val loserCards = findViewById<RecyclerView>(R.id.loser_cards)
         loserCards.adapter = loserCardsAdapter
         loserCardsAdapter.setOwnCards(loser.cards)
@@ -75,9 +74,9 @@ val winnerFaces = arrayOf(
     ":-D",
     "^_^",
     "٩(^‿^)۶",
-        "¯\\_(ツ)_/¯\n" +
-                "\n",
-"\uD83D\uDE0A",
+    "¯\\_(ツ)_/¯\n" +
+            "\n",
+    "\uD83D\uDE0A",
     "\uD83D\uDE04",
     "\uD83D\uDE01",
     "\uD83D\uDE06",
