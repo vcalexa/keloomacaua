@@ -11,9 +11,9 @@ import com.sound.keloomacaua.game.CardMoves
 import com.sound.keloomacaua.game.CardUtils.Companion.cardToImageId
 import com.sound.keloomacaua.interfaces.CardTapListener
 
-class MyCardDisplayAdapter(cardTapListener: CardTapListener) : RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder>() {
-    private val ownCards: MutableList<Int>
-    private val clickListener: CardTapListener
+class MyCardDisplayAdapter() : RecyclerView.Adapter<MyCardDisplayAdapter.ViewHolder>() {
+    private var ownCards: MutableList<Int> = ArrayList()
+    private lateinit var clickListener: CardTapListener
     @SuppressLint("NotifyDataSetChanged")
     fun setOwnCards(ownCards: List<Int>?) {
         this.ownCards.clear()
@@ -37,7 +37,7 @@ class MyCardDisplayAdapter(cardTapListener: CardTapListener) : RecyclerView.Adap
             viewHolder.container.animate().translationY(32f).start()
             viewHolder.container.elevation = 0f
         }
-        viewHolder.container.setOnClickListener { view: View? -> clickListener.onCardTapped(cardIndex) }
+        viewHolder.container.setOnClickListener { clickListener.onCardTapped(cardIndex) }
     }
 
     override fun getItemCount(): Int {
@@ -51,7 +51,9 @@ class MyCardDisplayAdapter(cardTapListener: CardTapListener) : RecyclerView.Adap
     }
 
     init {
-        ownCards = ArrayList()
-        clickListener = cardTapListener
+
+    }
+    constructor(cardTapListener:CardTapListener) : this() {
+        this.clickListener = cardTapListener
     }
 }

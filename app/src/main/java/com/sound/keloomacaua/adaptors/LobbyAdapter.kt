@@ -18,13 +18,13 @@ import com.sound.keloomacaua.game.Player
 import java.util.stream.Collectors
 
 class LobbyAdapter(localUserId: String?, localUsername: String?) : RecyclerView.Adapter<LobbyAdapter.ViewHolder>() {
-    private val createdGames: MutableList<Game>
+    private val createdGames: MutableList<Game?>
     private val userId: String
     private val localUsername: String
-    fun setCreatedGames(createdGames: List<Game>) {
-        val filteredGames = createdGames.stream().filter { game: Game ->
-            (game.state === GameState.Started && game.findPlayer(userId) != -1
-                    || game.state === GameState.Waiting)
+    fun setCreatedGames(createdGames: MutableList<Game?>) {
+        val filteredGames = createdGames.stream().filter { game: Game? ->
+            (game?.state === GameState.Started && game.findPlayer(userId) != -1
+                    || game?.state === GameState.Waiting)
         }.collect(Collectors.toList())
         this.createdGames.clear()
         this.createdGames.addAll(filteredGames)
@@ -40,8 +40,8 @@ class LobbyAdapter(localUserId: String?, localUsername: String?) : RecyclerView.
     @RequiresApi(api = Build.VERSION_CODES.O)
     override fun onBindViewHolder(viewHolder: ViewHolder, gameIndex: Int) {
         val game = createdGames[gameIndex]
-        viewHolder.gameState.text = game.state.toString()
-        if (game.players.size > 0) {
+        viewHolder.gameState.text = game?.state.toString()
+        if (game?.players?.size!! > 0) {
             viewHolder.player1Name.text = game.players[0].name
         }
         if (game.players.size > 1) {
@@ -72,17 +72,11 @@ class LobbyAdapter(localUserId: String?, localUsername: String?) : RecyclerView.
     }
 
     class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var gameState: TextView
-        var player1Name: TextView
-        var player2Name: TextView
-        var gameView: View
+        var gameState: TextView = itemView.findViewById(R.id.gameState)
+        var player1Name: TextView = itemView.findViewById(R.id.player1Name)
+        var player2Name: TextView = itemView.findViewById(R.id.player2Name)
+        var gameView: View = itemView.findViewById(R.id.lobbyItem)
 
-        init {
-            gameState = itemView.findViewById(R.id.gameState)
-            player1Name = itemView.findViewById(R.id.player1Name)
-            player2Name = itemView.findViewById(R.id.player2Name)
-            gameView = itemView.findViewById(R.id.lobbyItem)
-        }
     }
 
     init {

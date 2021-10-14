@@ -22,6 +22,7 @@ import com.sound.keloomacaua.game.CardUtils
 import com.sound.keloomacaua.game.CardUtils.Companion.cardToImageId
 import com.sound.keloomacaua.game.Game
 import com.sound.keloomacaua.game.GameState
+import com.sound.keloomacaua.interfaces.CardTapListener
 
 class MainActivity : AppCompatActivity() {
     var mGameRef: DatabaseReference? = null
@@ -66,15 +67,17 @@ class MainActivity : AppCompatActivity() {
         }
         mGameRef = FirebaseDatabase.getInstance().reference.child(Constants.DB_COLLECTION_GAMES).child(game.gameId.toString())
         mGameRef!!.setValue(game)
-        bottomCardsAdaptor = MyCardDisplayAdapter { cardPosition: Int ->
-            val cardTitle = CardUtils.getImageViewName(CardMoves.localPlayerCards()[cardPosition])
-            if (CardMoves.canPlayCardAt(cardPosition)) {
-                CardMoves.playCardAt(cardPosition)
-                mGameRef!!.setValue(CardMoves.game)
-            } else {
-                Toast.makeText(this, getString(R.string.cannot_play_card, cardTitle), Toast.LENGTH_SHORT).show()
+        bottomCardsAdaptor = MyCardDisplayAdapter(object : CardTapListener {
+            override fun onCardTapped(cardPosition: Int) {
+                val cardTitle = CardUtils.getImageViewName(CardMoves.localPlayerCards().get(cardPosition))
+                if (CardMoves.canPlayCardAt(cardPosition)) {
+                    CardMoves.playCardAt(cardPosition)
+                    mGameRef!!.setValue(CardMoves.game)
+                } else {
+                    Toast.makeText(applicationContext, getString(R.string.cannot_play_card, cardTitle), Toast.LENGTH_SHORT).show()
+                }
             }
-        }
+        })
         cardsInHand?.adapter = bottomCardsAdaptor
         cardsInHand?.scrollToPosition(CardMoves.localPlayerCards().size - 1)
         opponentCardsAdapter = OpponentCardsAdapter()

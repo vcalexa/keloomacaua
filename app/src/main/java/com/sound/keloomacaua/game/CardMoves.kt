@@ -27,13 +27,13 @@ object CardMoves {
         for (i in 0..53) {
             game.deckRemainingCards.add(i)
         }
-        Collections.shuffle(game.deckRemainingCards)
+        game.deckRemainingCards.shuffle()
         for (i in 0 until CARDS_PER_PLAYER) {
             val players: List<Player> = game.players
             players.forEach(Consumer { player: Player -> removeLast(game.deckRemainingCards)?.let { player.cards.add(it) } })
         }
         for (player in game.players) {
-            Collections.sort(player.cards)
+            player.cards.sort()
         }
 
         // Play first card and remove from deck
@@ -54,7 +54,7 @@ object CardMoves {
         if (getCardRank(card).equals(CardUtils.CARD_ACE)) {
             game.playerPicksSuite = this.player
         }
-        if (!game.suiteOverride.isEmpty()) {
+        if (game.suiteOverride.isNotEmpty()) {
             // reset override when card is played
             game.suiteOverride = ""
         }
